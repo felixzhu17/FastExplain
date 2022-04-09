@@ -1,7 +1,8 @@
 from itertools import cycle
 
+COLOURS = {'blue': "#0052CC", 'dark_blue': "#172B4D", 'light_blue': "#00B8D9", "white": "#FFFFFF", "green": }
 
-class ColourUtils:
+class Colours:
     def __init__(self):
         self._init_colours()
 
