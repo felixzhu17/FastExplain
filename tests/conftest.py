@@ -1,6 +1,5 @@
 import pytest
 import pandas as pd
-from model_helper.clean import prepare_data
 from model_helper import model_data
 from .params import *
 
@@ -11,25 +10,14 @@ def test_class_csv():
 
 
 @pytest.fixture(scope="session")
-def clean_class_object(test_class_csv):
-    return prepare_data(
-        test_class_csv,
-        cat_names=CLASS_CAT_COLS,
-        cont_names=CLASS_CONT_COLS,
-        dep_var=CLASS_DEP_VAR,
-        return_class=True,
-        perc_train=TRAIN_SPLIT,
-    )
-
-
-@pytest.fixture(scope="session")
 def rf_class_object(test_class_csv):
     return model_data(
         test_class_csv,
         cat_names=CLASS_CAT_COLS,
         cont_names=CLASS_CONT_COLS,
         dep_var=CLASS_DEP_VAR,
-        type="rf",
+        model="rf",
+        perc_train=TRAIN_SPLIT,
     )
 
 
@@ -40,7 +28,8 @@ def xgb_class_object(test_class_csv):
         cat_names=CLASS_CAT_COLS,
         cont_names=CLASS_CONT_COLS,
         dep_var=CLASS_DEP_VAR,
-        type="xgb",
+        model="xgb",
+        perc_train=TRAIN_SPLIT,
     )
 
 
@@ -51,5 +40,6 @@ def ebm_class_object(test_class_csv):
         cat_names=CLASS_CAT_COLS,
         cont_names=CLASS_CONT_COLS,
         dep_var=CLASS_DEP_VAR,
-        type="ebm",
+        model="ebm",
+        perc_train=TRAIN_SPLIT,
     )
