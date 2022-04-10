@@ -1,0 +1,2 @@
+class Clean:
+    ...  # Abstract todo

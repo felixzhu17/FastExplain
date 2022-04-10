@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.express as px
-from ...utils import Utils
+from model_helper.utils import *
 from ..PyALE import ale
 from ..PyALE._src.ALE_2D import aleplot_2D_continuous
 
@@ -107,7 +107,7 @@ def plot_ale(
             xs,
             col,
             feature_name,
-            blue,
+            COLOURS["blue"],
             return_index_size=True,
             *args,
             **kwargs,
@@ -132,7 +132,7 @@ def _get_ale_traces(
     size = df["size"]
     y_lower = df["lowerCI_95%"]
     y_upper = df["upperCI_95%"]
-    return _get_upper_lower_bound_traces(
+    return get_upper_lower_bound_traces(
         x, y, y_lower, y_upper, size, color, model_name, return_index_size
     )
 
@@ -170,7 +170,7 @@ def plot_2d_ale(
     df = df - df.min().min()
     df.index = convert_ale_index(df.index, dp, percentage, condense_last)
     df.columns = convert_ale_index(df.columns, dp, percentage, condense_last)
-    return _plot_two_way_analysis(df, cols, feature_names, plotsize, colorscale)
+    return plot_two_way(df, cols, feature_names, plotsize, colorscale)
 
 
 def convert_ale_index(index, dp, percentage, condense_last):
@@ -184,7 +184,7 @@ def convert_ale_index(index, dp, percentage, condense_last):
         )
 
 
-class AleClassified:
+class Ale:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

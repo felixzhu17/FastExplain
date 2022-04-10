@@ -117,7 +117,7 @@ def predict_column(df, m, m_cols):
     return m.predict(df[m_cols])
 
 
-class SensitivityClassified:
+class Sensitivity:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

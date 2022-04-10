@@ -143,16 +143,16 @@ def _get_ebm_explain_traces(
     )
 
 
-class EbmExplainClassified(EbmExplain):
+class EbmExplain:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs
 
     def get_index(self, *args, **kwargs):
-        return EbmExplain().get_index(self.m, *args, **kwargs)
+        return get_index(self.m, *args, **kwargs)
 
     def ebm_explain_summary(self, *args, **kwargs):
-        return EbmExplain().ebm_explain_summary(self.m, self.xs, *args, **kwargs)
+        return ebm_explain_summary(self.m, self.xs, *args, **kwargs)
 
     def plot_ebm_explain(self, *args, **kwargs):
-        return EbmExplain().plot_ebm_explain(self.m, self.xs, *args, **kwargs)
+        return plot_ebm_explain(self.m, self.xs, *args, **kwargs)

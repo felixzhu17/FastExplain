@@ -81,7 +81,7 @@ def plot_ice(
     return fig
 
 
-class PDPClassified:
+class PDP:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

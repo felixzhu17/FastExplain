@@ -6,4 +6,5 @@ pandas
 plotly
 scikit_learn
 scipy
-
+plotly_express
+xgboost

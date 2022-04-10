@@ -12,7 +12,7 @@ def get_shap_values(m, xs):
     return shap_values_df
 
 
-class ShapExplainClassified:
+class ShapExplain:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

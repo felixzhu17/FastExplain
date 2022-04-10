@@ -5,9 +5,7 @@ from plotly.subplots import make_subplots
 from .colours import COLOURS
 
 
-def _plot_two_way_analysis(
-    df, cols, feature_names=None, plotsize=None, colorscale="Blues"
-):
+def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"):
     fig = px.imshow(df, color_continuous_scale=colorscale)
 
     feature_1, feature_2 = feature_names if feature_names else clean_text(
@@ -27,11 +25,13 @@ def _plot_two_way_analysis(
     return fig
 
 
-def _plot_one_way_analysis(df, cols, size=None, feature_names=None, plotsize=None):
+def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
     if size is not None:
         fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
         fig.add_trace(
-            go.Bar(name="Frequency", x=df.index, y=size, marker={"color": COLOURS['grey']}),
+            go.Bar(
+                name="Frequency", x=df.index, y=size, marker={"color": COLOURS["grey"]}
+            ),
             secondary_y=False,
         )
         _two_axis_layout(fig)
@@ -55,7 +55,7 @@ def _plot_one_way_analysis(df, cols, size=None, feature_names=None, plotsize=Non
     return fig
 
 
-def _get_upper_lower_bound_traces(
+def get_upper_lower_bound_traces(
     x,
     y,
     y_lower,
@@ -65,7 +65,7 @@ def _get_upper_lower_bound_traces(
     line_name="",
     return_index_size=True,
 ):
-    color = color if color else COLOURS['blue']
+    color = color if color else COLOURS["blue"]
     fig = go.Figure(
         [
             go.Scatter(
@@ -110,7 +110,7 @@ def plot_upper_lower_bound_traces(
     for i in traces:
         fig.add_trace(i, secondary_y=True)
     fig.add_trace(
-        go.Bar(name="Frequency", x=x, y=size, marker={"color": COLOURS['grey']}),
+        go.Bar(name="Frequency", x=x, y=size, marker={"color": COLOURS["grey"]}),
         secondary_y=False,
     )
     if plotsize:
@@ -164,7 +164,7 @@ def create_secondary_axis_plotly(fig):
     return output
 
 
-def _custom_legend_name(fig, new_names):
+def custom_legend_name(fig, new_names):
     for i, new_name in enumerate(new_names):
         fig.data[i].name = new_name
     return

@@ -15,5 +15,5 @@ COLOURS = {
 }
 
 
-def cycle_colours(colours = ['blue', 'red', 'yellow', 'green', 'purple', 'black']):
+def cycle_colours(colours=["blue", "red", "yellow", "green", "purple", "black"]):
     return cycle([COLOURS[i] for i in colours])

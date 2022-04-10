@@ -69,7 +69,7 @@ def _get_feature_importance_df(m, xs):
     return pd.DataFrame(df_dict)
 
 
-class ImportanceClassified:
+class Importance:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

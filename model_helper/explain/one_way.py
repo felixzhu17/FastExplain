@@ -1,4 +1,5 @@
 import pandas as pd
+from ..utils import *
 
 
 def get_one_way_analysis(
@@ -32,7 +33,7 @@ def plot_one_way_analysis(
     df, x_col, y_col, feature_names=None, plotsize=None, *args, **kwargs
 ):
     output = get_one_way_analysis(df, x_col, y_col, *args, **kwargs)
-    return _plot_one_way_analysis(
+    return plot_one_way(
         df=output,
         cols=[x_col, y_col],
         size=output["size"],
@@ -108,7 +109,7 @@ def plot_two_way_frequency(
     **kwargs,
 ):
     output = get_two_way_frequency(df, x_cols, *args, **kwargs)
-    return _plot_two_way_analysis(output, x_cols, feature_names, plotsize, colorscale)
+    return plot_two_way(output, x_cols, feature_names, plotsize, colorscale)
 
 
 def plot_two_way_analysis(
@@ -140,12 +141,10 @@ def plot_two_way_analysis(
         percentage=percentage,
         condense_last=condense_last,
     )
-    return _plot_two_way_analysis(
-        two_way_df, x_cols, feature_names, plotsize, colorscale
-    )
+    return plot_two_way(two_way_df, x_cols, feature_names, plotsize, colorscale)
 
 
-class OneWayClassified:
+class OneWay:
     def __init__(self, m, xs, df, dep_var):
         self.m = m
         self.xs = xs
@@ -153,27 +152,27 @@ class OneWayClassified:
         self.dep_var = dep_var
 
     def get_one_way_analysis(self, x_col, *args, **kwargs):
-        return OneWay().get_one_way_analysis(
+        return get_one_way_analysis(
             self.df, x_col=x_col, y_col=self.dep_var, *args, **kwargs
         )
 
     def plot_one_way_analysis(self, x_col, *args, **kwargs):
-        return OneWay().plot_one_way_analysis(
+        return plot_one_way_analysis(
             self.df, x_col=x_col, y_col=self.dep_var, *args, **kwargs
         )
 
     def get_two_way_analysis(self, x_cols, *args, **kwargs):
-        return OneWay().get_two_way_analysis(
+        return get_two_way_analysis(
             self.df, x_cols=x_cols, y_col=self.dep_var, *args, **kwargs
         )
 
     def plot_two_way_analysis(self, x_cols, *args, **kwargs):
-        return OneWay().plot_two_way_analysis(
+        return plot_two_way_analysis(
             self.df, x_cols=x_cols, y_col=self.dep_var, *args, **kwargs
         )
 
     def get_two_way_frequency(self, *args, **kwargs):
-        return OneWay().get_two_way_frequency(self.df, *args, **kwargs)
+        return get_two_way_frequency(self.df, *args, **kwargs)
 
     def plot_two_way_frequency(self, *args, **kwargs):
-        return OneWay().plot_two_way_frequency(self.df, *args, **kwargs)
+        return plot_two_way_frequency(self.df, *args, **kwargs)
