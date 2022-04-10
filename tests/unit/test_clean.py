@@ -16,7 +16,8 @@ def test_stratify(rf_class_object):
     assert (
         -STRATIFY_ERROR_MARGIN
         <= sum(rf_class_object.data.val_y == 1) / sum(rf_class_object.data.val_y == 0)
-        - sum(rf_class_object.data.train_y == 1) / sum(rf_class_object.data.train_y == 0)
+        - sum(rf_class_object.data.train_y == 1)
+        / sum(rf_class_object.data.train_y == 0)
         <= STRATIFY_ERROR_MARGIN
     )
 
