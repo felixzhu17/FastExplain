@@ -49,7 +49,6 @@ def _clean_ebm_explain(m, xs, col, dp=2, percentage=False, condense_last=True):
         },
         index=bin_columns(
             ebm_global.data(index)["names"],
-            format_numbers=True,
             dp=dp,
             percentage=percentage,
             condense_last=condense_last,

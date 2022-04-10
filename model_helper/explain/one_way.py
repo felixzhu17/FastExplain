@@ -4,7 +4,7 @@ from scipy.stats import spearmanr
 from scipy.spatial.distance import squareform
 import scipy.cluster.hierarchy as sch
 import plotly.figure_factory as ff
-from .simplify import get_bins
+from .bin import get_bins
 from ..utils import *
 import warnings
 
@@ -15,7 +15,6 @@ def get_one_way_analysis(
     y_col,
     grid_size=20,
     bins=None,
-    format_numbers=True,
     dp=2,
     func=None,
     size_cutoff=0,
@@ -30,9 +29,7 @@ def get_one_way_analysis(
     one_way_df = filtered_df.groupby(x_col).agg(
         **{y_col: (y_col, func), "size": (y_col, "count")}
     )
-    one_way_df.index = bin_intervals(
-        one_way_df.index, format_numbers, dp, percentage, condense_last
-    )
+    one_way_df.index = bin_intervals(one_way_df.index, dp, percentage, condense_last)
     return one_way_df
 
 
@@ -55,7 +52,6 @@ def get_two_way_analysis(
     y_col,
     grid_size=20,
     bins=None,
-    format_numbers=True,
     dp=2,
     func=None,
     size_cutoff=0,
@@ -85,11 +81,9 @@ def get_two_way_analysis(
         .pivot(index=col_1, columns=col_2)[y_col]
     )
 
-    two_way_df.index = bin_intervals(
-        two_way_df.index, format_numbers, dp, percentage, condense_last
-    )
+    two_way_df.index = bin_intervals(two_way_df.index, dp, percentage, condense_last)
     two_way_df.columns = bin_intervals(
-        two_way_df.columns, format_numbers, dp, percentage, condense_last
+        two_way_df.columns, dp, percentage, condense_last
     )
     return two_way_df
 
@@ -173,7 +167,9 @@ class OneWay:
         self.dep_var = dep_var
 
         if self.df is None or self.dep_var is None:
-            warnings.warn("One way analysis and Two way analysis does not work without dependent variable")
+            warnings.warn(
+                "One way analysis and Two way analysis does not work without dependent variable"
+            )
 
     def get_one_way_analysis(self, x_col, *args, **kwargs):
         return get_one_way_analysis(
@@ -206,7 +202,6 @@ class OneWay:
             return plot_two_way_frequency(self.xs, *args, **kwargs)
         else:
             return plot_two_way_frequency(self.df, *args, **kwargs)
-
 
     def feature_correlation(self, *args, **kwargs):
         return feature_correlation(self.xs, *args, **kwargs)

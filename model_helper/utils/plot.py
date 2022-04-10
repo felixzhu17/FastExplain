@@ -2,6 +2,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from .logic import clean_text
 from .colours import COLOURS
 
 
@@ -168,7 +169,3 @@ def custom_legend_name(fig, new_names):
     for i, new_name in enumerate(new_names):
         fig.data[i].name = new_name
     return
-
-
-def clean_text(text):
-    return text.replace("_", " ").title()

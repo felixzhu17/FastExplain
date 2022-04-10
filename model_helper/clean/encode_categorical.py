@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import MultiLabelBinarizer
 from .base import Clean
 
 
@@ -49,3 +50,17 @@ class EncodeCategorical(Clean):
             if cat_strategy not in dir(CatStrategy):
                 raise ValueError("Categorical encoding strategy not valid")
             return getattr(CatStrategy, cat_strategy)
+
+
+def encode_list(df, col, include_col_name=True):
+    mlb = MultiLabelBinarizer()
+    df = df.join(
+        pd.DataFrame(
+            mlb.fit_transform(df[col]),
+            columns=[f"{col}_{i}" for i in mlb.classes_]
+            if include_col_name
+            else mlb.classes_,
+            index=df.index,
+        )
+    )
+    return df

@@ -1,7 +1,4 @@
 interpret
-loguru
-matplotlib
-numpy
 pandas
 plotly
 scikit_learn
@@ -10,3 +7,5 @@ plotly_express
 xgboost
 statsmodels
 shap
+numpy==1.21
+pytest

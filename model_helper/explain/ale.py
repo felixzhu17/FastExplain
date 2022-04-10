@@ -176,11 +176,11 @@ def plot_2d_ale(
 def convert_ale_index(index, dp, percentage, condense_last):
     if percentage:
         return [f"{index[0]:,.{dp}%}"] + bin_columns(
-            index, True, dp=dp, percentage=percentage, condense_last=condense_last
+            index, dp=dp, percentage=percentage, condense_last=condense_last
         )
     else:
         return [f"{index[0]:,.{dp}f}"] + bin_columns(
-            index, True, dp=dp, percentage=percentage, condense_last=condense_last
+            index, dp=dp, percentage=percentage, condense_last=condense_last
         )
 
 

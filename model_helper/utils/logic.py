@@ -1,30 +1,6 @@
-from itertools import product
-import numpy as np
-import inspect
-
-
-def bool_map_list(ls, mapping):
-    return [i for i, j in zip(ls, mapping) if j]
-
-
-def binary_permutations(ls, len_cutoff=None):
-    output = [bool_map_list(ls, i) for i in product([True, False], repeat=4)]
-    if len_cutoff:
-        output = [i for i in output if len(i) >= len_cutoff]
-    return output
-
-
 def ifnone(a, b):
     "`b` if `a` is None else `a`"
     return b if a is None else a
-
-
-def remove_values_list(ls, values):
-    return [i for i in ls if i not in values]
-
-
-def filter_values_list(ls, values):
-    return [i for i in ls if i in values]
 
 
 def fill_list(list, length, fill_value=None):
@@ -32,17 +8,33 @@ def fill_list(list, length, fill_value=None):
     return list
 
 
-def conditional_mean(x, cutoff):
-    if len(x) < cutoff:
-        return None
-    else:
-        return np.mean(x)
-
-
-def extract_args(func, kwargs):
-    args = list(inspect.signature(func).parameters)
-    return {k: kwargs.pop(k) for k in dict(kwargs) if k in args}
-
-
 def drop_duplicate(ls):
     return list(set(ls))
+
+
+def clean_text(text):
+    return text.replace("_", " ").title()
+
+
+def bin_columns(bins, dp=2, percentage=False, condense_last=True):
+    formatting = "%" if percentage else "f"
+
+    binned_columns = [
+        f"{lower:,.{dp}{formatting}} - {upper:,.{dp}{formatting}}"
+        for lower, upper in zip(bins[:-1], bins[1:])
+    ]
+
+    if condense_last:
+        binned_columns[-1] = f"{float(bins[-2]):,.{dp}{formatting}}+"
+
+    return binned_columns
+
+
+def bin_intervals(bins, dp=2, percentage=False, condense_last=True):
+    formatting = "%" if percentage else "f"
+    binned_intervals = [
+        f"{i.left:,.{dp}{formatting}} - {i.right:,.{dp}{formatting}}" for i in bins
+    ]
+    if condense_last:
+        binned_intervals[-1] = f"{bins[-1].left:,.{dp}{formatting}}+"
+    return binned_intervals
