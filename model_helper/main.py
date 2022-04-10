@@ -1,5 +1,5 @@
 from .explain import Explain
-from .clean import prepare_data
+from .clean import prepare_data, check_classification
 from .models import *
 from .metrics import *
 
@@ -16,20 +16,11 @@ def model_data(
     cat_names,
     cont_names,
     dep_var,
-    type="reg",
     *args,
     **kwargs,
 ):
-    if type == "reg":
-        return Regression(
-            df,
-            cat_names,
-            cont_names,
-            dep_var,
-            *args,
-            **kwargs,
-        )
-    elif type == "class":
+    classification = check_classification(df[dep_var])
+    if classification:
         return Classification(
             df,
             cat_names,
@@ -39,7 +30,14 @@ def model_data(
             **kwargs,
         )
     else:
-        raise ValueError("Type can only be reg or class")
+        return Regression(
+            df,
+            cat_names,
+            cont_names,
+            dep_var,
+            *args,
+            **kwargs,
+        )
 
 
 class Regression(

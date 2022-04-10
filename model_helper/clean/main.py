@@ -88,7 +88,14 @@ class PandasClean:
 
         # Check classification
         if self.dep_var:
-            self._check_classification()
+            self.classification = check_classification(self.df[self.dep_var])
+            if self.classification:
+                self._prepare_classification()
+            else:
+                try:
+                    self.df[self.dep_var] = self.df[self.dep_var].astype("float")
+                except ValueError:
+                    raise NotImplementedError("Multi-classification not supported yet")
 
         # Convert column types
         encode_cat = EncodeCategorical(cat_strategy=cat_strategy)
@@ -141,21 +148,18 @@ class PandasClean:
 
         self.df = self.xs.assign(**{dep_var: self.y})
 
-    def _check_classification(self):
-        unique_dep_var = len(self.df[self.dep_var].unique())
-        if unique_dep_var == 1:
-            raise ValueError("Dependent Variable only has 1 unique value")
-        self.classification = unique_dep_var == 2
-        if self.classification:
-            y_cat = self.df[self.dep_var].astype("category")
-            self.cat_mapping[self.dep_var] = dict(enumerate(y_cat.cat.categories))
-            self.df[self.dep_var] = y_cat.cat.codes
-            self.stratify = self.df[self.dep_var]
-        else:
-            try:
-                self.df[self.dep_var] = self.df[self.dep_var].astype("float")
-            except ValueError:
-                raise NotImplementedError("Multi-classification not supported yet")
+    def _prepare_classification(self):
+        y_cat = self.df[self.dep_var].astype("category")
+        self.cat_mapping[self.dep_var] = dict(enumerate(y_cat.cat.categories))
+        self.df[self.dep_var] = y_cat.cat.codes
+        self.stratify = self.df[self.dep_var]
 
     def _record_transformation(self, transform_class):
         self.transformations[type(transform_class).__name__] = transform_class
+
+
+def check_classification(y):
+    unique_y = len(y.unique())
+    if unique_y == 1:
+        raise ValueError("Dependent Variable only has 1 unique value")
+    return unique_y == 2

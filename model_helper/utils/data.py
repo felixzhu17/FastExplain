@@ -13,6 +13,7 @@ def percent_cat_agg(series, top=None):
     else:
         return x_perc
 
+
 def merge_multi_df(dfs, *args, **kwargs):
     return reduce(lambda left, right: pd.merge(left, right, *args, **kwargs), dfs)
 
