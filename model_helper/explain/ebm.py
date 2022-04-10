@@ -7,6 +7,7 @@ def get_index(m, col):
     col_dict = {i: count for count, i in enumerate(ebm_global.data()["names"])}
     return col_dict[col]
 
+
 def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
     if isinstance(m, (list, tuple)):
         model_names = (
@@ -23,9 +24,7 @@ def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
                 )
             else:
                 ebms.append(
-                    _clean_ebm_explain(model, x_values, col, *args, **kwargs)[
-                        ["eff"]
-                    ]
+                    _clean_ebm_explain(model, x_values, col, *args, **kwargs)[["eff"]]
                 )
 
         output = merge_multi_df(ebms, left_index=True, right_index=True)
@@ -34,9 +33,8 @@ def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
     else:
         return _clean_ebm_explain(m, xs, col, *args, **kwargs)
 
-def _clean_ebm_explain(
-    m, xs, col, dp=2, percentage=False, condense_last=True
-):
+
+def _clean_ebm_explain(m, xs, col, dp=2, percentage=False, condense_last=True):
 
     ebm_global = m.explain_global()
     index = get_index(m, col)
@@ -64,6 +62,7 @@ def _clean_ebm_explain(
     df["upper"] += adjust
     return df
 
+
 def plot_ebm_explain(
     m,
     xs,
@@ -82,9 +81,7 @@ def plot_ebm_explain(
         model_names = (
             model_names if model_names else [f"Model {i}" for i in range(len(m))]
         )
-        for count, ale_info in enumerate(
-            zip(m, xs, model_names, cycle_colours())
-        ):
+        for count, ale_info in enumerate(zip(m, xs, model_names, cycle_colours())):
             model, x_values, model_name, color = ale_info
             if count == 0:
                 traces, x, size = _get_ebm_explain_traces(
@@ -130,6 +127,7 @@ def plot_ebm_explain(
         y_axis_title=dep_name,
         plotsize=plotsize,
     )
+
 
 def _get_ebm_explain_traces(
     m, xs, col, model_name, color, return_index_size=True, *args, **kwargs

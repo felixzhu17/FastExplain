@@ -1,5 +1,6 @@
 from random import sample
 
+
 def sensitivity_test(
     df,
     m=None,
@@ -49,6 +50,7 @@ def sensitivity_test(
 
     return trial_results
 
+
 def replace_features(
     df,
     replace_features,
@@ -97,6 +99,7 @@ def replace_features(
         )
     return
 
+
 def _replace_feature(
     df,
     replace_feature,
@@ -109,11 +112,12 @@ def _replace_feature(
     df.loc[sample_index, replace_feature] = replacement_value
     return
 
+
 def predict_column(df, m, m_cols):
     return m.predict(df[m_cols])
 
 
-class SensitivityClassified():
+class SensitivityClassified:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

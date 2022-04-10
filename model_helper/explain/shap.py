@@ -1,6 +1,7 @@
 import shap
 import pandas as pd
 
+
 def get_shap_values(m, xs):
     explainer = shap.TreeExplainer(m)
     shap_values = explainer.shap_values(xs)
@@ -11,7 +12,7 @@ def get_shap_values(m, xs):
     return shap_values_df
 
 
-class ShapExplainClassified():
+class ShapExplainClassified:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

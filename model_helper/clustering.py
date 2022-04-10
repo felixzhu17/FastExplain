@@ -8,7 +8,6 @@ import scipy.cluster.hierarchy as sch
 import plotly.figure_factory as ff
 
 
-
 def feature_correlation(xs, plotsize=(1000, 1000)):
     keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
     corr = np.round(spearmanr(xs[keep_cols]).correlation, 4)
@@ -22,6 +21,7 @@ def feature_correlation(xs, plotsize=(1000, 1000)):
     fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
     return fig
 
+
 def get_centroid_distance(kmeans):
     centroids = {count: i for count, i in enumerate(kmeans.cluster_centers_)}
     df = pd.DataFrame(columns=centroids.keys(), index=centroids.keys())
@@ -32,14 +32,14 @@ def get_centroid_distance(kmeans):
             )
     return df
 
+
 def merge_clusters(labels, cluster_0, cluster_1):
     return [cluster_0 if i == cluster_1 else i for i in labels]
 
+
 def similar_clusters(kmeans, similarity_cutoff):
     similarity = get_centroid_distance(kmeans)
-    similarity = similarity.where(
-        np.triu(np.ones(similarity.shape)).astype(np.bool)
-    )
+    similarity = similarity.where(np.triu(np.ones(similarity.shape)).astype(np.bool))
     return (
         similarity[(similarity < similarity_cutoff) & (similarity != 0)]
         .stack()
@@ -47,7 +47,7 @@ def similar_clusters(kmeans, similarity_cutoff):
     )
 
 
-class ClusteringClassified():
+class ClusteringClassified:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

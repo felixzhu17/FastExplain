@@ -1,5 +1,6 @@
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 
+
 def rf_reg(
     xs,
     y,
@@ -21,6 +22,7 @@ def rf_reg(
         *args,
         **kwargs,
     ).fit(xs, y)
+
 
 def rf_class(
     xs,

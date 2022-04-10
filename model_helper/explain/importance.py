@@ -5,9 +5,7 @@ import sklearn
 import interpret
 
 
-def plot_feature_importance(
-    m, xs, feature_highlights=[], limit=10, plotsize=None
-):
+def plot_feature_importance(m, xs, feature_highlights=[], limit=10, plotsize=None):
 
     df = _get_feature_importance_df(m, xs)
     df = df.sort_values("Importance")
@@ -33,6 +31,7 @@ def plot_feature_importance(
     fig.update_layout(plot_bgcolor="white")
 
     return fig
+
 
 def _get_feature_importance_df(m, xs):
     rf = isinstance(
@@ -70,7 +69,7 @@ def _get_feature_importance_df(m, xs):
     return pd.DataFrame(df_dict)
 
 
-class ImportanceClassified():
+class ImportanceClassified:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

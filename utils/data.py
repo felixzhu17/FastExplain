@@ -26,9 +26,9 @@ def quantile_ied(x_vec, q):
     g = n * q + m - j
 
     gamma = (g != 0).astype(int)
-    quant_res = (1 - gamma) * x_vec.shift(1, fill_value=0).iloc[
+    quant_res = (1 - gamma) * x_vec.shift(1, fill_value=0).iloc[j] + gamma * x_vec.iloc[
         j
-    ] + gamma * x_vec.iloc[j]
+    ]
     quant_res.index = q
     # add min at quantile zero and max at quantile one (if needed)
     if 0 in q:
@@ -37,13 +37,13 @@ def quantile_ied(x_vec, q):
         quant_res.loc[1] = x_vec.max()
     return quant_res
 
+
 def get_bins(x, grid_size):
 
-    quantiles = np.append(
-        0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size)
-    )
-    bins = [x.min()] + self.quantile_ied(x, quantiles).to_list()
+    quantiles = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
+    bins = [x.min()] + quantile_ied(x, quantiles).to_list()
     return np.unique(bins)
+
 
 def percent_cat_agg(series, top=None):
     x = Counter(series)
@@ -53,6 +53,7 @@ def percent_cat_agg(series, top=None):
         return Counter(x_perc).most_common(top)
     else:
         return x_perc
+
 
 def encode_list(df, col, include_col_name=True):
     mlb = MultiLabelBinarizer()
@@ -67,8 +68,10 @@ def encode_list(df, col, include_col_name=True):
     )
     return df
 
+
 def merge_multi_df(dfs, *args, **kwargs):
     return reduce(lambda left, right: pd.merge(left, right, *args, **kwargs), dfs)
+
 
 def get_date_freq(df, col, freq):
     return df.groupby(df[col].dt.to_period(freq)).count()[col]

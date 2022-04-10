@@ -15,20 +15,17 @@ def ale_summary(m, xs, col, model_names=None, *args, **kwargs):
             model, x_values = ale_info
             if count == len(m) - 1:
                 ales.append(
-                    _clean_ale(model, x_values, col, *args, **kwargs)[
-                        ["eff", "size"]
-                    ]
+                    _clean_ale(model, x_values, col, *args, **kwargs)[["eff", "size"]]
                 )
             else:
-                ales.append(
-                    _clean_ale(model, x_values, col, *args, **kwargs)[["eff"]]
-                )
+                ales.append(_clean_ale(model, x_values, col, *args, **kwargs)[["eff"]])
 
         output = merge_multi_df(ales, left_index=True, right_index=True)
         output.columns = model_names + ["size"]
         return output
     else:
         return _clean_ale(m, xs, col, *args, **kwargs)
+
 
 def _clean_ale(
     m,
@@ -59,6 +56,7 @@ def _clean_ale(
         df = df.iloc[:-remove_last_bins]
     return df
 
+
 def plot_ale(
     m,
     xs,
@@ -77,9 +75,7 @@ def plot_ale(
         model_names = (
             model_names if model_names else [f"Model {i}" for i in range(len(m))]
         )
-        for count, ale_info in enumerate(
-            zip(m, xs, model_names, cycle_colours())
-        ):
+        for count, ale_info in enumerate(zip(m, xs, model_names, cycle_colours())):
             model, x_values, model_name, color = ale_info
             if count == 0:
                 traces, x, size = _get_ale_traces(
@@ -126,6 +122,7 @@ def plot_ale(
         plotsize=plotsize,
     )
 
+
 def _get_ale_traces(
     m, xs, col, model_name, color, return_index_size=True, *args, **kwargs
 ):
@@ -139,11 +136,10 @@ def _get_ale_traces(
         x, y, y_lower, y_upper, size, color, model_name, return_index_size
     )
 
+
 def plot_multi_ale(m, xs, cols, index, plotsize=None, *args, **kwargs):
     pdp = {
-        i: fill_list(
-            list(ale_summary(m, xs, i, *args, **kwargs)["eff"]), len(index)
-        )
+        i: fill_list(list(ale_summary(m, xs, i, *args, **kwargs)["eff"]), len(index))
         for i in cols
     }
     pdp_df = pd.DataFrame(pdp, index=index)
@@ -155,6 +151,7 @@ def plot_multi_ale(m, xs, cols, index, plotsize=None, *args, **kwargs):
         )
     fig.update_layout(plot_bgcolor="white")
     return fig
+
 
 def plot_2d_ale(
     m,
@@ -173,9 +170,8 @@ def plot_2d_ale(
     df = df - df.min().min()
     df.index = convert_ale_index(df.index, dp, percentage, condense_last)
     df.columns = convert_ale_index(df.columns, dp, percentage, condense_last)
-    return _plot_two_way_analysis(
-        df, cols, feature_names, plotsize, colorscale
-    )
+    return _plot_two_way_analysis(df, cols, feature_names, plotsize, colorscale)
+
 
 def convert_ale_index(index, dp, percentage, condense_last):
     if percentage:
@@ -188,7 +184,7 @@ def convert_ale_index(index, dp, percentage, condense_last):
         )
 
 
-class AleClassified():
+class AleClassified:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

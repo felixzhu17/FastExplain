@@ -3,6 +3,7 @@ import plotly.express as px
 from sklearn.inspection import partial_dependence
 import plotly.graph_objects as go
 
+
 def plot_pdp(m, xs, col, log_x=False, plotsize=None, *args, **kwargs):
     part_dep = partial_dependence(m, xs, [col], kind="average", *args, **kwargs)
     average = part_dep["average"]
@@ -15,6 +16,7 @@ def plot_pdp(m, xs, col, log_x=False, plotsize=None, *args, **kwargs):
         )
     fig.update_layout(plot_bgcolor="white")
     return fig
+
 
 def plot_multi_pdp(m, xs, cols, index, plotsize=None, *args, **kwargs):
     pdp = {
@@ -38,6 +40,7 @@ def plot_multi_pdp(m, xs, cols, index, plotsize=None, *args, **kwargs):
         )
     fig.update_layout(plot_bgcolor="white")
     return fig
+
 
 def plot_ice(
     m,
@@ -78,7 +81,7 @@ def plot_ice(
     return fig
 
 
-class PDPClassified():
+class PDPClassified:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs

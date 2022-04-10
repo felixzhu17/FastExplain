@@ -2,6 +2,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from .colours import COLOURS
 
 
 def _plot_two_way_analysis(
@@ -25,15 +26,12 @@ def _plot_two_way_analysis(
         )
     return fig
 
-def _plot_one_way_analysis(
-    df, cols, size=None, feature_names=None, plotsize=None
-):
+
+def _plot_one_way_analysis(df, cols, size=None, feature_names=None, plotsize=None):
     if size is not None:
         fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
         fig.add_trace(
-            go.Bar(
-                name="Frequency", x=df.index, y=size, marker={"color": grey}
-            ),
+            go.Bar(name="Frequency", x=df.index, y=size, marker={"color": COLOURS['grey']}),
             secondary_y=False,
         )
         _two_axis_layout(fig)
@@ -56,8 +54,8 @@ def _plot_one_way_analysis(
         )
     return fig
 
+
 def _get_upper_lower_bound_traces(
-    self,
     x,
     y,
     y_lower,
@@ -67,7 +65,7 @@ def _get_upper_lower_bound_traces(
     line_name="",
     return_index_size=True,
 ):
-    color = color if color else blue
+    color = color if color else COLOURS['blue']
     fig = go.Figure(
         [
             go.Scatter(
@@ -104,6 +102,7 @@ def _get_upper_lower_bound_traces(
     else:
         return list(fig["data"])
 
+
 def plot_upper_lower_bound_traces(
     traces, x, size, x_axis_title=None, y_axis_title=None, plotsize=None
 ):
@@ -111,7 +110,7 @@ def plot_upper_lower_bound_traces(
     for i in traces:
         fig.add_trace(i, secondary_y=True)
     fig.add_trace(
-        go.Bar(name="Frequency", x=x, y=size, marker={"color": grey}),
+        go.Bar(name="Frequency", x=x, y=size, marker={"color": COLOURS['grey']}),
         secondary_y=False,
     )
     if plotsize:
@@ -126,6 +125,7 @@ def plot_upper_lower_bound_traces(
     if y_axis_title:
         fig.update_yaxes(title_text=clean_text(y_axis_title), secondary_y=True)
     return fig
+
 
 def _two_axis_layout(fig):
     fig.update_layout(
@@ -148,11 +148,13 @@ def _two_axis_layout(fig):
     )
     return
 
+
 def get_plotly_express_traces(fig):
     traces = []
     for trace in range(len(fig["data"])):
         traces.append(fig["data"][trace])
     return traces
+
 
 def create_secondary_axis_plotly(fig):
     output = make_subplots(specs=[[{"secondary_y": True}]])
@@ -161,10 +163,12 @@ def create_secondary_axis_plotly(fig):
         output.add_trace(i, secondary_y=True)
     return output
 
+
 def _custom_legend_name(fig, new_names):
     for i, new_name in enumerate(new_names):
         fig.data[i].name = new_name
     return
+
 
 def clean_text(text):
     return text.replace("_", " ").title()

@@ -27,6 +27,7 @@ def get_one_way_analysis(
     )
     return one_way_df
 
+
 def plot_one_way_analysis(
     df, x_col, y_col, feature_names=None, plotsize=None, *args, **kwargs
 ):
@@ -38,6 +39,7 @@ def plot_one_way_analysis(
         feature_names=feature_names,
         plotsize=plotsize,
     )
+
 
 def get_two_way_analysis(
     df,
@@ -83,6 +85,7 @@ def get_two_way_analysis(
     )
     return two_way_df
 
+
 def get_two_way_frequency(df, x_cols, *args, **kwargs):
 
     mod_df = df.copy()
@@ -94,6 +97,7 @@ def get_two_way_frequency(df, x_cols, *args, **kwargs):
 
     return output / output.sum(axis=0)
 
+
 def plot_two_way_frequency(
     df,
     x_cols,
@@ -104,9 +108,8 @@ def plot_two_way_frequency(
     **kwargs,
 ):
     output = get_two_way_frequency(df, x_cols, *args, **kwargs)
-    return _plot_two_way_analysis(
-        output, x_cols, feature_names, plotsize, colorscale
-    )
+    return _plot_two_way_analysis(output, x_cols, feature_names, plotsize, colorscale)
+
 
 def plot_two_way_analysis(
     df,
@@ -142,7 +145,7 @@ def plot_two_way_analysis(
     )
 
 
-class OneWayClassified():
+class OneWayClassified:
     def __init__(self, m, xs, df, dep_var):
         self.m = m
         self.xs = xs

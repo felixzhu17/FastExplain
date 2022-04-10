@@ -3,11 +3,14 @@ import plotly.figure_factory as ff
 import math
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 
+
 def r_mse(pred, y):
     return round(math.sqrt(((pred - y) ** 2).mean()), 6)
 
+
 def m_rmse(m, xs, y):
     return r_mse(m.predict(xs), y)
+
 
 def plot_roc_curve(m, xs, y, plot=True, skip_thresholds=None):
     pred_y_proba = m.predict_proba(xs)[:, 1]
@@ -36,9 +39,8 @@ def plot_roc_curve(m, xs, y, plot=True, skip_thresholds=None):
 
     return auc_score
 
-def confusion_matrix(
-    m, xs, y, labels=None, normalize=None, colorscale="Blues"
-):
+
+def confusion_matrix(m, xs, y, labels=None, normalize=None, colorscale="Blues"):
     pred_y = m.predict(xs)
 
     cm_labels = sorted(list(y.unique()))
