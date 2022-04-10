@@ -1,5 +1,6 @@
 import pandas as pd
 from .base import Clean
+from ..utils import drop_duplicate
 
 
 class FillStrategy:
@@ -27,17 +28,26 @@ class FillMissing(Clean):
     def fit(self, xs, cont_names):
         self.cont_names = cont_names
         self.replace_xs = xs[cont_names].apply(self.fill_strategy)
+        missing_xs = pd.isnull(xs[self.cont_names])
+        self.missing_cols = list(missing_xs.any()[missing_xs.any()].keys())
+        if self.na_dummy:
+            self.na_dummy_cols = [n + "_na" for n in self.missing_cols]
+            self.na_dummy_col_mappings = {}
 
     def fit_transform(self, xs, cont_names):
         self.fit(xs, cont_names)
-        return self.transform(xs, cont_names)
+        return self.transform(xs)
 
     def transform(self, xs):
         missing_xs = pd.isnull(xs[self.cont_names])
-        missing_cols = missing_xs.any()[missing_xs.any()].keys()
         if self.na_dummy:
-            for n in missing_cols:
-                xs.loc[:, n + "_na"] = missing_xs[n].astype("category").cat.codes
+            for n in self.missing_cols:
+                missing_cat = missing_xs[n].astype("category")
+                xs.loc[:, n + "_na"] = missing_cat.cat.codes
+                self.na_dummy_col_mappings[n + "_na"] = dict(
+                    enumerate(missing_cat.cat.categories)
+                )
+
         xs[self.cont_names] = xs[self.cont_names].fillna(self.replace_xs)
         return xs
 

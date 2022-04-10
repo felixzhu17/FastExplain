@@ -17,6 +17,7 @@ class CatStrategy:
         if pd.isnull(df[col]).any():
             df[col] = df[col].fillna("None")
         cat_convert = df[col].astype("category")
+        cat_cols.append(col)
         cat_mapping[col] = dict(enumerate(cat_convert.cat.categories))
         df[col] = cat_convert.cat.codes
         return df, cat_cols, cat_mapping
@@ -30,7 +31,9 @@ class EncodeCategorical(Clean):
 
     def fit(self, df, cat_cols):
         for col in cat_cols:
-            df, self.cat_cols, self.cat_mapping = self.cat_strategy(df, col, self.cat_cols, self.cat_mapping)
+            df, self.cat_cols, self.cat_mapping = self.cat_strategy(
+                df, col, self.cat_cols, self.cat_mapping
+            )
         return df
 
     def fit_transform(self, df, cat_cols):
@@ -46,4 +49,3 @@ class EncodeCategorical(Clean):
             if cat_strategy not in dir(CatStrategy):
                 raise ValueError("Categorical encoding strategy not valid")
             return getattr(CatStrategy, cat_strategy)
-

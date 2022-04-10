@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.express as px
-from model_helper.utils import *
+from ..utils import *
 from ..PyALE import ale
 from ..PyALE._src.ALE_2D import aleplot_2D_continuous
 

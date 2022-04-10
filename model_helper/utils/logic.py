@@ -42,3 +42,7 @@ def conditional_mean(x, cutoff):
 def extract_args(func, kwargs):
     args = list(inspect.signature(func).parameters)
     return {k: kwargs.pop(k) for k in dict(kwargs) if k in args}
+
+
+def drop_duplicate(ls):
+    return list(set(ls))
