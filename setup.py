@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="modelflow",
-    version="0.0.0",
+    version="0.0.1",
     license="MIT",
     author="Felix Zhu",
     author_email="zhu.felix@outlook.com",
