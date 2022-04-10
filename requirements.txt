@@ -8,3 +8,5 @@ scikit_learn
 scipy
 plotly_express
 xgboost
+statsmodels
+shap

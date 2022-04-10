@@ -6,6 +6,7 @@ import scipy.cluster.hierarchy as sch
 import plotly.figure_factory as ff
 from .simplify import get_bins
 from ..utils import *
+import warnings
 
 
 def get_one_way_analysis(
@@ -165,11 +166,14 @@ def feature_correlation(xs, plotsize=(1000, 1000)):
 
 
 class OneWay:
-    def __init__(self, m, xs, df, dep_var):
+    def __init__(self, m, xs, df=None, dep_var=None):
         self.m = m
         self.xs = xs
         self.df = df
         self.dep_var = dep_var
+
+        if self.df is None or self.dep_var is None:
+            warnings.warn("One way analysis and Two way analysis does not work without dependent variable")
 
     def get_one_way_analysis(self, x_col, *args, **kwargs):
         return get_one_way_analysis(
@@ -192,10 +196,17 @@ class OneWay:
         )
 
     def get_two_way_frequency(self, *args, **kwargs):
-        return get_two_way_frequency(self.df, *args, **kwargs)
+        if self.df is None:
+            return get_two_way_frequency(self.xs, *args, **kwargs)
+        else:
+            return get_two_way_frequency(self.df, *args, **kwargs)
 
     def plot_two_way_frequency(self, *args, **kwargs):
-        return plot_two_way_frequency(self.df, *args, **kwargs)
+        if self.df is None:
+            return plot_two_way_frequency(self.xs, *args, **kwargs)
+        else:
+            return plot_two_way_frequency(self.df, *args, **kwargs)
+
 
     def feature_correlation(self, *args, **kwargs):
         return feature_correlation(self.xs, *args, **kwargs)

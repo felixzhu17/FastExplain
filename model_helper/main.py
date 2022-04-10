@@ -129,7 +129,6 @@ class Classification(
             cat_names=cat_names,
             cont_names=cont_names,
             dep_var=dep_var,
-            return_class=True,
             perc_train=perc_train,
             seed=seed,
             splits=splits,

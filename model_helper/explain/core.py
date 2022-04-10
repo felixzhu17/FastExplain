@@ -9,8 +9,7 @@ from .sensitivity import Sensitivity
 
 class Explain(OneWay, Ale, PDP, EbmExplain, ShapExplain, Importance, Sensitivity):
     def __init__(self, m, xs, df=None, dep_var=None):
-        if dep_var and df:
-            OneWay.__init__(self, m, xs, df, dep_var)
+        OneWay.__init__(self, m, xs, df, dep_var)
         Ale.__init__(self, m, xs)
         PDP.__init__(self, m, xs)
         EbmExplain.__init__(self, m, xs)
