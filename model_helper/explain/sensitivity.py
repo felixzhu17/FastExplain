@@ -38,7 +38,7 @@ def sensitivity_test(
 
         # Predict Old
         old_pred = pred_func(sensitivity_df)
-        old_metric = new_pred.apply(metric_agg_func)
+        old_metric = old_pred.apply(metric_agg_func)
 
         # Replace Values
         replace_func(sensitivity_df)

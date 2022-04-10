@@ -1,25 +1,6 @@
 import scipy.spatial.distance as spatial_distance
-from ..utils import Utils
 import pandas as pd
 import numpy as np
-from scipy.stats import spearmanr
-from scipy.spatial.distance import squareform
-import scipy.cluster.hierarchy as sch
-import plotly.figure_factory as ff
-
-
-def feature_correlation(xs, plotsize=(1000, 1000)):
-    keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
-    corr = np.round(spearmanr(xs[keep_cols]).correlation, 4)
-    fig = ff.create_dendrogram(
-        1 - corr,
-        orientation="left",
-        labels=xs.columns,
-        distfun=squareform,
-        linkagefun=lambda x: sch.linkage(x, "average"),
-    )
-    fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
-    return fig
 
 
 def get_centroid_distance(kmeans):
@@ -45,12 +26,3 @@ def similar_clusters(kmeans, similarity_cutoff):
         .stack()
         .index.tolist()
     )
-
-
-class ClusteringClassified:
-    def __init__(self, m, xs):
-        self.m = m
-        self.xs = xs
-
-    def feature_correlation(self, *args, **kwargs):
-        return feature_correlation(self.xs, *args, **kwargs)

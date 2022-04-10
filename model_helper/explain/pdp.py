@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 from sklearn.inspection import partial_dependence
 import plotly.graph_objects as go
+from ..utils import *
 
 
 def plot_pdp(m, xs, col, log_x=False, plotsize=None, *args, **kwargs):

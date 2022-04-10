@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import sklearn
 import interpret
+from ..utils import *
 
 
 def plot_feature_importance(m, xs, feature_highlights=[], limit=10, plotsize=None):
@@ -18,7 +19,9 @@ def plot_feature_importance(m, xs, feature_highlights=[], limit=10, plotsize=Non
     fig = px.bar(df, **plot_dict)
 
     colour = df.apply(
-        lambda x: self.blue if x["Feature"] in feature_highlights else self.grey,
+        lambda x: COLOURS["blue"]
+        if x["Feature"] in feature_highlights
+        else COLOURS["grey"],
         axis=1,
     )
 

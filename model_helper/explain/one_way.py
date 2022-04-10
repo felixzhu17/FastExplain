@@ -1,4 +1,10 @@
 import pandas as pd
+import numpy as np
+from scipy.stats import spearmanr
+from scipy.spatial.distance import squareform
+import scipy.cluster.hierarchy as sch
+import plotly.figure_factory as ff
+from .simplify import get_bins
 from ..utils import *
 
 
@@ -144,6 +150,20 @@ def plot_two_way_analysis(
     return plot_two_way(two_way_df, x_cols, feature_names, plotsize, colorscale)
 
 
+def feature_correlation(xs, plotsize=(1000, 1000)):
+    keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
+    corr = np.round(spearmanr(xs[keep_cols]).correlation, 4)
+    fig = ff.create_dendrogram(
+        1 - corr,
+        orientation="left",
+        labels=xs.columns,
+        distfun=squareform,
+        linkagefun=lambda x: sch.linkage(x, "average"),
+    )
+    fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
+    return fig
+
+
 class OneWay:
     def __init__(self, m, xs, df, dep_var):
         self.m = m
@@ -176,3 +196,6 @@ class OneWay:
 
     def plot_two_way_frequency(self, *args, **kwargs):
         return plot_two_way_frequency(self.df, *args, **kwargs)
+
+    def feature_correlation(self, *args, **kwargs):
+        return feature_correlation(self.xs, *args, **kwargs)

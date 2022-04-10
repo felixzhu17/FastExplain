@@ -1,5 +1,5 @@
 import pandas as pd
-import plotly.graph_objects as go
+from ..utils import *
 
 
 def get_index(m, col):
@@ -113,7 +113,7 @@ def plot_ebm_explain(
             xs,
             col,
             feature_name,
-            self.blue,
+            COLOURS["blue"],
             return_index_size=True,
             *args,
             **kwargs,
@@ -138,7 +138,7 @@ def _get_ebm_explain_traces(
     size = df["size"]
     y_lower = df["lower"]
     y_upper = df["upper"]
-    return _get_upper_lower_bound_traces(
+    return get_upper_lower_bound_traces(
         x, y, y_lower, y_upper, size, color, model_name, return_index_size
     )
 
@@ -147,9 +147,6 @@ class EbmExplain:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs
-
-    def get_index(self, *args, **kwargs):
-        return get_index(self.m, *args, **kwargs)
 
     def ebm_explain_summary(self, *args, **kwargs):
         return ebm_explain_summary(self.m, self.xs, *args, **kwargs)
