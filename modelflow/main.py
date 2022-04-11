@@ -164,9 +164,7 @@ class Classification(
         )
 
     def auc(self, *args, **kwargs):
-        return auc(
-            self.m, self.data.val_xs, self.data.val_y, *args, **kwargs
-        )
+        return auc(self.m, self.data.val_xs, self.data.val_y, *args, **kwargs)
 
     def confusion_matrix(self, *args, **kwargs):
         return confusion_matrix(

@@ -64,8 +64,21 @@ def test_shap_values(rf_reg_object, xgb_reg_object):
     xgb_reg_object.get_shap_values()
     assert True
 
+
 def test_sensitivity(rf_reg_object, xgb_reg_object, ebm_reg_object):
-    rf_reg_object.sensitivity_test(replace_features= ['Age'], replacement_conditions = ['Sex == 0'], replacement_values = [10])
-    xgb_reg_object.sensitivity_test(replace_features= ['Age'], replacement_conditions = ['Sex == 0'], replacement_values = [10])
-    ebm_reg_object.sensitivity_test(replace_features= ['Age'], replacement_conditions = ['Sex == 0'], replacement_values = [10])
+    rf_reg_object.sensitivity_test(
+        replace_features=["Age"],
+        replacement_conditions=["Sex == 0"],
+        replacement_values=[10],
+    )
+    xgb_reg_object.sensitivity_test(
+        replace_features=["Age"],
+        replacement_conditions=["Sex == 0"],
+        replacement_values=[10],
+    )
+    ebm_reg_object.sensitivity_test(
+        replace_features=["Age"],
+        replacement_conditions=["Sex == 0"],
+        replacement_values=[10],
+    )
     assert True
