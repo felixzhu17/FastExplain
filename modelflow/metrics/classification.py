@@ -1,12 +1,14 @@
 import plotly.express as px
 import plotly.figure_factory as ff
-from sklearn.metrics import confusion_matrix, roc_curve, auc
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import auc as _auc
+from sklearn.metrics import confusion_matrix as _confusion_matrix
 
 
-def plot_roc_curve(m, xs, y, plot=True, skip_thresholds=None):
+def auc(m, xs, y, plot=True, skip_thresholds=None):
     pred_y_proba = m.predict_proba(xs)[:, 1]
     fpr, tpr, thresholds = roc_curve(y, pred_y_proba)
-    auc_score = auc(fpr, tpr)
+    auc_score = _auc(fpr, tpr)
 
     if plot:
 
@@ -35,7 +37,7 @@ def confusion_matrix(m, xs, y, labels=None, normalize=None, colorscale="Blues"):
     pred_y = m.predict(xs)
 
     cm_labels = sorted(list(y.unique()))
-    z = confusion_matrix(y, pred_y, labels=cm_labels, normalize=normalize)
+    z = _confusion_matrix(y, pred_y, labels=cm_labels, normalize=normalize)
 
     # invert z idx values
     z = z[::-1]

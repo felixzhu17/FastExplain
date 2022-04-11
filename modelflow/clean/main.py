@@ -133,6 +133,7 @@ class PandasClean:
         for transform in cont_transformations:
             if isinstance(transform, type):
                 transform = transform()
+            self._check_transformation(transform)
             self.train_xs[self.cont_names] = transform.fit_transform(
                 self.train_xs[self.cont_names]
             )
@@ -156,6 +157,16 @@ class PandasClean:
 
     def _record_transformation(self, transform_class):
         self.transformations[type(transform_class).__name__] = transform_class
+
+    def _check_transformation(self, transform_class):
+        if hasattr(transform_class, "fit_transform") and hasattr(
+            transform_class, "transform"
+        ):
+            return
+        else:
+            raise ValueError(
+                f"{transform_class} needs to have fit_transform and transform attributes"
+            )
 
 
 def check_classification(y):

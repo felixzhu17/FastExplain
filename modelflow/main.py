@@ -96,7 +96,14 @@ class Regression(
             self.m, self.data.val_xs, self.data.val_y
         )
 
-        Explain.__init__(self, self.m, self.data.xs, self.data.df, self.data.dep_var)
+        Explain.__init__(
+            self,
+            self.m,
+            self.data.xs,
+            self.data.df,
+            self.data.dep_var,
+            self.data.train_xs.columns,
+        )
 
 
 class Classification(
@@ -147,10 +154,17 @@ class Classification(
         else:
             raise ValueError(f"Model can only be one of {', '. join(CLASS_MODELS)}")
 
-        Explain.__init__(self, self.m, self.data.xs, self.data.df, self.data.dep_var)
+        Explain.__init__(
+            self,
+            self.m,
+            self.data.xs,
+            self.data.df,
+            self.data.dep_var,
+            self.data.train_xs.columns,
+        )
 
-    def plot_roc_curve(self, *args, **kwargs):
-        return plot_roc_curve(
+    def auc(self, *args, **kwargs):
+        return auc(
             self.m, self.data.val_xs, self.data.val_y, *args, **kwargs
         )
 

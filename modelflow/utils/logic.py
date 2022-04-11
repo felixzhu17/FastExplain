@@ -38,3 +38,7 @@ def bin_intervals(bins, dp=2, percentage=False, condense_last=True):
     if condense_last:
         binned_intervals[-1] = f"{bins[-1].left:,.{dp}{formatting}}+"
     return binned_intervals
+
+
+def check_unequal_list(lists):
+    return len({len(i) for i in lists}) != 1

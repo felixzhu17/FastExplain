@@ -1,11 +1,13 @@
 from random import sample
+import warnings
+from ..utils import check_unequal_list
 
 
 def sensitivity_test(
     df,
     m=None,
-    trials: int = 50,
     m_cols: list = [],
+    trials: int = 50,
     replace_features: list = [],
     replacement_conditions: list = [],
     replacement_values: list = [],
@@ -23,7 +25,7 @@ def sensitivity_test(
     if replace_func is None:
 
         def replace_func(df):
-            replace_features(
+            _replace_features(
                 df,
                 replace_features,
                 replacement_conditions,
@@ -38,20 +40,20 @@ def sensitivity_test(
 
         # Predict Old
         old_pred = pred_func(sensitivity_df)
-        old_metric = old_pred.apply(metric_agg_func)
+        old_metric = metric_agg_func(old_pred)
 
         # Replace Values
         replace_func(sensitivity_df)
 
         # Predict New
         new_pred = pred_func(sensitivity_df)
-        new_metric = new_pred.apply(metric_agg_func)
+        new_metric = metric_agg_func(new_pred)
         trial_results.append(new_metric / old_metric)
 
     return trial_results
 
 
-def replace_features(
+def _replace_features(
     df,
     replace_features,
     replacement_conditions,
@@ -60,22 +62,16 @@ def replace_features(
 ):
 
     percent_replaces = (
-        percent_replaces if percent_replaces else [0.2 for _ in replace_feature]
+        percent_replaces if percent_replaces else [0.2 for _ in replace_features]
     )
 
-    if (
-        len(
-            {
-                len(i)
-                for i in [
-                    replace_features,
-                    replacement_conditions,
-                    replacement_values,
-                    percent_replaces,
-                ]
-            }
-        )
-        != 1
+    if check_unequal_list(
+        [
+            replace_features,
+            replacement_conditions,
+            replacement_values,
+            percent_replaces,
+        ]
     ):
         raise ValueError("Replacement inputs are not equal")
 
@@ -118,9 +114,12 @@ def predict_column(df, m, m_cols):
 
 
 class Sensitivity:
-    def __init__(self, m, xs):
+    def __init__(self, m, xs, m_cols=None):
         self.m = m
         self.xs = xs
+        self.m_cols = m_cols
+        if self.m_cols is None:
+            warnings.warn("Sensitivity analysis does not work without model columns")
 
     def sensitivity_test(self, *args, **kwargs):
-        return sensitivity_test(self.xs, self.m, *args, **kwargs)
+        return sensitivity_test(self.xs, self.m, self.m_cols, *args, **kwargs)
