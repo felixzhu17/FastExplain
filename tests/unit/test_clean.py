@@ -1,4 +1,4 @@
-from model_helper.clean import *
+from modelflow.clean import *
 from tests.params import *
 from math import floor
 from sklearn.preprocessing import MinMaxScaler

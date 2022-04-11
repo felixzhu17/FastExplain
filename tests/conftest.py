@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from model_helper import model_data
+from modelflow import model_data
 from .params import *
 
 
