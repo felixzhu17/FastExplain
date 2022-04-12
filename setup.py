@@ -9,7 +9,7 @@ setup(
     license="MIT",
     author="Felix Zhu",
     author_email="zhu.felix@outlook.com",
-    description="ML flows from start to finish",
+    description="Machine Learning flowing from start to finish",
     long_description=long_description,
     packages=find_packages(),
     url="https://github.com/felixzhu17/ModelFlow",
