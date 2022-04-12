@@ -1,5 +1,13 @@
 import pandas as pd
-from ..utils import *
+from modelflow.utils import (
+    COLOURS,
+    merge_multi_df,
+    bin_columns,
+    clean_text,
+    cycle_colours,
+    plot_upper_lower_bound_traces,
+    get_upper_lower_bound_traces,
+)
 
 
 def get_index(m, col):

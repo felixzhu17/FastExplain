@@ -4,8 +4,8 @@ from scipy.stats import spearmanr
 from scipy.spatial.distance import squareform
 import scipy.cluster.hierarchy as sch
 import plotly.figure_factory as ff
-from .bin import get_bins
-from ..utils import *
+from modelflow.explain.bin import get_bins
+from modelflow.utils import conditional_mean, bin_intervals, plot_one_way, bin_intervals, plot_two_way
 import warnings
 
 

@@ -1,1 +1,1 @@
-from ._ALE_generic import ale
+from modelflow.PyALE._ALE_generic import ale

@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
-from .base import Clean
+from modelflow.clean.base import Clean
 
 
 class CatStrategy:

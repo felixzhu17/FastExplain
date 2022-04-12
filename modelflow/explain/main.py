@@ -1,10 +1,10 @@
-from .one_way import OneWay
-from .ale import Ale
-from .ebm import EbmExplain
-from .pdp import PDP
-from .shap import ShapExplain
-from .importance import Importance
-from .sensitivity import Sensitivity
+from modelflow.explain.one_way import OneWay
+from modelflow.explain.ale import Ale
+from modelflow.explain.ebm import EbmExplain
+from modelflow.explain.pdp import PDP
+from modelflow.explain.shap import ShapExplain
+from modelflow.explain.importance import Importance
+from modelflow.explain.sensitivity import Sensitivity
 
 
 class Explain(OneWay, Ale, PDP, EbmExplain, ShapExplain, Importance, Sensitivity):

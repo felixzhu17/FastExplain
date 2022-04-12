@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.neighbors import NearestNeighbors
 
-from .lib import quantile_ied
+from modelflow.PyALE._src.lib import quantile_ied
 
 
 def aleplot_2D_continuous(X, model, features, grid_size=40):

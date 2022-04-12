@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import sklearn
 import interpret
-from ..utils import *
+from modelflow.utils import COLOURS
 
 
 def plot_feature_importance(m, xs, feature_highlights=[], limit=10, plotsize=None):

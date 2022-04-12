@@ -4,7 +4,7 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtrans
 
-from .lib import quantile_ied, CI_estimate, order_groups
+from modelflow.PyALE._src.lib import quantile_ied, CI_estimate, order_groups
 
 
 def aleplot_1D_continuous(X, model, feature, grid_size=20, include_CI=True, C=0.95):

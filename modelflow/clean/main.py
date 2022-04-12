@@ -1,8 +1,8 @@
 import pandas as pd
-from .encode_categorical import EncodeCategorical
-from .fill_missing import FillMissing
-from .shrink import df_shrink
-from .split import get_train_val_split_index, split_train_val
+from modelflow.clean.encode_categorical import EncodeCategorical
+from modelflow.clean.fill_missing import FillMissing
+from modelflow.clean.shrink import df_shrink
+from modelflow.clean.split import get_train_val_split_index, split_train_val
 
 
 def prepare_data(

@@ -1,6 +1,6 @@
 from random import sample
 import warnings
-from ..utils import check_unequal_list
+from modelflow.utils import check_unequal_list
 
 
 def sensitivity_test(

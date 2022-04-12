@@ -1,7 +1,6 @@
 import shap
 import pandas as pd
-import numpy as np
-from ..utils import query_df_index, sample_index
+from modelflow.utils import query_df_index, sample_index
 
 SHAP_MAX_SAMPLES = 10_000
 

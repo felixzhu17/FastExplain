@@ -1,3 +1,3 @@
-from .classification import *
-from .regression import *
-from .summary import *
+from modelflow.metrics.classification import *
+from modelflow.metrics.regression import *
+from modelflow.metrics.summary import *

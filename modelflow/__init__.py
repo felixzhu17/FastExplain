@@ -1,3 +1,3 @@
-from .main import *
+from modelflow.main import *
 
 __all__ = ["clean", "clustering", "explain", "metrics", "models", "utils"]

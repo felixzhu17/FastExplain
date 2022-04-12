@@ -1,6 +1,6 @@
 from xgboost import XGBRegressor, XGBClassifier
-from ..metrics import m_cross_entropy, m_rmse
-from .hypertuning import hypertune_model
+from modelflow.metrics import m_cross_entropy, m_rmse
+from modelflow.models.hypertuning import hypertune_model
 from sklearn.utils.class_weight import compute_sample_weight
 import warnings
 

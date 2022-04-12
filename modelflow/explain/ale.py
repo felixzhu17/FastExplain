@@ -1,8 +1,18 @@
 import pandas as pd
 import plotly.express as px
-from ..utils import *
-from ..PyALE import ale
-from ..PyALE._src.ALE_2D import aleplot_2D_continuous
+from modelflow.utils import (
+    COLOURS,
+    merge_multi_df,
+    clean_text,
+    cycle_colours,
+    plot_upper_lower_bound_traces,
+    get_upper_lower_bound_traces,
+    fill_list,
+    plot_two_way,
+    bin_columns,
+)
+from modelflow.PyALE import ale
+from modelflow.PyALE._src.ALE_2D import aleplot_2D_continuous
 
 
 def ale_summary(m, xs, col, model_names=None, *args, **kwargs):

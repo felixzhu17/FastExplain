@@ -1,1 +1,1 @@
-from .clustering import *
+from modelflow.clustering.clustering import *

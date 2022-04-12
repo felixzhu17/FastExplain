@@ -2,8 +2,8 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from .logic import clean_text
-from .colours import COLOURS
+from modelflow.utils.logic import clean_text
+from modelflow.utils.colours import COLOURS
 
 
 def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"):

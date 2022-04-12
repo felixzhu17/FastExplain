@@ -1,5 +1,5 @@
 from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
-from ..utils import check_numeric
+from modelflow.utils import check_numeric
 
 
 def hypertune_model(

@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 
-from ._src.ALE_1D import (
+from modelflow.PyALE._src.ALE_1D import (
     aleplot_1D_continuous,
     plot_1D_continuous_eff,
     aleplot_1D_discrete,
     aleplot_1D_categorical,
     plot_1D_discrete_eff,
 )
-from ._src.ALE_2D import aleplot_2D_continuous, plot_2D_continuous_eff
+from modelflow.PyALE._src.ALE_2D import aleplot_2D_continuous, plot_2D_continuous_eff
 
 
 def ale(

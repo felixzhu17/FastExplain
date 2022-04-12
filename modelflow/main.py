@@ -1,7 +1,17 @@
-from .explain import Explain
-from .clean import prepare_data, check_classification
-from .models import *
-from .metrics import *
+from modelflow.explain import Explain
+from modelflow.clean import prepare_data, check_classification
+from modelflow.models import rf_reg, xgb_reg, ebm_reg, rf_class, xgb_class, ebm_class
+from modelflow.metrics import (
+    get_benchmark_error,
+    r_mse,
+    get_error,
+    m_rmse,
+    plot_one_way_error,
+    plot_two_way_error,
+    auc,
+    m_cross_entropy,
+    confusion_matrix,
+)
 
 REG_MODELS = {"rf": rf_reg, "xgb": xgb_reg, "ebm": ebm_reg}
 CLASS_MODELS = {

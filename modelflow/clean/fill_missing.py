@@ -1,6 +1,5 @@
 import pandas as pd
-from .base import Clean
-from ..utils import drop_duplicate
+from modelflow.clean.base import Clean
 
 
 class FillStrategy:

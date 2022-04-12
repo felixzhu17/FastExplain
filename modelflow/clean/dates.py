@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from ..utils import ifnone
+from modelflow.utils import ifnone
 import re
 
 

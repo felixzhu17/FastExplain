@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 from sklearn.inspection import partial_dependence
 import plotly.graph_objects as go
-from ..utils import *
+from modelflow.utils import clean_text
 
 
 def plot_ice(

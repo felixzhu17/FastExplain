@@ -1,6 +1,6 @@
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from ..metrics import m_cross_entropy, m_rmse
-from .hypertuning import hypertune_model
+from modelflow.metrics import m_cross_entropy, m_rmse
+from modelflow.models.hypertuning import hypertune_model
 
 RF_DEFAULT_PARAMS = {
     "n_estimators": (40, 200, True),
