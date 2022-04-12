@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from modelflow import model_data
-from .params import *
+from tests.params import *
 
 
 @pytest.fixture(scope="session")

@@ -1,6 +1,12 @@
 import pytest
-from modelflow.clean import *
-from tests.params import *
+from modelflow.clean import prepare_data
+from tests.params import (
+    TRAIN_SPLIT,
+    STRATIFY_ERROR_MARGIN,
+    CAT_COLS,
+    CONT_COLS,
+    CLASS_DEP_VAR,
+)
 from math import floor
 from sklearn.preprocessing import MinMaxScaler
 

@@ -1,6 +1,5 @@
 import pytest
 from tests.utils import check_dict_na
-from modelflow.metrics import *
 
 
 def test_rmse(rf_reg_object, xgb_reg_object, ebm_reg_object):
