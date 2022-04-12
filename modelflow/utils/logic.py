@@ -43,5 +43,6 @@ def bin_intervals(bins, dp=2, percentage=False, condense_last=True):
 def check_unequal_list(lists):
     return len({len(i) for i in lists}) != 1
 
+
 def check_numeric(x):
     return isinstance(x, (int, float, complex)) and not isinstance(x, bool)

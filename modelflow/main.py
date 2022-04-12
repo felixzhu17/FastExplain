@@ -277,15 +277,13 @@ class Classification(
                 **kwargs,
             )
 
-    def confusion_matrix(self, val = True, *args, **kwargs):
+    def confusion_matrix(self, val=True, *args, **kwargs):
         if val:
             return confusion_matrix(
                 self.m, self.data.val_xs, self.data.val_y, *args, **kwargs
             )
         else:
-            return confusion_matrix(
-                self.m, self.data.xs, self.data.y, *args, **kwargs
-            )
+            return confusion_matrix(self.m, self.data.xs, self.data.y, *args, **kwargs)
 
     def plot_one_way_cross_entropy(self, col, *args, **kwargs):
         return plot_one_way_error(

@@ -22,6 +22,7 @@ def feature_correlation(xs, plotsize=(1000, 1000)):
     fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
     return fig
 
+
 def get_one_way_analysis(
     df,
     x_col,
@@ -129,6 +130,7 @@ def plot_two_way_analysis(
         condense_last=condense_last,
     )
     return plot_two_way(two_way_df, x_cols, feature_names, plotsize, colorscale)
+
 
 def get_two_way_frequency(df, x_cols, *args, **kwargs):
 

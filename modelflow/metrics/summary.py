@@ -1,6 +1,7 @@
 from ..explain.one_way import get_one_way_analysis, get_two_way_analysis
 from ..utils import plot_one_way, plot_two_way
 
+
 def get_benchmark_error(func, benchmark, train_y, val_y, y, mean):
     return {
         "train": func(benchmark, train_y, mean),
@@ -15,6 +16,7 @@ def get_error(func, m, train_xs, train_y, val_xs, val_y, xs, y, mean):
         "val": func(m, val_xs, val_y, mean),
         "overall": func(m, xs, y, mean),
     }
+
 
 def get_one_way_error(df, error, x_col, *args, **kwargs):
     error_df = df.copy()
