@@ -175,6 +175,9 @@ class OneWay:
                 "One way analysis and Two way analysis does not work without dependent variable"
             )
 
+    def feature_correlation(self, *args, **kwargs):
+        return feature_correlation(self.xs, *args, **kwargs)
+
     def get_one_way_analysis(self, x_col, *args, **kwargs):
         return get_one_way_analysis(
             self.df, x_col=x_col, y_col=self.dep_var, *args, **kwargs
@@ -207,5 +210,4 @@ class OneWay:
         else:
             return plot_two_way_frequency(self.df, *args, **kwargs)
 
-    def feature_correlation(self, *args, **kwargs):
-        return feature_correlation(self.xs, *args, **kwargs)
+
