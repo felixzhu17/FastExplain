@@ -9,6 +9,19 @@ from ..utils import *
 import warnings
 
 
+def feature_correlation(xs, plotsize=(1000, 1000)):
+    keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
+    corr = np.round(spearmanr(xs[keep_cols]).correlation, 4)
+    fig = ff.create_dendrogram(
+        1 - corr,
+        orientation="left",
+        labels=xs.columns,
+        distfun=squareform,
+        linkagefun=lambda x: sch.linkage(x, "average"),
+    )
+    fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
+    return fig
+
 def get_one_way_analysis(
     df,
     x_col,
@@ -88,31 +101,6 @@ def get_two_way_analysis(
     return two_way_df
 
 
-def get_two_way_frequency(df, x_cols, *args, **kwargs):
-
-    mod_df = df.copy()
-    mod_df["dummy_count"] = 1
-
-    output = get_two_way_analysis(
-        df=mod_df, x_cols=x_cols, y_col="dummy_count", func=sum, *args, **kwargs
-    )
-
-    return output / output.sum(axis=0)
-
-
-def plot_two_way_frequency(
-    df,
-    x_cols,
-    feature_names=None,
-    plotsize=None,
-    colorscale="Blues",
-    *args,
-    **kwargs,
-):
-    output = get_two_way_frequency(df, x_cols, *args, **kwargs)
-    return plot_two_way(output, x_cols, feature_names, plotsize, colorscale)
-
-
 def plot_two_way_analysis(
     df,
     x_cols,
@@ -142,19 +130,29 @@ def plot_two_way_analysis(
     )
     return plot_two_way(two_way_df, x_cols, feature_names, plotsize, colorscale)
 
+def get_two_way_frequency(df, x_cols, *args, **kwargs):
 
-def feature_correlation(xs, plotsize=(1000, 1000)):
-    keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
-    corr = np.round(spearmanr(xs[keep_cols]).correlation, 4)
-    fig = ff.create_dendrogram(
-        1 - corr,
-        orientation="left",
-        labels=xs.columns,
-        distfun=squareform,
-        linkagefun=lambda x: sch.linkage(x, "average"),
+    mod_df = df.copy()
+    mod_df["dummy_count"] = 1
+
+    output = get_two_way_analysis(
+        df=mod_df, x_cols=x_cols, y_col="dummy_count", func=sum, *args, **kwargs
     )
-    fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
-    return fig
+
+    return output / output.sum(axis=0)
+
+
+def plot_two_way_frequency(
+    df,
+    x_cols,
+    feature_names=None,
+    plotsize=None,
+    colorscale="Blues",
+    *args,
+    **kwargs,
+):
+    output = get_two_way_frequency(df, x_cols, *args, **kwargs)
+    return plot_two_way(output, x_cols, feature_names, plotsize, colorscale)
 
 
 class OneWay:

@@ -1,12 +1,38 @@
 import plotly.express as px
 import plotly.figure_factory as ff
-from sklearn.metrics import roc_curve, auc
+import numpy as np
+from sklearn.metrics import roc_curve, log_loss
 from sklearn.metrics import auc as _auc
 from sklearn.metrics import confusion_matrix as _confusion_matrix
 
 
+def get_classification_prediction(m, xs):
+    return m.predict_proba(xs)[:, 1]
+
+
+def _cross_entropy(pred, y, eps=1e-15):
+
+    pred = max(eps, min(1 - eps, pred))
+
+    if y == 1:
+        return -np.log(pred)
+    else:
+        return -np.log(1 - pred)
+
+
+def cross_entropy(pred, y, mean=True, eps=1e-15):
+    if mean:
+        return np.mean([_cross_entropy(i, j, eps) for i, j in zip(pred, y)])
+    else:
+        return [_cross_entropy(i, j, eps) for i, j in zip(pred, y)]
+
+
+def m_cross_entropy(m, xs, y, mean=True, eps=1e-15):
+    return cross_entropy(get_classification_prediction(m, xs), y, mean, eps)
+
+
 def auc(m, xs, y, plot=True, skip_thresholds=None):
-    pred_y_proba = m.predict_proba(xs)[:, 1]
+    pred_y_proba = get_classification_prediction(m, xs)
     fpr, tpr, thresholds = roc_curve(y, pred_y_proba)
     auc_score = _auc(fpr, tpr)
 
@@ -31,6 +57,10 @@ def auc(m, xs, y, plot=True, skip_thresholds=None):
         return fig
 
     return auc_score
+
+
+def negative_auc(m, xs, y):
+    return auc(m, xs, y, False, None) * -1
 
 
 def confusion_matrix(m, xs, y, labels=None, normalize=None, colorscale="Blues"):

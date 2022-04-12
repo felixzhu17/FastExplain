@@ -18,6 +18,7 @@ def rf_class_object(test_csv):
         dep_var=CLASS_DEP_VAR,
         model="rf",
         perc_train=TRAIN_SPLIT,
+        hypertune=True,
     )
 
 
@@ -30,6 +31,7 @@ def xgb_class_object(test_csv):
         dep_var=CLASS_DEP_VAR,
         model="xgb",
         perc_train=TRAIN_SPLIT,
+        hypertune=True,
     )
 
 
@@ -54,6 +56,7 @@ def rf_reg_object(test_csv):
         dep_var=REG_DEP_VAR,
         model="rf",
         perc_train=TRAIN_SPLIT,
+        hypertune=True,
     )
 
 
@@ -66,6 +69,7 @@ def xgb_reg_object(test_csv):
         dep_var=REG_DEP_VAR,
         model="xgb",
         perc_train=TRAIN_SPLIT,
+        hypertune=True,
     )
 
 

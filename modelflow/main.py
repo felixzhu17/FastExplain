@@ -81,20 +81,61 @@ class Regression(
         )
 
         self.benchmark = self.data.train_y.mean()
-        self.benchmark_rmse = r_mse(self.benchmark, self.data.train_y), r_mse(
-            self.benchmark, self.data.val_y
-        )
-
         if model in REG_MODELS:
             self.m = REG_MODELS[model](
-                self.data.train_xs, self.data.train_y, *args, **kwargs
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                *args,
+                **kwargs,
             )
         else:
             raise ValueError(f"Model can only be one of {', '. join(REG_MODELS)}")
 
-        self.model_rmse = m_rmse(self.m, self.data.train_xs, self.data.train_y), m_rmse(
-            self.m, self.data.val_xs, self.data.val_y
-        )
+        self.rmse = {
+            "benchmark": get_benchmark_error(
+                r_mse,
+                self.benchmark,
+                self.data.train_y,
+                self.data.val_y,
+                self.data.y,
+                True,
+            ),
+            "model": get_error(
+                m_rmse,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                True,
+            ),
+        }
+
+        self.squared_error = {
+            "benchmark": get_benchmark_error(
+                r_mse,
+                self.benchmark,
+                self.data.train_y,
+                self.data.val_y,
+                self.data.y,
+                False,
+            ),
+            "model": get_error(
+                m_rmse,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                False,
+            ),
+        }
 
         Explain.__init__(
             self,
@@ -103,6 +144,17 @@ class Regression(
             self.data.df,
             self.data.dep_var,
             self.data.train_xs.columns,
+        )
+
+    def plot_one_way_squared_error(self, col=None, *args, **kwargs):
+        col = col if col else self.data.dep_var
+        return plot_one_way_error(
+            self.data.df, self.squared_error["model"]["overall"], col, *args, **kwargs
+        )
+
+    def plot_two_way_squared_error(self, cols, *args, **kwargs):
+        return plot_two_way_error(
+            self.data.df, self.squared_error["model"]["overall"], cols, *args, **kwargs
         )
 
 
@@ -149,10 +201,57 @@ class Classification(
         if model in CLASS_MODELS:
 
             self.m = CLASS_MODELS[model](
-                self.data.train_xs, self.data.train_y, *args, **kwargs
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                *args,
+                **kwargs,
             )
         else:
             raise ValueError(f"Model can only be one of {', '. join(CLASS_MODELS)}")
+
+        self.auc = {
+            "model": get_error(
+                auc,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                False,
+            ),
+        }
+
+        self.cross_entropy = {
+            "model": get_error(
+                m_cross_entropy,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                True,
+            )
+        }
+
+        self.cross_entropy_prob = {
+            "model": get_error(
+                m_cross_entropy,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                False,
+            )
+        }
 
         Explain.__init__(
             self,
@@ -163,10 +262,45 @@ class Classification(
             self.data.train_xs.columns,
         )
 
-    def auc(self, *args, **kwargs):
-        return auc(self.m, self.data.val_xs, self.data.val_y, *args, **kwargs)
+    def plot_auc(self, val=True, *args, **kwargs):
+        if val:
+            return auc(
+                self.m, self.data.val_xs, self.data.val_y, plot=True, *args, **kwargs
+            )
+        else:
+            return auc(
+                self.m,
+                self.data.xs,
+                self.data.y,
+                plot=True,
+                *args,
+                **kwargs,
+            )
 
-    def confusion_matrix(self, *args, **kwargs):
-        return confusion_matrix(
-            self.m, self.data.val_xs, self.data.val_y, *args, **kwargs
+    def confusion_matrix(self, val = True, *args, **kwargs):
+        if val:
+            return confusion_matrix(
+                self.m, self.data.val_xs, self.data.val_y, *args, **kwargs
+            )
+        else:
+            return confusion_matrix(
+                self.m, self.data.xs, self.data.y, *args, **kwargs
+            )
+
+    def plot_one_way_cross_entropy(self, col, *args, **kwargs):
+        return plot_one_way_error(
+            self.data.df,
+            self.cross_entropy_prob["model"]["overall"],
+            col,
+            *args,
+            **kwargs,
+        )
+
+    def plot_two_way_cross_entropy(self, cols, *args, **kwargs):
+        return plot_two_way_error(
+            self.data.df,
+            self.cross_entropy_prob["model"]["overall"],
+            cols,
+            *args,
+            **kwargs,
         )

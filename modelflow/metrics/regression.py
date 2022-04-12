@@ -1,9 +1,12 @@
 import math
 
 
-def r_mse(pred, y):
-    return round(math.sqrt(((pred - y) ** 2).mean()), 6)
+def r_mse(pred, y, mean=True):
+    if mean:
+        return math.sqrt(((pred - y) ** 2).mean())
+    else:
+        return (pred - y) ** 2
 
 
-def m_rmse(m, xs, y):
-    return r_mse(m.predict(xs), y)
+def m_rmse(m, xs, y, mean=True):
+    return r_mse(m.predict(xs), y, mean)
