@@ -23,3 +23,11 @@ def conditional_mean(x, cutoff):
         return None
     else:
         return np.mean(x)
+
+
+def sample_index(df, *args, **kwargs):
+    return list(df.sample(*args, **kwargs).index)
+
+
+def query_df_index(df, query):
+    return list(df.reset_index().query(query).index)

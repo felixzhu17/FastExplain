@@ -5,44 +5,6 @@ import plotly.graph_objects as go
 from ..utils import *
 
 
-def plot_pdp(m, xs, col, log_x=False, plotsize=None, *args, **kwargs):
-    part_dep = partial_dependence(m, xs, [col], kind="average", *args, **kwargs)
-    average = part_dep["average"]
-    values = part_dep["values"]
-    fig = px.line(x=values[0], y=average.squeeze(), log_x=log_x)
-    if plotsize:
-        fig.update_layout(
-            width=plotsize[0],
-            height=plotsize[1],
-        )
-    fig.update_layout(plot_bgcolor="white")
-    return fig
-
-
-def plot_multi_pdp(m, xs, cols, index, plotsize=None, *args, **kwargs):
-    pdp = {
-        i: fill_list(
-            list(
-                partial_dependence(m, xs, [i], kind="average", *args, **kwargs)[
-                    "average"
-                ].squeeze()
-            ),
-            len(index),
-        )
-        for i in cols
-    }
-
-    pdp_df = pd.DataFrame(pdp, index=index)
-    fig = px.line(pdp_df, x=pdp_df.index, y=pdp_df.columns)
-    if plotsize:
-        fig.update_layout(
-            width=plotsize[0],
-            height=plotsize[1],
-        )
-    fig.update_layout(plot_bgcolor="white")
-    return fig
-
-
 def plot_ice(
     m,
     xs,
@@ -86,12 +48,6 @@ class PDP:
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs
-
-    def plot_pdp(self, *args, **kwargs):
-        return plot_pdp(self.m, self.xs, *args, **kwargs)
-
-    def plot_multi_pdp(self, *args, **kwargs):
-        return plot_multi_pdp(self.m, self.xs, *args, **kwargs)
 
     def plot_ice(self, *args, **kwargs):
         return plot_ice(self.m, self.xs, *args, **kwargs)

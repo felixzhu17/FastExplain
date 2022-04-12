@@ -34,7 +34,6 @@ def add_datepart(df, field_name, prefix=None, drop=True, time=False):
     ]
     if time:
         attr = attr + ["Hour", "Minute", "Second"]
-    # Pandas removed `dt.week` in v1.1.10
     week = (
         field.dt.isocalendar().week.astype(field.dt.day.dtype)
         if hasattr(field.dt, "isocalendar")

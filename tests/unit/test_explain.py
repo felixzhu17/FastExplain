@@ -59,9 +59,27 @@ def test_feature_correlation(rf_class_object, xgb_class_object, ebm_class_object
     assert True
 
 
-def test_shap_values(rf_reg_object, xgb_reg_object):
-    rf_reg_object.get_shap_values()
-    xgb_reg_object.get_shap_values()
+def test_shap_values(rf_reg_object, xgb_reg_object, rf_class_object, xgb_class_object):
+    _ = rf_reg_object.shap_force_plot(query="Age < 30")
+    _ = xgb_reg_object.shap_force_plot()
+    _ = rf_class_object.shap_force_plot()
+    _ = xgb_class_object.shap_force_plot(query="Age < 30")
+
+    _ = rf_reg_object.shap_summary_plot(query="Age < 30")
+    _ = xgb_reg_object.shap_summary_plot()
+    _ = rf_class_object.shap_summary_plot()
+    _ = xgb_class_object.shap_summary_plot(query="Age < 30")
+
+    _ = rf_reg_object.shap_dependence_plot("Age", query="Age < 30")
+    _ = xgb_reg_object.shap_dependence_plot("Age")
+    _ = rf_class_object.shap_dependence_plot("Age")
+    _ = xgb_class_object.shap_dependence_plot("Age", query="Age < 30")
+
+    _ = rf_reg_object.shap_importance_plot()
+    _ = xgb_reg_object.shap_importance_plot()
+    _ = rf_class_object.shap_importance_plot()
+    _ = xgb_class_object.shap_importance_plot()
+
     assert True
 
 
