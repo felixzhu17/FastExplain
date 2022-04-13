@@ -26,6 +26,7 @@ def model_data(
     cat_names,
     cont_names,
     dep_var,
+    model="rf",
     *args,
     **kwargs,
 ):
@@ -36,6 +37,7 @@ def model_data(
             cat_names,
             cont_names,
             dep_var,
+            model=model,
             *args,
             **kwargs,
         )
@@ -45,6 +47,7 @@ def model_data(
             cat_names,
             cont_names,
             dep_var,
+            model=model,
             *args,
             **kwargs,
         )

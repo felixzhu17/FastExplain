@@ -6,26 +6,26 @@ SHAP_MAX_SAMPLES = 10_000
 
 
 class ShapExplain:
-    def __init__(self, m, xs):
+    def __init__(self, m, xs, shap_max_samples=SHAP_MAX_SAMPLES):
         self.m = m
         self.xs = xs
-        self.shap_max_samples = SHAP_MAX_SAMPLES
+        self.shap_max_samples = shap_max_samples
         self.sample_index = self._set_sample_index()
         shap.initjs()
 
-    def shap_force_plot(self, query=None, index=[]):
+    def shap_force_plot(self, filter=None, index=[]):
         self.set_shap_values()
-        index = self.get_shap_index(query, index)
+        index = self.get_shap_index(filter, index)
         return shap.plots.force(self.shap_values[index])
 
-    def shap_summary_plot(self, query=None, index=[]):
+    def shap_summary_plot(self, filter=None, index=[]):
         self.set_shap_values()
-        index = self.get_shap_index(query, index)
+        index = self.get_shap_index(filter, index)
         return shap.plots.beeswarm(self.shap_values[index])
 
-    def shap_dependence_plot(self, col, query=None, index=[]):
+    def shap_dependence_plot(self, col, filter=None, index=[]):
         self.set_shap_values()
-        index = self.get_shap_index(query, index)
+        index = self.get_shap_index(filter, index)
         return shap.plots.scatter(
             self.shap_values[index, col], color=self.shap_values[index]
         )
@@ -69,9 +69,9 @@ class ShapExplain:
         shap_values_df.index = self.xs.index
         return shap_values_df
 
-    def get_shap_index(self, query, index):
-        if query:
-            return query_df_index(self.xs, query)
+    def get_shap_index(self, filter, index):
+        if filter:
+            return query_df_index(self.xs, filter)[: self.shap_max_samples]
         elif len(index) > 0:
             return index
         else:

@@ -53,9 +53,7 @@ def _clean_ale(
     *args,
     **kwargs,
 ):
-    if filter:
-        xs = xs.query(filter)
-
+    xs = xs.query(filter) if filter else xs
     numeric = numeric if numeric is not None else check_cont_col(xs[col])
     bins = bins if numeric else sorted(list(xs[col].unique()))
     df = aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
@@ -81,19 +79,10 @@ def plot_ale(
     m,
     xs,
     col,
-    grid_size=20,
     feature_name=None,
     dep_name=None,
     model_names=None,
     plotsize=None,
-    numeric=None,
-    normalize=True,
-    percentage=False,
-    condense_last=True,
-    remove_last_bins=None,
-    dp=2,
-    filter=None,
-    bins=None,
     *args,
     **kwargs,
 ):
@@ -113,16 +102,6 @@ def plot_ale(
                     col,
                     model_name,
                     color,
-                    grid_size=grid_size,
-                    return_index_size=True,
-                    numeric=numeric,
-                    normalize=normalize,
-                    percentage=percentage,
-                    condense_last=condense_last,
-                    remove_last_bins=remove_last_bins,
-                    dp=dp,
-                    filter=filter,
-                    bins=bins,
                     *args,
                     **kwargs,
                 )
@@ -134,16 +113,6 @@ def plot_ale(
                         col,
                         model_name,
                         color,
-                        grid_size=grid_size,
-                        return_index_size=False,
-                        numeric=numeric,
-                        normalize=normalize,
-                        percentage=percentage,
-                        condense_last=condense_last,
-                        remove_last_bins=remove_last_bins,
-                        dp=dp,
-                        filter=filter,
-                        bins=bins,
                         *args,
                         **kwargs,
                     )

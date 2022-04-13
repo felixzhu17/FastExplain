@@ -42,8 +42,10 @@ def get_one_way_analysis(
     size_cutoff=0,
     percentage=False,
     condense_last=True,
+    filter=None,
 ):
 
+    df = df.query(filter) if filter else df
     numeric = numeric if numeric is not None else check_cont_col(df[x_col])
     bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col, y_col]].copy()
@@ -87,7 +89,9 @@ def get_two_way_analysis(
     size_cutoff=0,
     percentage=False,
     condense_last=True,
+    filter=None,
 ):
+    df = df.query(filter) if filter else df
     col_1, col_2 = x_cols
     numeric_1 = numeric[0] if numeric[0] else check_cont_col(df[col_1])
     numeric_2 = numeric[1] if numeric[1] else check_cont_col(df[col_2])
@@ -136,28 +140,15 @@ def plot_two_way_analysis(
     df,
     x_cols,
     y_col,
-    grid_size=20,
-    bins=None,
-    dp=2,
-    func=None,
     feature_names=None,
     plotsize=None,
     colorscale="Blues",
-    size_cutoff=0,
-    percentage=False,
-    condense_last=True,
+    *args,
+    **kwargs,
 ):
+
     two_way_df = get_two_way_analysis(
-        df=df,
-        x_cols=x_cols,
-        y_col=y_col,
-        grid_size=grid_size,
-        bins=bins,
-        dp=dp,
-        func=func,
-        size_cutoff=size_cutoff,
-        percentage=percentage,
-        condense_last=condense_last,
+        df=df, x_cols=x_cols, y_col=y_col, *args, **kwargs
     )
     return plot_two_way(two_way_df, x_cols, feature_names, plotsize, colorscale)
 

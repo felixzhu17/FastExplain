@@ -22,14 +22,14 @@ def test_multi_ebm(ebm_class_object):
 
 def test_ale(rf_class_object, xgb_class_object):
     rf_class_object.plot_ale("Age", bins=[1, 2, 3, 4, 5])
-    xgb_class_object.plot_ale("Age")
+    xgb_class_object.plot_ale("Age", filter="Age < 30")
     assert True
 
 
 def test_ale_class(rf_class_object, xgb_class_object):
     assert len(rf_class_object.ale_summary("Sex").index) == 2
     assert len(xgb_class_object.ale_summary("Cabin", numeric=False).index) == 148
-    rf_class_object.plot_ale("Sex")
+    rf_class_object.plot_ale("Sex", filter="Age < 30")
     xgb_class_object.plot_ale("Sex")
     assert True
 
@@ -47,7 +47,7 @@ def test_feature_importance(rf_class_object, xgb_class_object, ebm_class_object)
 
 
 def test_one_way(rf_class_object, xgb_class_object, ebm_class_object):
-    rf_class_object.plot_one_way_analysis("Age")
+    rf_class_object.plot_one_way_analysis("Age", filter="Age < 30")
     xgb_class_object.plot_one_way_analysis("Age")
     ebm_class_object.plot_one_way_analysis("Age")
     assert True
@@ -56,7 +56,7 @@ def test_one_way(rf_class_object, xgb_class_object, ebm_class_object):
 def test_two_way(rf_class_object, xgb_class_object, ebm_class_object):
     rf_class_object.plot_two_way_analysis(["Age", "Fare"])
     xgb_class_object.plot_two_way_analysis(["Age", "Fare"])
-    ebm_class_object.plot_two_way_analysis(["Age", "Fare"])
+    ebm_class_object.plot_two_way_analysis(["Age", "Fare"], filter="Age < 30")
     assert True
 
 
@@ -69,12 +69,12 @@ def test_feature_correlation(rf_class_object, xgb_class_object, ebm_class_object
 
 def test_shap_values(rf_reg_object, xgb_class_object):
     rf_reg_object.shap_force_plot()
-    xgb_class_object.shap_force_plot(query="Age < 30")
+    xgb_class_object.shap_force_plot(filter="Age < 30")
 
-    rf_reg_object.shap_summary_plot(query="Age < 30")
+    rf_reg_object.shap_summary_plot(filter="Age < 30")
     xgb_class_object.shap_summary_plot()
 
-    rf_reg_object.shap_dependence_plot("Age", query="Age < 30")
+    rf_reg_object.shap_dependence_plot("Age", filter="Age < 30")
     xgb_class_object.shap_dependence_plot("Age")
 
     rf_reg_object.shap_importance_plot()

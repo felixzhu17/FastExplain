@@ -12,12 +12,12 @@ def plot_ice(
     feature_name=None,
     dep_name=None,
     plotsize=None,
-    query=None,
+    filter=None,
     sample=500,
     *args,
     **kwargs,
 ):
-    xs = xs.query(query) if query else xs.sample(sample)
+    xs = xs.query(filter) if filter else xs.sample(sample)
     ice = partial_dependence(m, xs, col, kind="individual", *args, **kwargs)
     ice_df = pd.DataFrame(ice["individual"][0]).T
     ice_df.index = ice["values"][0]
