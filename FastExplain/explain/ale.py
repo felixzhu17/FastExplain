@@ -131,8 +131,6 @@ def plot_ale(
             **kwargs,
         )
 
-    return traces
-
     return plot_upper_lower_bound_traces(
         traces,
         x,

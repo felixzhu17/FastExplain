@@ -27,6 +27,9 @@ def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"
 
 
 def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
+    feature_1, feature_2 = feature_names if feature_names else clean_text(
+        cols[0]
+    ), clean_text(cols[1])
     if size is not None:
         fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
         fig.add_trace(
@@ -37,15 +40,14 @@ def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
         )
         _two_axis_layout(fig)
         fig.update_yaxes(title_text="Frequency", secondary_y=False)
+        fig.update_yaxes(title_text=feature_2, secondary_y=True)
     else:
         fig = px.line(df, x=df.index, y=cols[1])
-    feature_1, feature_2 = feature_names if feature_names else clean_text(
-        cols[0]
-    ), clean_text(cols[1])
+        fig.update_yaxes(title_text=feature_2)
+
     fig.update_layout(
         title=f"{feature_1} vs {feature_2}",
         xaxis_title=feature_1,
-        yaxis_title=feature_2,
         plot_bgcolor="white",
     )
     if plotsize:

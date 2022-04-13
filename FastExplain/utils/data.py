@@ -2,6 +2,7 @@ import pandas as pd
 from collections import Counter
 from functools import reduce
 import numpy as np
+import math
 
 
 def percent_cat_agg(series, top=None):
@@ -31,3 +32,7 @@ def sample_index(df, *args, **kwargs):
 
 def query_df_index(df, query):
     return list(df.reset_index().query(query).index)
+
+
+def root_mean(x):
+    return math.sqrt(np.mean(x))

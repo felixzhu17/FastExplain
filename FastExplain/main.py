@@ -12,6 +12,7 @@ from FastExplain.metrics import (
     m_cross_entropy,
     confusion_matrix,
 )
+from FastExplain.utils import root_mean
 
 REG_MODELS = {"rf": rf_reg, "xgb": xgb_reg, "ebm": ebm_reg}
 CLASS_MODELS = {
@@ -162,12 +163,22 @@ class Regression(
     def plot_one_way_error(self, col=None, *args, **kwargs):
         col = col if col else self.data.dep_var
         return _plot_one_way_error(
-            self.data.df, self.squared_error["model"]["overall"], col, *args, **kwargs
+            self.data.df,
+            self.squared_error["model"]["overall"],
+            col,
+            func=root_mean,
+            *args,
+            **kwargs,
         )
 
     def plot_two_way_error(self, cols, *args, **kwargs):
         return _plot_two_way_error(
-            self.data.df, self.squared_error["model"]["overall"], cols, *args, **kwargs
+            self.data.df,
+            self.squared_error["model"]["overall"],
+            cols,
+            func=root_mean,
+            *args,
+            **kwargs,
         )
 
 
@@ -298,7 +309,8 @@ class Classification(
         else:
             return confusion_matrix(self.m, self.data.xs, self.data.y, *args, **kwargs)
 
-    def plot_one_way_error(self, col, *args, **kwargs):
+    def plot_one_way_error(self, col=None, *args, **kwargs):
+        col = col if col else self.data.dep_var
         return _plot_one_way_error(
             self.data.df,
             self.cross_entropy_prob["model"]["overall"],
