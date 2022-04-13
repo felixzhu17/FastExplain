@@ -1,12 +1,13 @@
 import pytest
 import pandas as pd
 from FastExplain import model_data
+from FastExplain.datasets import load_titanic_data
 from tests.params import *
 
 
 @pytest.fixture(scope="session")
 def test_csv():
-    return pd.read_csv(CLASS_DF_PATH)
+    return load_titanic_data()
 
 
 @pytest.fixture(scope="session")

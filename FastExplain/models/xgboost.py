@@ -74,7 +74,16 @@ def xgb_class(
         return _xgb_class(xs, y, *args, **kwargs)
 
 
-def _xgb_reg(xs, y, tree_method="hist", use_label_encoder=False , verbosity=0, silent=True, *args, **kwargs):
+def _xgb_reg(
+    xs,
+    y,
+    tree_method="hist",
+    use_label_encoder=False,
+    verbosity=0,
+    silent=True,
+    *args,
+    **kwargs
+):
     return XGBRegressor(
         tree_method=tree_method,
         use_label_encoder=use_label_encoder,
@@ -85,8 +94,20 @@ def _xgb_reg(xs, y, tree_method="hist", use_label_encoder=False , verbosity=0, s
     ).fit(xs, y)
 
 
-def _xgb_class(xs, y, tree_method="hist", use_label_encoder=False, verbosity=0, silent=True, sample_weight=None, *args, **kwargs):
-    sample_weight = sample_weight if sample_weight else compute_sample_weight("balanced", y)
+def _xgb_class(
+    xs,
+    y,
+    tree_method="hist",
+    use_label_encoder=False,
+    verbosity=0,
+    silent=True,
+    sample_weight=None,
+    *args,
+    **kwargs
+):
+    sample_weight = (
+        sample_weight if sample_weight else compute_sample_weight("balanced", y)
+    )
     return XGBClassifier(
         tree_method=tree_method,
         use_label_encoder=use_label_encoder,
@@ -95,4 +116,4 @@ def _xgb_class(xs, y, tree_method="hist", use_label_encoder=False, verbosity=0, 
         silent=silent,
         *args,
         **kwargs
-    ).fit(xs, y, eval_metric="auc")
+    ).fit(xs, y)

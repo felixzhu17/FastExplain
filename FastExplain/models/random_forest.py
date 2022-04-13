@@ -124,5 +124,3 @@ def _rf_class(
         *args,
         **kwargs,
     ).fit(xs, y)
-
-

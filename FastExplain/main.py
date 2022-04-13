@@ -1,6 +1,14 @@
 from FastExplain.explain import Explain
 from FastExplain.clean import prepare_data, check_classification
-from FastExplain.models import rf_reg, xgb_reg, ebm_reg, rf_class, xgb_class, ebm_class, get_model_parameters
+from FastExplain.models import (
+    rf_reg,
+    xgb_reg,
+    ebm_reg,
+    rf_class,
+    xgb_class,
+    ebm_class,
+    get_model_parameters,
+)
 from FastExplain.metrics import (
     get_benchmark_error,
     r_mse,
@@ -12,7 +20,7 @@ from FastExplain.metrics import (
     m_cross_entropy,
     confusion_matrix,
 )
-from FastExplain.utils import root_mean
+from FastExplain.utils import root_mean, ifnone
 
 REG_MODELS = {"rf": rf_reg, "xgb": xgb_reg, "ebm": ebm_reg}
 CLASS_MODELS = {
@@ -24,9 +32,9 @@ CLASS_MODELS = {
 
 def model_data(
     df,
-    cat_names,
-    cont_names,
     dep_var,
+    cat_names=None,
+    cont_names=None,
     model="rf",
     *args,
     **kwargs,
@@ -34,20 +42,20 @@ def model_data(
     classification = check_classification(df[dep_var])
     if classification:
         return Classification(
-            df,
-            cat_names,
-            cont_names,
-            dep_var,
+            df=df,
+            dep_var=dep_var,
+            cat_names=cat_names,
+            cont_names=cont_names,
             model=model,
             *args,
             **kwargs,
         )
     else:
         return Regression(
-            df,
-            cat_names,
-            cont_names,
-            dep_var,
+            df=df,
+            dep_var=dep_var,
+            cat_names=cat_names,
+            cont_names=cont_names,
             model=model,
             *args,
             **kwargs,
@@ -60,9 +68,9 @@ class Regression(
     def __init__(
         self,
         df,
-        cat_names,
-        cont_names,
         dep_var,
+        cat_names=None,
+        cont_names=None,
         model="rf",
         perc_train=0.8,
         seed=0,
@@ -79,9 +87,9 @@ class Regression(
 
         self.data = prepare_data(
             df=df,
+            dep_var=dep_var,
             cat_names=cat_names,
             cont_names=cont_names,
-            dep_var=dep_var,
             perc_train=perc_train,
             seed=seed,
             splits=splits,
@@ -107,7 +115,7 @@ class Regression(
         else:
             raise ValueError(f"Model can only be one of {', '. join(REG_MODELS)}")
 
-        self.rmse = {
+        rmse = {
             "benchmark": get_benchmark_error(
                 r_mse,
                 self.benchmark,
@@ -129,7 +137,7 @@ class Regression(
             ),
         }
 
-        self.squared_error = {
+        squared_error = {
             "benchmark": get_benchmark_error(
                 r_mse,
                 self.benchmark,
@@ -150,8 +158,11 @@ class Regression(
                 False,
             ),
         }
-        
-        self.params = get_model_parameters(self.m, model)
+
+        self.error = {"rmse": rmse}
+        self.raw_error = {"squared_error": squared_error}
+
+        self.params = get_model_parameters(self.m)
 
         Explain.__init__(
             self,
@@ -166,7 +177,7 @@ class Regression(
         col = col if col else self.data.dep_var
         return plot_one_way_error(
             self.data.df,
-            self.squared_error["model"]["overall"],
+            self.raw_error["squared_error"]["model"]["overall"],
             col,
             func=root_mean,
             *args,
@@ -176,7 +187,7 @@ class Regression(
     def plot_two_way_error(self, cols, *args, **kwargs):
         return plot_two_way_error(
             self.data.df,
-            self.squared_error["model"]["overall"],
+            self.raw_error["squared_error"]["model"]["overall"],
             cols,
             func=root_mean,
             *args,
@@ -237,7 +248,7 @@ class Classification(
         else:
             raise ValueError(f"Model can only be one of {', '. join(CLASS_MODELS)}")
 
-        self.auc = {
+        auc_score = {
             "model": get_error(
                 auc,
                 self.m,
@@ -251,7 +262,7 @@ class Classification(
             ),
         }
 
-        self.cross_entropy = {
+        cross_entropy = {
             "model": get_error(
                 m_cross_entropy,
                 self.m,
@@ -265,7 +276,7 @@ class Classification(
             )
         }
 
-        self.cross_entropy_prob = {
+        cross_entropy_prob = {
             "model": get_error(
                 m_cross_entropy,
                 self.m,
@@ -278,8 +289,11 @@ class Classification(
                 False,
             )
         }
-        
-        self.params = get_model_parameters(self.m, model)
+
+        self.error = {"auc": auc_score, "cross_entropy": cross_entropy}
+        self.raw_error = {"cross_entropy": cross_entropy_prob}
+
+        self.params = get_model_parameters(self.m)
 
         Explain.__init__(
             self,
@@ -314,10 +328,10 @@ class Classification(
             return confusion_matrix(self.m, self.data.xs, self.data.y, *args, **kwargs)
 
     def plot_one_way_error(self, col=None, *args, **kwargs):
-        col = col if col else self.data.dep_var
+        col = ifnone(col, self.data.dep_var)
         return plot_one_way_error(
             self.data.df,
-            self.cross_entropy_prob["model"]["overall"],
+            self.raw_error["cross_entropy"]["model"]["overall"],
             col,
             *args,
             **kwargs,
@@ -326,7 +340,7 @@ class Classification(
     def plot_two_way_error(self, cols, *args, **kwargs):
         return plot_two_way_error(
             self.data.df,
-            self.cross_entropy_prob["model"]["overall"],
+            self.raw_error["cross_entropy"]["model"]["overall"],
             cols,
             *args,
             **kwargs,

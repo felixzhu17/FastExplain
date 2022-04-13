@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 from sklearn.inspection import partial_dependence
 import plotly.graph_objects as go
-from FastExplain.utils import clean_text, COLOURS
+from FastExplain.utils import clean_text, COLOURS, ifnone
 
 
 def plot_ice(
@@ -42,7 +42,7 @@ def plot_ice(
         ]
     )
     fig.update_traces(showlegend=False)
-    feature_name = feature_name if feature_name else clean_text(col)
+    feature_name = ifnone(feature_name, clean_text(col))
     fig.update_layout(
         title=f"ICE Plot of {feature_name}",
         xaxis_title=feature_name,

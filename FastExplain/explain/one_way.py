@@ -12,6 +12,7 @@ from FastExplain.utils import (
     plot_one_way,
     bin_intervals,
     plot_two_way,
+    ifnone,
 )
 import warnings
 
@@ -46,7 +47,7 @@ def get_one_way_analysis(
 ):
 
     df = df.query(filter) if filter else df
-    numeric = numeric if numeric is not None else check_cont_col(df[x_col])
+    numeric = ifnone(numeric, check_cont_col(df[x_col]))
     bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col, y_col]].copy()
     if numeric:
@@ -106,16 +107,17 @@ def get_two_way_analysis(
         bin_2 = get_bins(df[col_2], grid_size)
 
     filtered_df = df[x_cols + [y_col]].copy()
-    if numeric_1:
-        filtered_df[col_1] = pd.cut(filtered_df[col_1], bin_1, include_lowest=True)
-    else:
-        filtered_df[col_1] = filtered_df[col_1].astype("category")
-    if numeric_2:
-        filtered_df[col_2] = pd.cut(filtered_df[col_2], bin_2, include_lowest=True)
-    else:
-        filtered_df[col_2] = filtered_df[col_2].astype("category")
-
-    func = func if func else lambda x: conditional_mean(x, size_cutoff)
+    filtered_df[col_1] = (
+        pd.cut(filtered_df[col_1], bin_1, include_lowest=True)
+        if numeric_1
+        else filtered_df[col_1].astype("category")
+    )
+    filtered_df[col_2] = (
+        pd.cut(filtered_df[col_2], bin_2, include_lowest=True)
+        if numeric_2
+        else filtered_df[col_2].astype("category")
+    )
+    func = ifnone(func, lambda x: conditional_mean(x, size_cutoff))
 
     two_way_df = (
         filtered_df.groupby(x_cols)

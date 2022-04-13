@@ -1,5 +1,5 @@
 from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
-from FastExplain.utils import check_numeric
+from FastExplain.utils import check_numeric, is_rf, is_xgb, is_ebm
 
 
 def hypertune_model(
@@ -68,10 +68,12 @@ def _check_param_input(param_info):
     )
 
 
-def get_model_parameters(m, model):
-    if model == "rf":
+def get_model_parameters(m):
+    if is_rf(m):
         return {i: getattr(m, i) for i in m._get_param_names()}
-    elif model =="xgb":
+    elif is_xgb(m):
         return m.get_xgb_params()
-    elif model =="ebm":
+    elif is_ebm(m):
         return m.get_params()
+    else:
+        raise TypeError

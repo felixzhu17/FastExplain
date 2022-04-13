@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import sklearn
-import interpret
-from FastExplain.utils import COLOURS
+from FastExplain.utils import COLOURS, is_rf, is_ebm
 
 
 def plot_feature_importance(m, xs, feature_highlights=[], limit=10, plotsize=None):
@@ -18,12 +16,15 @@ def plot_feature_importance(m, xs, feature_highlights=[], limit=10, plotsize=Non
 
     fig = px.bar(df, **plot_dict)
 
-    colour = df.apply(
-        lambda x: COLOURS["blue"]
-        if x["Feature"] in feature_highlights
-        else COLOURS["grey"],
-        axis=1,
-    )
+    if len(feature_highlights) > 0:
+        colour = df.apply(
+            lambda x: COLOURS["blue"]
+            if x["Feature"] in feature_highlights
+            else COLOURS["grey"],
+            axis=1,
+        )
+    else:
+        colour = COLOURS["blue"]
 
     fig.update_traces(marker=dict(color=colour))
     if plotsize:
@@ -37,23 +38,8 @@ def plot_feature_importance(m, xs, feature_highlights=[], limit=10, plotsize=Non
 
 
 def _get_feature_importance_df(m, xs):
-    rf = isinstance(
-        m,
-        (
-            sklearn.ensemble._forest.RandomForestRegressor,
-            sklearn.ensemble._forest.RandomForestClassifier,
-        ),
-    )
 
-    ebm = isinstance(
-        m,
-        (
-            interpret.glassbox.ebm.ebm.ExplainableBoostingRegressor,
-            interpret.glassbox.ebm.ebm.ExplainableBoostingClassifier,
-        ),
-    )
-
-    if ebm:
+    if is_ebm(m):
         df_dict = {
             "Feature": m.explain_global().data()["names"],
             "Importance": m.explain_global().data()["scores"],
@@ -64,7 +50,7 @@ def _get_feature_importance_df(m, xs):
             "Importance": m.feature_importances_,
         }
 
-    if rf:
+    if is_rf(m):
         df_dict["Error"] = np.std(
             [tree.feature_importances_ for tree in m.estimators_], axis=0
         )

@@ -1,6 +1,6 @@
 from random import sample
 import warnings
-from FastExplain.utils import check_unequal_list
+from FastExplain.utils import check_unequal_list, ifnone
 
 
 def sensitivity_test(
@@ -61,9 +61,7 @@ def _replace_features(
     percent_replaces=None,
 ):
 
-    percent_replaces = (
-        percent_replaces if percent_replaces else [0.2 for _ in replace_features]
-    )
+    percent_replaces = ifnone(percent_replaces, [0.2 for _ in replace_features])
 
     if check_unequal_list(
         [

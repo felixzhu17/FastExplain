@@ -4,24 +4,24 @@ from FastExplain.metrics import get_one_way_error
 
 
 def test_rmse(rf_reg_object, xgb_reg_object, ebm_reg_object):
-    assert check_dict_na(rf_reg_object.rmse["model"])
-    assert check_dict_na(xgb_reg_object.rmse["model"])
-    assert check_dict_na(ebm_reg_object.rmse["model"])
-    assert check_dict_na(rf_reg_object.rmse["benchmark"])
-    assert check_dict_na(xgb_reg_object.rmse["benchmark"])
-    assert check_dict_na(ebm_reg_object.rmse["benchmark"])
+    assert check_dict_na(rf_reg_object.error["rmse"]["model"])
+    assert check_dict_na(xgb_reg_object.error["rmse"]["model"])
+    assert check_dict_na(ebm_reg_object.error["rmse"]["model"])
+    assert check_dict_na(rf_reg_object.error["rmse"]["benchmark"])
+    assert check_dict_na(xgb_reg_object.error["rmse"]["benchmark"])
+    assert check_dict_na(ebm_reg_object.error["rmse"]["benchmark"])
 
 
 def test_cross_entropy(rf_class_object, xgb_class_object, ebm_class_object):
-    assert check_dict_na(rf_class_object.cross_entropy["model"])
-    assert check_dict_na(xgb_class_object.cross_entropy["model"])
-    assert check_dict_na(ebm_class_object.cross_entropy["model"])
+    assert check_dict_na(rf_class_object.error["cross_entropy"]["model"])
+    assert check_dict_na(xgb_class_object.error["cross_entropy"]["model"])
+    assert check_dict_na(ebm_class_object.error["cross_entropy"]["model"])
 
 
 def test_auc(rf_class_object, xgb_class_object, ebm_class_object):
-    assert check_dict_na(rf_class_object.auc["model"])
-    assert check_dict_na(xgb_class_object.auc["model"])
-    assert check_dict_na(ebm_class_object.auc["model"])
+    assert check_dict_na(rf_class_object.error["auc"]["model"])
+    assert check_dict_na(xgb_class_object.error["auc"]["model"])
+    assert check_dict_na(ebm_class_object.error["auc"]["model"])
     rf_class_object.plot_auc()
     xgb_class_object.plot_auc()
     ebm_class_object.plot_auc()
@@ -41,7 +41,7 @@ def test_one_way_class_error(rf_class_object, xgb_class_object, ebm_class_object
         len(
             get_one_way_error(
                 rf_class_object.data.df,
-                rf_class_object.cross_entropy_prob["model"]["overall"],
+                rf_class_object.raw_error["cross_entropy"]["model"]["overall"],
                 "Sex",
             )
         )
@@ -51,7 +51,7 @@ def test_one_way_class_error(rf_class_object, xgb_class_object, ebm_class_object
         len(
             get_one_way_error(
                 xgb_class_object.data.df,
-                xgb_class_object.cross_entropy_prob["model"]["overall"],
+                xgb_class_object.raw_error["cross_entropy"]["model"]["overall"],
                 "Sex",
             )
         )
@@ -61,7 +61,7 @@ def test_one_way_class_error(rf_class_object, xgb_class_object, ebm_class_object
         len(
             get_one_way_error(
                 ebm_class_object.data.df,
-                ebm_class_object.cross_entropy_prob["model"]["overall"],
+                ebm_class_object.raw_error["cross_entropy"]["model"]["overall"],
                 "Sex",
             )
         )

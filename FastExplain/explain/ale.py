@@ -11,6 +11,7 @@ from FastExplain.utils import (
     fill_list,
     plot_two_way,
     bin_columns,
+    ifnone,
 )
 from FastExplain.clean import check_cont_col
 from sklearn.neighbors import NearestNeighbors
@@ -19,9 +20,7 @@ from FastExplain.explain.bin import quantile_ied, CI_estimate
 
 def ale_summary(m, xs, col, model_names=None, *args, **kwargs):
     if isinstance(m, (list, tuple)):
-        model_names = (
-            model_names if model_names else [f"Model {i}" for i in range(len(m))]
-        )
+        model_names = ifnone(model_names, [f"Model {i}" for i in range(len(m))])
         ales = []
         for count, ale_info in enumerate(zip(m, xs)):
             model, x_values = ale_info
@@ -55,7 +54,7 @@ def _clean_ale(
     **kwargs,
 ):
     xs = xs.query(filter) if filter else xs
-    numeric = numeric if numeric is not None else check_cont_col(xs[col])
+    numeric = ifnone(numeric, check_cont_col(xs[col]))
     bins = bins if numeric else sorted(list(xs[col].unique()))
     df = aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
     df = df[~df.index.duplicated(keep="last")]
@@ -88,8 +87,7 @@ def plot_ale(
     **kwargs,
 ):
 
-    feature_name = feature_name if feature_name else clean_text(col)
-
+    feature_name = ifnone(feature_name, clean_text(col))
     if isinstance(m, (list, tuple)):
         model_names = (
             model_names if model_names else [f"Model {i}" for i in range(len(m))]

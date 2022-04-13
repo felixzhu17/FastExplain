@@ -7,6 +7,7 @@ from FastExplain.utils import (
     cycle_colours,
     plot_upper_lower_bound_traces,
     get_upper_lower_bound_traces,
+    ifnone,
 )
 
 
@@ -18,9 +19,7 @@ def _get_ebm_index(m, col):
 
 def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
     if isinstance(m, (list, tuple)):
-        model_names = (
-            model_names if model_names else [f"Model {i}" for i in range(len(m))]
-        )
+        model_names = ifnone(model_names, [f"Model {i}" for i in range(len(m))])
         ebms = []
         for count, ale_info in enumerate(zip(m, xs)):
             model, x_values = ale_info
@@ -82,7 +81,7 @@ def plot_ebm_explain(
     **kwargs,
 ):
 
-    feature_name = feature_name if feature_name else clean_text(col)
+    feature_name = ifnone(feature_name, clean_text(col))
 
     if isinstance(m, list):
         model_names = (

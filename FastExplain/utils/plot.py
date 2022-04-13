@@ -2,16 +2,16 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from FastExplain.utils.logic import clean_text
+from FastExplain.utils.logic import clean_text, ifnone
 from FastExplain.utils.colours import COLOURS
 
 
 def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"):
     fig = px.imshow(df, color_continuous_scale=colorscale)
 
-    feature_1, feature_2 = feature_names if feature_names else clean_text(
-        cols[0]
-    ), clean_text(cols[1])
+    feature_1, feature_2 = ifnone(
+        feature_names, (clean_text(cols[0]), clean_text(cols[1]))
+    )
 
     fig.update_layout(
         title=f"Joint Distribution of {feature_1} and {feature_2}",
@@ -27,9 +27,9 @@ def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"
 
 
 def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
-    feature_1, feature_2 = feature_names if feature_names else clean_text(
-        cols[0]
-    ), clean_text(cols[1])
+    feature_1, feature_2 = ifnone(
+        feature_names, (clean_text(cols[0]), clean_text(cols[1]))
+    )
     if size is not None:
         fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
         fig.add_trace(
@@ -68,7 +68,7 @@ def get_upper_lower_bound_traces(
     line_name="",
     return_index_size=True,
 ):
-    color = color if color else COLOURS["blue"]
+    color = ifnone(color, COLOURS["blue"])
     fig = go.Figure(
         [
             go.Scatter(

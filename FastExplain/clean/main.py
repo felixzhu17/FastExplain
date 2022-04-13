@@ -2,14 +2,18 @@ import pandas as pd
 from FastExplain.clean.encode_categorical import EncodeCategorical
 from FastExplain.clean.fill_missing import FillMissing
 from FastExplain.clean.shrink import df_shrink
-from FastExplain.clean.split import get_train_val_split_index, split_train_val
+from FastExplain.clean.split import (
+    get_train_val_split_index,
+    split_train_val,
+    cont_cat_split,
+)
 
 
 def prepare_data(
     df,
+    dep_var=None,
     cat_names=None,
     cont_names=None,
-    dep_var=None,
     perc_train=0.8,
     seed=0,
     splits=None,
@@ -23,9 +27,9 @@ def prepare_data(
 ):
     pandas_clean = PandasClean(
         df=df,
+        dep_var=dep_var,
         cat_names=cat_names,
         cont_names=cont_names,
-        dep_var=dep_var,
         perc_train=perc_train,
         seed=seed,
         splits=splits,
@@ -59,9 +63,9 @@ class PandasClean:
     def __init__(
         self,
         df,
+        dep_var=None,
         cat_names=None,
         cont_names=None,
-        dep_var=None,
         perc_train=0.8,
         seed=0,
         splits=None,
@@ -73,8 +77,6 @@ class PandasClean:
         reduce_memory=True,
     ):
         self.df = df.reset_index(drop=True)
-        self.cat_names = cat_names.copy()
-        self.cont_names = cont_names.copy()
         self.cat_mapping = {}
         self.dep_var = dep_var
         self.perc_train = perc_train
@@ -85,6 +87,10 @@ class PandasClean:
         self.transformations = {}
         if reduce_memory:
             self.df = df_shrink(self.df, int2uint=True)
+
+        cont, cat = cont_cat_split(df, dep_var=self.dep_var)
+        self.cat_names = cat_names.copy() if cat_names else cat.copy()
+        self.cont_names = cont_names.copy() if cont_names else cont.copy()
 
         # Check classification
         if self.dep_var:

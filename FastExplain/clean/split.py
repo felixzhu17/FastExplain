@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from FastExplain.utils import ifnone
 
 
 def get_train_val_split_index(df, perc_train, seed=0, stratify=None):
@@ -18,8 +19,9 @@ def split_train_val(xs, y, splits):
     return xs.loc[splits[0]], y.loc[splits[0]], xs.loc[splits[1]], y.loc[splits[1]]
 
 
-def cont_cat_split(dfs, max_card=20, dep_var=""):
+def cont_cat_split(dfs, max_card=20, dep_var=None):
     "Helper function that returns column names of cont and cat variables from given `df`."
+    dep_var = ifnone(dep_var, "")
     df = dfs.copy()
     cont_names, cat_names = [], []
     for label in df.columns:
