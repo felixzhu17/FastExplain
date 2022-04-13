@@ -44,7 +44,7 @@ def get_one_way_analysis(
     condense_last=True,
 ):
 
-    numeric = numeric if numeric else check_cont_col(df[x_col])
+    numeric = numeric if numeric is not None else check_cont_col(df[x_col])
     bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col, y_col]].copy()
     if numeric:

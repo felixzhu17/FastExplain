@@ -56,7 +56,7 @@ def _clean_ale(
     if filter:
         xs = xs.query(filter)
 
-    numeric = numeric if numeric else check_cont_col(xs[col])
+    numeric = numeric if numeric is not None else check_cont_col(xs[col])
     bins = bins if numeric else sorted(list(xs[col].unique()))
     df = aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
     df = df[~df.index.duplicated(keep="last")]
