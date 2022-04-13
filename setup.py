@@ -25,5 +25,6 @@ setup(
         "shap",
         "numpy==1.21",
         "pytest",
+        "hyperopt",
     ],
 )
