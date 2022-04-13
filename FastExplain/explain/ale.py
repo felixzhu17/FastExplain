@@ -102,6 +102,7 @@ def plot_ale(
                     col,
                     model_name,
                     color,
+                    return_index_size=True,
                     *args,
                     **kwargs,
                 )
@@ -113,6 +114,7 @@ def plot_ale(
                         col,
                         model_name,
                         color,
+                        return_index_size=False,
                         *args,
                         **kwargs,
                     )
@@ -128,6 +130,8 @@ def plot_ale(
             *args,
             **kwargs,
         )
+
+    return traces
 
     return plot_upper_lower_bound_traces(
         traces,

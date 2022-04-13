@@ -102,7 +102,7 @@ def test_sensitivity(rf_reg_object, xgb_reg_object, ebm_reg_object):
 
 
 def test_ice(rf_reg_object, xgb_class_object, ebm_reg_object):
-    rf_reg_object.plot_ice("Age", query="Sex == 1")
-    xgb_class_object.plot_ice("Age", query="Sex == 1")
+    rf_reg_object.plot_ice("Age", filter="Sex == 1")
+    xgb_class_object.plot_ice("Age", filter="Sex == 1")
     ebm_reg_object.plot_ice("Age", sample=100)
     assert True
