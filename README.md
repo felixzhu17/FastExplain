@@ -31,7 +31,7 @@ plot_one_way_analysis(classification.data.df, "Age", "Survived", filter = "Sex =
 ``` python
 plot_ale(classification.m, classification.data.xs, "Age", filter = "Sex == 1", dep_name = "Survived")
 ```
-<img alt="ALE" src="images/ale.png">
+<img alt="ALE" src="images/ALE.png">
 
 ### Connected Interface
 ``` python
