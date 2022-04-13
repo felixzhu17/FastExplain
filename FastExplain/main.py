@@ -6,8 +6,8 @@ from FastExplain.metrics import (
     r_mse,
     get_error,
     m_rmse,
-    plot_one_way_error as _plot_one_way_error,
-    plot_two_way_error as _plot_two_way_error,
+    plot_one_way_error,
+    plot_two_way_error,
     auc,
     m_cross_entropy,
     confusion_matrix,
@@ -164,7 +164,7 @@ class Regression(
 
     def plot_one_way_error(self, col=None, *args, **kwargs):
         col = col if col else self.data.dep_var
-        return _plot_one_way_error(
+        return plot_one_way_error(
             self.data.df,
             self.squared_error["model"]["overall"],
             col,
@@ -174,7 +174,7 @@ class Regression(
         )
 
     def plot_two_way_error(self, cols, *args, **kwargs):
-        return _plot_two_way_error(
+        return plot_two_way_error(
             self.data.df,
             self.squared_error["model"]["overall"],
             cols,
@@ -315,7 +315,7 @@ class Classification(
 
     def plot_one_way_error(self, col=None, *args, **kwargs):
         col = col if col else self.data.dep_var
-        return _plot_one_way_error(
+        return plot_one_way_error(
             self.data.df,
             self.cross_entropy_prob["model"]["overall"],
             col,
@@ -324,7 +324,7 @@ class Classification(
         )
 
     def plot_two_way_error(self, cols, *args, **kwargs):
-        return _plot_two_way_error(
+        return plot_two_way_error(
             self.data.df,
             self.cross_entropy_prob["model"]["overall"],
             cols,

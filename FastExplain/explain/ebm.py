@@ -10,7 +10,7 @@ from FastExplain.utils import (
 )
 
 
-def get_index(m, col):
+def _get_ebm_index(m, col):
     ebm_global = m.explain_global()
     col_dict = {i: count for count, i in enumerate(ebm_global.data()["names"])}
     return col_dict[col]
@@ -45,7 +45,7 @@ def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
 def _clean_ebm_explain(m, xs, col, dp=2, percentage=False, condense_last=True):
 
     ebm_global = m.explain_global()
-    index = get_index(m, col)
+    index = _get_ebm_index(m, col)
     binned = pd.cut(xs[col], ebm_global.data(index)["names"], include_lowest=True)
     binned_count = list(binned.groupby(binned).count())
     df = pd.DataFrame(
