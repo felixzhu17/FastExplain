@@ -17,7 +17,7 @@ FastExplain provides an **out-of-the-box** methodology for users to **quickly ex
 from FastExplain import model_data
 from FastExplain.datasets import load_titanic_data
 df = load_titanic_data()
-classification = model_data(df, 'Survived')
+classification = model_data(df, 'Survived', hypertune=True)
 ``` 
 ### Aesthetic Display
 ``` python
