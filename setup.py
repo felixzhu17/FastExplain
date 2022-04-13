@@ -9,7 +9,7 @@ setup(
     license="MIT",
     author="Felix Zhu",
     author_email="zhu.felix@outlook.com",
-    description="Fast Fit, Fast Explain",
+    description="Fit Fast, Explain Fast",
     long_description=long_description,
     packages=find_packages(),
     url="https://github.com/felixzhu17/FastExplain",

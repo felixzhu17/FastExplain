@@ -3,7 +3,7 @@ from FastExplain.utils import root_mean
 
 def r_mse(pred, y, mean=True):
     if mean:
-        root_mean((pred - y) ** 2)
+        return root_mean((pred - y) ** 2)
     else:
         return (pred - y) ** 2
 
