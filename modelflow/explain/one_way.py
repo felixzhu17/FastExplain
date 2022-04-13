@@ -209,5 +209,3 @@ class OneWay:
             return plot_two_way_frequency(self.xs, *args, **kwargs)
         else:
             return plot_two_way_frequency(self.df, *args, **kwargs)
-
-
