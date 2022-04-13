@@ -91,7 +91,6 @@ def _rf_reg(
     y,
     n_jobs=-1,
     max_samples=200_000,
-    oob_score=True,
     *args,
     **kwargs,
 ):
@@ -99,7 +98,6 @@ def _rf_reg(
     return RandomForestRegressor(
         n_jobs=n_jobs,
         max_samples=max_samples,
-        oob_score=oob_score,
         *args,
         **kwargs,
     ).fit(xs, y)
@@ -110,7 +108,6 @@ def _rf_class(
     y,
     n_jobs=-1,
     max_samples=200_000,
-    oob_score=True,
     class_weight="balanced",
     *args,
     **kwargs,
@@ -120,7 +117,7 @@ def _rf_class(
         n_jobs=n_jobs,
         max_samples=max_samples,
         class_weight=class_weight,
-        oob_score=oob_score,
+
         *args,
         **kwargs,
     ).fit(xs, y)

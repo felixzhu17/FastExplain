@@ -115,52 +115,8 @@ class Regression(
         else:
             raise ValueError(f"Model can only be one of {', '. join(REG_MODELS)}")
 
-        rmse = {
-            "benchmark": get_benchmark_error(
-                r_mse,
-                self.benchmark,
-                self.data.train_y,
-                self.data.val_y,
-                self.data.y,
-                True,
-            ),
-            "model": get_error(
-                m_rmse,
-                self.m,
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                self.data.xs,
-                self.data.y,
-                True,
-            ),
-        }
-
-        squared_error = {
-            "benchmark": get_benchmark_error(
-                r_mse,
-                self.benchmark,
-                self.data.train_y,
-                self.data.val_y,
-                self.data.y,
-                False,
-            ),
-            "model": get_error(
-                m_rmse,
-                self.m,
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                self.data.xs,
-                self.data.y,
-                False,
-            ),
-        }
-
-        self.error = {"rmse": rmse}
-        self.raw_error = {"squared_error": squared_error}
+        self.error = self._get_error()
+        self.raw_error = self._get_raw_error()
 
         self.params = get_model_parameters(self.m)
 
@@ -193,6 +149,54 @@ class Regression(
             *args,
             **kwargs,
         )
+
+    def _get_error(self):
+        rmse = {
+            "benchmark": get_benchmark_error(
+                r_mse,
+                self.benchmark,
+                self.data.train_y,
+                self.data.val_y,
+                self.data.y,
+                True,
+            ),
+            "model": get_error(
+                m_rmse,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                True,
+            ),
+        }
+        return {"rmse": rmse}
+
+    def _get_raw_error(self):
+        squared_error = {
+            "benchmark": get_benchmark_error(
+                r_mse,
+                self.benchmark,
+                self.data.train_y,
+                self.data.val_y,
+                self.data.y,
+                False,
+            ),
+            "model": get_error(
+                m_rmse,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                False,
+            ),
+        }
+        return {"squared_error": squared_error}
 
 
 class Classification(
@@ -248,51 +252,8 @@ class Classification(
         else:
             raise ValueError(f"Model can only be one of {', '. join(CLASS_MODELS)}")
 
-        auc_score = {
-            "model": get_error(
-                auc,
-                self.m,
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                self.data.xs,
-                self.data.y,
-                False,
-            ),
-        }
-
-        cross_entropy = {
-            "model": get_error(
-                m_cross_entropy,
-                self.m,
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                self.data.xs,
-                self.data.y,
-                True,
-            )
-        }
-
-        cross_entropy_prob = {
-            "model": get_error(
-                m_cross_entropy,
-                self.m,
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                self.data.xs,
-                self.data.y,
-                False,
-            )
-        }
-
-        self.error = {"auc": auc_score, "cross_entropy": cross_entropy}
-        self.raw_error = {"cross_entropy": cross_entropy_prob}
-
+        self.error = self._get_error()
+        self.raw_error = self._get_raw_error()
         self.params = get_model_parameters(self.m)
 
         Explain.__init__(
@@ -345,3 +306,50 @@ class Classification(
             *args,
             **kwargs,
         )
+
+    def _get_error(self):
+        auc_score = {
+            "model": get_error(
+                auc,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                False,
+            ),
+        }
+
+        cross_entropy = {
+            "model": get_error(
+                m_cross_entropy,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                True,
+            )
+        }
+
+        return {"auc": auc_score, "cross_entropy": cross_entropy}
+
+    def _get_raw_error(self):
+        cross_entropy_prob = {
+            "model": get_error(
+                m_cross_entropy,
+                self.m,
+                self.data.train_xs,
+                self.data.train_y,
+                self.data.val_xs,
+                self.data.val_y,
+                self.data.xs,
+                self.data.y,
+                False,
+            )
+        }
+        return {"cross_entropy": cross_entropy_prob}

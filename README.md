@@ -22,15 +22,15 @@ classification = model_data(df, 'Survived')
 ### Aesthetic Display
 ``` python
 from FastExplain.explain import plot_one_way_analysis, plot_ale
-plot_one_way_analysis(classification.m, "Age")
-plot_ale(classification.m, "Age")
+plot_one_way_analysis(classification.m, "Age", filter = "Sex == 1")
+plot_ale(classification.m, "Age", filter = "Sex == 1")
 ``` 
 
 ### Connected Interface
 ``` python
-classification.plot_one_way_analysis("Age")
-classification.plot_ale("Age")
-classification.shap_dependence_plot("Age")
+classification.plot_one_way_analysis("Age", filter = "Sex == 1")
+classification.plot_ale("Age", filter = "Sex == 1")
+classification.shap_dependence_plot("Age", filter = "Sex == 1")
 classification.error
 ``` 
 
