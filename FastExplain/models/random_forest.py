@@ -117,7 +117,6 @@ def _rf_class(
         n_jobs=n_jobs,
         max_samples=max_samples,
         class_weight=class_weight,
-
         *args,
         **kwargs,
     ).fit(xs, y)
