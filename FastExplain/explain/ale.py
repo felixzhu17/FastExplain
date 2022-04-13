@@ -1,0 +1,249 @@
+import pandas as pd
+import plotly.express as px
+from FastExplain.utils import (
+    COLOURS,
+    merge_multi_df,
+    clean_text,
+    cycle_colours,
+    plot_upper_lower_bound_traces,
+    get_upper_lower_bound_traces,
+    fill_list,
+    plot_two_way,
+    bin_columns,
+)
+from FastExplain.clean import check_cont_col
+from FastExplain.PyALE._src.ALE_1D import aleplot_1D_continuous
+from FastExplain.PyALE._src.ALE_2D import aleplot_2D_continuous
+
+
+def ale_summary(m, xs, col, model_names=None, *args, **kwargs):
+    if isinstance(m, (list, tuple)):
+        model_names = (
+            model_names if model_names else [f"Model {i}" for i in range(len(m))]
+        )
+        ales = []
+        for count, ale_info in enumerate(zip(m, xs)):
+            model, x_values = ale_info
+            if count == len(m) - 1:
+                ales.append(
+                    _clean_ale(model, x_values, col, *args, **kwargs)[["eff", "size"]]
+                )
+            else:
+                ales.append(_clean_ale(model, x_values, col, *args, **kwargs)[["eff"]])
+
+        output = merge_multi_df(ales, left_index=True, right_index=True)
+        output.columns = model_names + ["size"]
+        return output
+    else:
+        return _clean_ale(m, xs, col, *args, **kwargs)
+
+
+def _clean_ale(
+    m,
+    xs,
+    col,
+    numeric=None,
+    normalize=True,
+    percentage=False,
+    condense_last=True,
+    remove_last_bins=None,
+    dp=2,
+    filter=None,
+    bins=None,
+    *args,
+    **kwargs,
+):
+    if filter:
+        xs = xs.query(filter)
+
+    numeric = numeric if numeric is not None else check_cont_col(xs[col])
+    bins = bins if numeric else sorted(list(xs[col].unique()))
+    df = aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
+    df = df[~df.index.duplicated(keep="last")]
+    adjust = -1 * df.iloc[0]["eff"]
+    df["eff"] += adjust
+    df["lowerCI_95%"] += adjust
+    df["upperCI_95%"] += adjust
+
+    if numeric is False:
+        df["size"] = list(xs[col].value_counts().sort_index())
+
+    if normalize and numeric:
+        df.index = convert_ale_index(
+            pd.to_numeric(df.index), dp, percentage, condense_last
+        )
+    if remove_last_bins:
+        df = df.iloc[:-remove_last_bins]
+    return df
+
+
+def plot_ale(
+    m,
+    xs,
+    col,
+    grid_size=20,
+    feature_name=None,
+    dep_name=None,
+    model_names=None,
+    plotsize=None,
+    numeric=None,
+    normalize=True,
+    percentage=False,
+    condense_last=True,
+    remove_last_bins=None,
+    dp=2,
+    filter=None,
+    bins=None,
+    *args,
+    **kwargs,
+):
+
+    feature_name = feature_name if feature_name else clean_text(col)
+
+    if isinstance(m, (list, tuple)):
+        model_names = (
+            model_names if model_names else [f"Model {i}" for i in range(len(m))]
+        )
+        for count, ale_info in enumerate(zip(m, xs, model_names, cycle_colours())):
+            model, x_values, model_name, color = ale_info
+            if count == 0:
+                traces, x, size = _get_ale_traces(
+                    model,
+                    x_values,
+                    col,
+                    model_name,
+                    color,
+                    grid_size=grid_size,
+                    return_index_size=True,
+                    numeric=numeric,
+                    normalize=normalize,
+                    percentage=percentage,
+                    condense_last=condense_last,
+                    remove_last_bins=remove_last_bins,
+                    dp=dp,
+                    filter=filter,
+                    bins=bins,
+                    *args,
+                    **kwargs,
+                )
+            else:
+                traces.extend(
+                    _get_ale_traces(
+                        model,
+                        x_values,
+                        col,
+                        model_name,
+                        color,
+                        grid_size=grid_size,
+                        return_index_size=False,
+                        numeric=numeric,
+                        normalize=normalize,
+                        percentage=percentage,
+                        condense_last=condense_last,
+                        remove_last_bins=remove_last_bins,
+                        dp=dp,
+                        filter=filter,
+                        bins=bins,
+                        *args,
+                        **kwargs,
+                    )
+                )
+    else:
+        traces, x, size = _get_ale_traces(
+            m,
+            xs,
+            col,
+            feature_name,
+            COLOURS["blue"],
+            return_index_size=True,
+            *args,
+            **kwargs,
+        )
+
+    return plot_upper_lower_bound_traces(
+        traces,
+        x,
+        size,
+        x_axis_title=feature_name,
+        y_axis_title=dep_name,
+        plotsize=plotsize,
+    )
+
+
+def _get_ale_traces(
+    m, xs, col, model_name, color, return_index_size=True, *args, **kwargs
+):
+    df = ale_summary(m, xs, col, *args, **kwargs)
+    x = df.index
+    y = df["eff"]
+    size = df["size"]
+    y_lower = df["lowerCI_95%"]
+    y_upper = df["upperCI_95%"]
+    return get_upper_lower_bound_traces(
+        x, y, y_lower, y_upper, size, color, model_name, return_index_size
+    )
+
+
+def plot_multi_ale(m, xs, cols, index, plotsize=None, *args, **kwargs):
+    pdp = {
+        i: fill_list(list(ale_summary(m, xs, i, *args, **kwargs)["eff"]), len(index))
+        for i in cols
+    }
+    pdp_df = pd.DataFrame(pdp, index=index)
+    fig = px.line(pdp_df, x=pdp_df.index, y=pdp_df.columns)
+    if plotsize:
+        fig.update_layout(
+            width=plotsize[0],
+            height=plotsize[1],
+        )
+    fig.update_layout(plot_bgcolor="white")
+    return fig
+
+
+def plot_2d_ale(
+    m,
+    xs,
+    cols,
+    dp=2,
+    feature_names=None,
+    percentage=False,
+    condense_last=True,
+    plotsize=None,
+    colorscale="Blues",
+    *args,
+    **kwargs,
+):
+    df = aleplot_2D_continuous(xs, m, cols, *args, **kwargs)
+    df = df - df.min().min()
+    df.index = convert_ale_index(df.index, dp, percentage, condense_last)
+    df.columns = convert_ale_index(df.columns, dp, percentage, condense_last)
+    return plot_two_way(df, cols, feature_names, plotsize, colorscale)
+
+
+def convert_ale_index(index, dp, percentage, condense_last):
+    if percentage:
+        return [f"{index[0]:,.{dp}%}"] + bin_columns(
+            index, dp=dp, percentage=percentage, condense_last=condense_last
+        )
+    else:
+        return [f"{index[0]:,.{dp}f}"] + bin_columns(
+            index, dp=dp, percentage=percentage, condense_last=condense_last
+        )
+
+
+class Ale:
+    def __init__(self, m, xs):
+        self.m = m
+        self.xs = xs
+
+    def ale_summary(self, *args, **kwargs):
+        return ale_summary(self.m, self.xs, *args, **kwargs)
+
+    def plot_ale(self, *args, **kwargs):
+        return plot_ale(self.m, self.xs, *args, **kwargs)
+
+    def plot_multi_ale(self, *args, **kwargs):
+        return plot_multi_ale(self.m, self.xs, *args, **kwargs)
+
+    def plot_2d_ale(self, *args, **kwargs):
+        return plot_2d_ale(self.m, self.xs, *args, **kwargs)
