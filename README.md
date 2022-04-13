@@ -46,12 +46,12 @@ classification.shap_dependence_plot("Age", filter = "Sex == 1")
 
 ``` python
 classification.error
-# {'auc': {'model': {'train': 0.9757607616377548,
-# 'val': 0.8396574440052701,
-# 'overall': 0.9512830345444667}},
-# 'cross_entropy': {'model': {'train': 0.25061474553248525,
-# 'val': 0.4548542718401812,
-# 'overall': 0.29164603084009194}}}
+# {'auc': {'model': {'train': 0.9934332941166654,
+# 'val': 0.8421607378129118,
+# 'overall': 0.9665739941840028}},
+# 'cross_entropy': {'model': {'train': 0.19279692001978943,
+# 'val': 0.4600233891109683,
+# 'overall': 0.24648214781700722}}}
 ``` 
 
 ## Models Supported
