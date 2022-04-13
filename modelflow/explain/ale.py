@@ -11,7 +11,8 @@ from modelflow.utils import (
     plot_two_way,
     bin_columns,
 )
-from modelflow.PyALE import ale
+from modelflow.clean import check_cont_col
+from modelflow.PyALE._src.ALE_1D import aleplot_1D_continuous
 from modelflow.PyALE._src.ALE_2D import aleplot_2D_continuous
 
 
@@ -41,24 +42,33 @@ def _clean_ale(
     m,
     xs,
     col,
+    numeric=None,
     normalize=True,
     percentage=False,
     condense_last=True,
     remove_last_bins=None,
     dp=2,
     filter=None,
+    bins=None,
     *args,
     **kwargs,
 ):
     if filter:
         xs = xs.query(filter)
-    df = ale(xs, model=m, feature=[col], plot=False, *args, **kwargs)
+
+    numeric = numeric if numeric else check_cont_col(xs[col])
+    bins = bins if numeric else sorted(list(xs[col].unique()))
+    df = aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
     df = df[~df.index.duplicated(keep="last")]
     adjust = -1 * df.iloc[0]["eff"]
     df["eff"] += adjust
     df["lowerCI_95%"] += adjust
     df["upperCI_95%"] += adjust
-    if normalize:
+
+    if numeric is False:
+        df["size"] = list(xs[col].value_counts().sort_index())
+
+    if normalize and numeric:
         df.index = convert_ale_index(
             pd.to_numeric(df.index), dp, percentage, condense_last
         )

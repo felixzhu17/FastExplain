@@ -5,6 +5,7 @@ from scipy.spatial.distance import squareform
 import scipy.cluster.hierarchy as sch
 import plotly.figure_factory as ff
 from modelflow.explain.bin import get_bins
+from modelflow.clean import check_cont_col
 from modelflow.utils import (
     conditional_mean,
     bin_intervals,
@@ -33,6 +34,7 @@ def get_one_way_analysis(
     df,
     x_col,
     y_col,
+    numeric=None,
     grid_size=20,
     bins=None,
     dp=2,
@@ -42,14 +44,21 @@ def get_one_way_analysis(
     condense_last=True,
 ):
 
+    numeric = numeric if numeric else check_cont_col(df[x_col])
     bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col, y_col]].copy()
-    filtered_df[x_col] = pd.cut(filtered_df[x_col], bins, include_lowest=True)
+    if numeric:
+        filtered_df[x_col] = pd.cut(filtered_df[x_col], bins, include_lowest=True)
+    else:
+        filtered_df[x_col] = filtered_df[x_col].astype("category")
     func = func if func else lambda x: conditional_mean(x, size_cutoff)
     one_way_df = filtered_df.groupby(x_col).agg(
         **{y_col: (y_col, func), "size": (y_col, "count")}
     )
-    one_way_df.index = bin_intervals(one_way_df.index, dp, percentage, condense_last)
+    if numeric:
+        one_way_df.index = bin_intervals(
+            one_way_df.index, dp, percentage, condense_last
+        )
     return one_way_df
 
 
@@ -70,6 +79,7 @@ def get_two_way_analysis(
     df,
     x_cols,
     y_col,
+    numeric=[None, None],
     grid_size=20,
     bins=None,
     dp=2,
@@ -79,6 +89,9 @@ def get_two_way_analysis(
     condense_last=True,
 ):
     col_1, col_2 = x_cols
+    numeric_1 = numeric[0] if numeric[0] else check_cont_col(df[col_1])
+    numeric_2 = numeric[1] if numeric[1] else check_cont_col(df[col_2])
+
     if bins:
         if len(bins) != 2:
             raise ValueError("Need two sets of bins to get two-way analysis")
@@ -89,8 +102,14 @@ def get_two_way_analysis(
         bin_2 = get_bins(df[col_2], grid_size)
 
     filtered_df = df[x_cols + [y_col]].copy()
-    filtered_df[col_1] = pd.cut(filtered_df[col_1], bin_1, include_lowest=True)
-    filtered_df[col_2] = pd.cut(filtered_df[col_2], bin_2, include_lowest=True)
+    if numeric_1:
+        filtered_df[col_1] = pd.cut(filtered_df[col_1], bin_1, include_lowest=True)
+    else:
+        filtered_df[col_1] = filtered_df[col_1].astype("category")
+    if numeric_2:
+        filtered_df[col_2] = pd.cut(filtered_df[col_2], bin_2, include_lowest=True)
+    else:
+        filtered_df[col_2] = filtered_df[col_2].astype("category")
 
     func = func if func else lambda x: conditional_mean(x, size_cutoff)
 
@@ -101,10 +120,15 @@ def get_two_way_analysis(
         .pivot(index=col_1, columns=col_2)[y_col]
     )
 
-    two_way_df.index = bin_intervals(two_way_df.index, dp, percentage, condense_last)
-    two_way_df.columns = bin_intervals(
-        two_way_df.columns, dp, percentage, condense_last
-    )
+    if numeric_1:
+        two_way_df.index = bin_intervals(
+            two_way_df.index, dp, percentage, condense_last
+        )
+
+    if numeric_2:
+        two_way_df.columns = bin_intervals(
+            two_way_df.columns, dp, percentage, condense_last
+        )
     return two_way_df
 
 

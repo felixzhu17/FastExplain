@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 from sklearn.inspection import partial_dependence
 import plotly.graph_objects as go
-from modelflow.utils import clean_text
+from modelflow.utils import clean_text, COLOURS
 
 
 def plot_ice(
@@ -12,28 +12,42 @@ def plot_ice(
     feature_name=None,
     dep_name=None,
     plotsize=None,
+    query=None,
+    sample=500,
     *args,
     **kwargs,
 ):
+    xs = xs.query(query) if query else xs.sample(sample)
     ice = partial_dependence(m, xs, col, kind="individual", *args, **kwargs)
     ice_df = pd.DataFrame(ice["individual"][0]).T
     ice_df.index = ice["values"][0]
     average_effect = ice_df.mean(axis=1)
-    fig = px.line(ice_df, x=ice_df.index, y=ice_df.columns)
-    fig.update_traces(line_color="#456987")
-    fig.add_trace(
-        go.Scatter(
-            x=ice_df.index,
-            y=average_effect,
-            name="Average",
-            line=dict(color="royalblue"),
-        )
+    fig = go.Figure(
+        [
+            go.Scatter(
+                x=ice_df.index,
+                y=ice_df[i],
+                name=None,
+                line=dict(color=COLOURS["grey"]),
+            )
+            for i in ice_df.columns
+        ]
+        + [
+            go.Scatter(
+                x=ice_df.index,
+                y=average_effect,
+                name="Average",
+                line=dict(color=COLOURS["blue"]),
+            )
+        ]
     )
-    fig.update_traces(showlegend=False, plot_bgcolor="white")
-
+    fig.update_traces(showlegend=False)
     feature_name = feature_name if feature_name else clean_text(col)
-
-    fig.update_layout(title=f"ICE Plot of {feature_name}", xaxis_title=feature_name)
+    fig.update_layout(
+        title=f"ICE Plot of {feature_name}",
+        xaxis_title=feature_name,
+        plot_bgcolor="white",
+    )
     if dep_name:
         fig.update_layout(yaxis_title=clean_text(dep_name))
     if plotsize:

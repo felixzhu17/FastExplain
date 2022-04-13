@@ -7,7 +7,9 @@ import matplotlib.transforms as mtrans
 from modelflow.PyALE._src.lib import quantile_ied, CI_estimate, order_groups
 
 
-def aleplot_1D_continuous(X, model, feature, grid_size=20, include_CI=True, C=0.95):
+def aleplot_1D_continuous(
+    X, model, feature, grid_size=20, bins=None, include_CI=True, C=0.95
+):
     """Compute the accumulated local effect of a numeric continuous feature.
 
     This function divides the feature in question into grid_size intervals (bins)
@@ -20,6 +22,7 @@ def aleplot_1D_continuous(X, model, feature, grid_size=20, include_CI=True, C=0.
     feature -- String, the name of the column holding the feature being studied.
     grid_size -- An integer indicating the number of intervals into which the
     feature range is divided.
+    bins -- Bins indicating what intervals the feature range is divided
     include_CI -- A boolean, if True the confidence interval
     of the effect is returned with the results.
     C -- A float the confidence level for which to compute the confidence interval
@@ -28,13 +31,16 @@ def aleplot_1D_continuous(X, model, feature, grid_size=20, include_CI=True, C=0.
     and the accumulated centered effect of this bin.
     """
 
-    quantiles = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
-    # use customized quantile function to get the same result as
-    # type 1 R quantile (Inverse of empirical distribution function)
-    bins = [X[feature].min()] + quantile_ied(X[feature], quantiles).to_list()
+    if bins is None:
+        quantiles = np.append(
+            0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size)
+        )
+        # use customized quantile function to get the same result as
+        # type 1 R quantile (Inverse of empirical distribution function)
+        bins = [X[feature].min()] + quantile_ied(X[feature], quantiles).to_list()
+
     bins = np.unique(bins)
     feat_cut = pd.cut(X[feature], bins, include_lowest=True)
-
     bin_codes = feat_cut.cat.codes
     bin_codes_unique = np.unique(bin_codes)
 

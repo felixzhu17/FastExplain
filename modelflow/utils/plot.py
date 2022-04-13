@@ -157,11 +157,11 @@ def get_plotly_express_traces(fig):
     return traces
 
 
-def create_secondary_axis_plotly(fig):
+def create_secondary_axis_plotly(fig, fig_on_secondary_axis=True):
     output = make_subplots(specs=[[{"secondary_y": True}]])
     traces = get_plotly_express_traces(fig)
     for i in traces:
-        output.add_trace(i, secondary_y=True)
+        output.add_trace(i, secondary_y=fig_on_secondary_axis)
     return output
 
 

@@ -1,5 +1,6 @@
 import pytest
 from tests.utils import check_dict_na
+from modelflow.metrics import get_one_way_error
 
 
 def test_rmse(rf_reg_object, xgb_reg_object, ebm_reg_object):
@@ -35,14 +36,46 @@ def test_confusion_matrix(rf_class_object, xgb_class_object, ebm_class_object):
 
 
 def test_one_way_class_error(rf_class_object, xgb_class_object, ebm_class_object):
-    rf_class_object.plot_one_way_cross_entropy("Age")
-    xgb_class_object.plot_one_way_cross_entropy("Age")
-    ebm_class_object.plot_one_way_cross_entropy("Age")
+
+    assert (
+        len(
+            get_one_way_error(
+                rf_class_object.data.df,
+                rf_class_object.cross_entropy_prob["model"]["overall"],
+                "Sex",
+            )
+        )
+        == 2
+    )
+    assert (
+        len(
+            get_one_way_error(
+                xgb_class_object.data.df,
+                xgb_class_object.cross_entropy_prob["model"]["overall"],
+                "Sex",
+            )
+        )
+        == 2
+    )
+    assert (
+        len(
+            get_one_way_error(
+                ebm_class_object.data.df,
+                ebm_class_object.cross_entropy_prob["model"]["overall"],
+                "Sex",
+            )
+        )
+        == 2
+    )
+
+    rf_class_object.plot_one_way_error("Age")
+    xgb_class_object.plot_one_way_error("Age")
+    ebm_class_object.plot_one_way_error("Age")
     assert True
 
 
 def test_one_way_reg_error(rf_reg_object, xgb_reg_object, ebm_reg_object):
-    rf_reg_object.plot_one_way_squared_error()
-    xgb_reg_object.plot_one_way_squared_error("Age")
-    ebm_reg_object.plot_one_way_squared_error()
+    rf_reg_object.plot_one_way_error()
+    xgb_reg_object.plot_one_way_error("Age")
+    ebm_reg_object.plot_one_way_error()
     assert True

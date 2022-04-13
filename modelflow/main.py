@@ -6,8 +6,8 @@ from modelflow.metrics import (
     r_mse,
     get_error,
     m_rmse,
-    plot_one_way_error,
-    plot_two_way_error,
+    plot_one_way_error as _plot_one_way_error,
+    plot_two_way_error as _plot_two_way_error,
     auc,
     m_cross_entropy,
     confusion_matrix,
@@ -156,14 +156,14 @@ class Regression(
             self.data.train_xs.columns,
         )
 
-    def plot_one_way_squared_error(self, col=None, *args, **kwargs):
+    def plot_one_way_error(self, col=None, *args, **kwargs):
         col = col if col else self.data.dep_var
-        return plot_one_way_error(
+        return _plot_one_way_error(
             self.data.df, self.squared_error["model"]["overall"], col, *args, **kwargs
         )
 
-    def plot_two_way_squared_error(self, cols, *args, **kwargs):
-        return plot_two_way_error(
+    def plot_two_way_error(self, cols, *args, **kwargs):
+        return _plot_two_way_error(
             self.data.df, self.squared_error["model"]["overall"], cols, *args, **kwargs
         )
 
@@ -295,8 +295,8 @@ class Classification(
         else:
             return confusion_matrix(self.m, self.data.xs, self.data.y, *args, **kwargs)
 
-    def plot_one_way_cross_entropy(self, col, *args, **kwargs):
-        return plot_one_way_error(
+    def plot_one_way_error(self, col, *args, **kwargs):
+        return _plot_one_way_error(
             self.data.df,
             self.cross_entropy_prob["model"]["overall"],
             col,
@@ -304,8 +304,8 @@ class Classification(
             **kwargs,
         )
 
-    def plot_two_way_cross_entropy(self, cols, *args, **kwargs):
-        return plot_two_way_error(
+    def plot_two_way_error(self, cols, *args, **kwargs):
+        return _plot_two_way_error(
             self.data.df,
             self.cross_entropy_prob["model"]["overall"],
             cols,

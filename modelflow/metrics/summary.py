@@ -34,8 +34,6 @@ def plot_one_way_error(
         size=output["size"],
         feature_names=feature_names,
         plotsize=plotsize,
-        *args,
-        **kwargs,
     )
 
 

@@ -21,8 +21,16 @@ def test_multi_ebm(ebm_class_object):
 
 
 def test_ale(rf_class_object, xgb_class_object):
-    rf_class_object.plot_ale("Age")
+    rf_class_object.plot_ale("Age", bins=[1, 2, 3, 4, 5])
     xgb_class_object.plot_ale("Age")
+    assert True
+
+
+def test_ale_class(rf_class_object, xgb_class_object):
+    assert len(rf_class_object.ale_summary("Sex").index) == 2
+    assert len(xgb_class_object.ale_summary("Sex").index) == 2
+    rf_class_object.plot_ale("Sex")
+    xgb_class_object.plot_ale("Sex")
     assert True
 
 
@@ -90,4 +98,11 @@ def test_sensitivity(rf_reg_object, xgb_reg_object, ebm_reg_object):
         replacement_conditions=["Sex == 0"],
         replacement_values=[10],
     )
+    assert True
+
+
+def test_ice(rf_reg_object, xgb_class_object, ebm_reg_object):
+    rf_reg_object.plot_ice("Age", query="Sex == 1")
+    xgb_class_object.plot_ice("Age", query="Sex == 1")
+    ebm_reg_object.plot_ice("Age", sample=100)
     assert True

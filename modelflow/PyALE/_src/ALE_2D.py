@@ -7,7 +7,7 @@ from sklearn.neighbors import NearestNeighbors
 from modelflow.PyALE._src.lib import quantile_ied
 
 
-def aleplot_2D_continuous(X, model, features, grid_size=40):
+def aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
     """Compute the two dimentional accumulated local effect of a two numeric continuous features.
 
     This function divides the space of the two features into a grid of size
@@ -21,6 +21,7 @@ def aleplot_2D_continuous(X, model, features, grid_size=40):
     holding the features in question.
     grid_size -- An integer indicating the number of intervals into which each
     feature range is divided.
+    bins -- Bins indicating what intervals the feature range is divided
 
     Return: A pandas DataFrame containing for each bin in the grid
     the accumulated centered effect of this bin.
@@ -29,15 +30,25 @@ def aleplot_2D_continuous(X, model, features, grid_size=40):
     # reset index to avoid index missmatches when replacing the values with the codes (lines 50 - 73)
     X = X.reset_index(drop=True)
 
-    quantiles = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
-    bins_0 = [X[features[0]].min()] + quantile_ied(X[features[0]], quantiles).to_list()
-    bins_0 = np.unique(bins_0)
+    if bins is None:
+        quantiles = np.append(
+            0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size)
+        )
+        bins_0 = [X[features[0]].min()] + quantile_ied(
+            X[features[0]], quantiles
+        ).to_list()
+        bins_0 = np.unique(bins_0)
+        bins_1 = [X[features[1]].min()] + quantile_ied(
+            X[features[1]], quantiles
+        ).to_list()
+        bins_1 = np.unique(bins_1)
+
+    else:
+        bins_0, bins_1 = bins
+
     feat_cut_0 = pd.cut(X[features[0]], bins_0, include_lowest=True)
     bin_codes_0 = feat_cut_0.cat.codes
     bin_codes_unique_0 = np.unique(bin_codes_0)
-
-    bins_1 = [X[features[1]].min()] + quantile_ied(X[features[1]], quantiles).to_list()
-    bins_1 = np.unique(bins_1)
     feat_cut_1 = pd.cut(X[features[1]], bins_1, include_lowest=True)
     bin_codes_1 = feat_cut_1.cat.codes
     bin_codes_unique_1 = np.unique(bin_codes_1)
