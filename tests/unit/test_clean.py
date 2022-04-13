@@ -1,5 +1,5 @@
 import pytest
-from modelflow.clean import prepare_data
+from FastExplain.clean import prepare_data
 from tests.params import (
     TRAIN_SPLIT,
     STRATIFY_ERROR_MARGIN,

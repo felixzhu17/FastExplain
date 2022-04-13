@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from modelflow import model_data
+from FastExplain import model_data
 from tests.params import *
 
 

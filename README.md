@@ -1,4 +1,4 @@
-# ModelFlow
-0.0.16
+# FastExplain
+0.0.0
 
-Machine Learning flowing from start to finish
+Fast Fit, Fast Explain

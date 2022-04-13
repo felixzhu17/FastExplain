@@ -1,6 +1,6 @@
 import pytest
 from tests.utils import check_dict_na
-from modelflow.metrics import get_one_way_error
+from FastExplain.metrics import get_one_way_error
 
 
 def test_rmse(rf_reg_object, xgb_reg_object, ebm_reg_object):

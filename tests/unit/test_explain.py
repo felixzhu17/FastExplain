@@ -1,5 +1,5 @@
 import pytest
-from modelflow.explain import plot_ale
+from FastExplain.explain import plot_ale
 
 
 def test_multi_ale(rf_class_object, xgb_class_object):
