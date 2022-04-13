@@ -12,6 +12,7 @@ def hypertune_model(
     max_evals,
     hypertune_params,
 ):
+    _check_param_dict(hypertune_params)
     space = _get_space(hypertune_params)
 
     def objective(space):
@@ -33,16 +34,11 @@ def hypertune_model(
 
 
 def _get_param_range(param, param_info):
-    if _check_param_input(param_info):
-        lower, upper, integer = param_info
-        if integer:
-            return hp.randint(param, lower, upper)
-        else:
-            return hp.uniform(param, lower, upper)
+    lower, upper, integer = param_info
+    if integer:
+        return hp.randint(param, lower, upper)
     else:
-        raise ValueError(
-            f"Key of {param} must be an array of [lower (numeric), upper (numeric), is_integer (bool)]"
-        )
+        return hp.uniform(param, lower, upper)
 
 
 def _get_space(params):
@@ -51,7 +47,16 @@ def _get_space(params):
         for param, param_info in params.items()
     }
 
-
+def _check_param_dict(params):
+    param_checks = {k: _check_param_input(v) for k,v in params.items()}
+    param_checked = [k for k,v in param_checks.items() if v is False]
+    if len(param_checked) > 0:
+        raise ValueError(
+            f"Params of {' '.join(param_checked)} must be an array of [lower (numeric), upper (numeric), is_integer (bool)]"
+        )
+    else:
+        return
+    
 def _check_param_input(param_info):
     return (
         len(param_info) == 3
