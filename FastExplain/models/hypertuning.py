@@ -66,3 +66,12 @@ def _check_param_input(param_info):
         and check_numeric(param_info[1])
         and isinstance(param_info[2], bool)
     )
+
+
+def get_model_parameters(m, model):
+    if model == "rf":
+        return {i: getattr(m, i) for i in m._get_param_names()}
+    elif model =="xgb":
+        return m.get_xgb_params()
+    elif model =="ebm":
+        return m.get_params()

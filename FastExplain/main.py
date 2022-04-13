@@ -1,6 +1,6 @@
 from FastExplain.explain import Explain
 from FastExplain.clean import prepare_data, check_classification
-from FastExplain.models import rf_reg, xgb_reg, ebm_reg, rf_class, xgb_class, ebm_class
+from FastExplain.models import rf_reg, xgb_reg, ebm_reg, rf_class, xgb_class, ebm_class, get_model_parameters
 from FastExplain.metrics import (
     get_benchmark_error,
     r_mse,
@@ -150,6 +150,8 @@ class Regression(
                 False,
             ),
         }
+        
+        self.params = get_model_parameters(self.m, model)
 
         Explain.__init__(
             self,
@@ -276,6 +278,8 @@ class Classification(
                 False,
             )
         }
+        
+        self.params = get_model_parameters(self.m, model)
 
         Explain.__init__(
             self,
