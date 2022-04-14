@@ -30,6 +30,7 @@ def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
     feature_1, feature_2 = ifnone(
         feature_names, (clean_text(cols[0]), clean_text(cols[1]))
     )
+
     if size is not None:
         fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
         fig.add_trace(
@@ -47,6 +48,33 @@ def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
 
     fig.update_layout(
         title=f"{feature_1} vs {feature_2}",
+        xaxis_title=feature_1,
+        plot_bgcolor="white",
+    )
+    if plotsize:
+        fig.update_layout(
+            width=plotsize[0],
+            height=plotsize[1],
+        )
+    return fig
+
+
+def plot_two_one_way(df, cols, feature_names=None, plotsize=None):
+    feature_1, feature_2, feature_3 = ifnone(
+        feature_names, (clean_text(cols[0]), clean_text(cols[1]), clean_text(cols[2]))
+    )
+
+    fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
+    fig.add_trace(
+        go.Scatter(x=df.index, y=df[cols[2]]),
+        secondary_y=False,
+    )
+    _two_axis_layout(fig)
+    fig.update_yaxes(title_text=feature_3, secondary_y=False)
+    fig.update_yaxes(title_text=feature_2, secondary_y=True)
+
+    fig.update_layout(
+        title=f"{feature_1} vs {feature_2} and {feature_3}",
         xaxis_title=feature_1,
         plot_bgcolor="white",
     )

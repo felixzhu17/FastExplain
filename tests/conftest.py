@@ -14,8 +14,6 @@ def test_csv():
 def rf_class_object(test_csv):
     return model_data(
         test_csv,
-        cat_names=CAT_COLS,
-        cont_names=CONT_COLS,
         dep_var=CLASS_DEP_VAR,
         model="rf",
         perc_train=TRAIN_SPLIT,
@@ -27,8 +25,6 @@ def rf_class_object(test_csv):
 def xgb_class_object(test_csv):
     return model_data(
         test_csv,
-        cat_names=CAT_COLS,
-        cont_names=CONT_COLS,
         dep_var=CLASS_DEP_VAR,
         model="xgb",
         perc_train=TRAIN_SPLIT,
@@ -40,8 +36,6 @@ def xgb_class_object(test_csv):
 def ebm_class_object(test_csv):
     return model_data(
         test_csv,
-        cat_names=CAT_COLS,
-        cont_names=CONT_COLS,
         dep_var=CLASS_DEP_VAR,
         model="ebm",
         perc_train=TRAIN_SPLIT,
@@ -52,8 +46,6 @@ def ebm_class_object(test_csv):
 def rf_reg_object(test_csv):
     return model_data(
         test_csv,
-        cat_names=CAT_COLS,
-        cont_names=CONT_COLS,
         dep_var=REG_DEP_VAR,
         model="rf",
         perc_train=TRAIN_SPLIT,
@@ -65,8 +57,6 @@ def rf_reg_object(test_csv):
 def xgb_reg_object(test_csv):
     return model_data(
         test_csv,
-        cat_names=CAT_COLS,
-        cont_names=CONT_COLS,
         dep_var=REG_DEP_VAR,
         model="xgb",
         perc_train=TRAIN_SPLIT,
@@ -78,8 +68,6 @@ def xgb_reg_object(test_csv):
 def ebm_reg_object(test_csv):
     return model_data(
         test_csv,
-        cat_names=CAT_COLS,
-        cont_names=CONT_COLS,
         dep_var=REG_DEP_VAR,
         model="ebm",
         perc_train=TRAIN_SPLIT,

@@ -10,6 +10,7 @@ from FastExplain.utils import (
     conditional_mean,
     bin_intervals,
     plot_one_way,
+    plot_two_one_way,
     bin_intervals,
     plot_two_way,
     ifnone,
@@ -46,33 +47,63 @@ def get_one_way_analysis(
     filter=None,
 ):
 
-    df = df.query(filter) if filter else df
-    numeric = ifnone(numeric, check_cont_col(df[x_col]))
-    bins = bins if bins else get_bins(df[x_col], grid_size)
-    filtered_df = df[[x_col, y_col]].copy()
-    if numeric:
-        filtered_df[x_col] = pd.cut(filtered_df[x_col], bins, include_lowest=True)
-    else:
-        filtered_df[x_col] = filtered_df[x_col].astype("category")
-    func = func if func else lambda x: conditional_mean(x, size_cutoff)
-    one_way_df = filtered_df.groupby(x_col).agg(
-        **{y_col: (y_col, func), "size": (y_col, "count")}
+    one_way_func = (
+        _get_two_one_way_analysis
+        if isinstance(y_col, (list, tuple))
+        else _get_one_way_analysis
     )
-    if numeric:
-        one_way_df.index = bin_intervals(
-            one_way_df.index, dp, percentage, condense_last
-        )
-    return one_way_df
+    return one_way_func(
+        df=df,
+        x_col=x_col,
+        y_col=y_col,
+        numeric=numeric,
+        grid_size=grid_size,
+        bins=bins,
+        dp=dp,
+        func=func,
+        size_cutoff=size_cutoff,
+        percentage=percentage,
+        condense_last=condense_last,
+        filter=filter,
+    )
 
 
 def plot_one_way_analysis(
-    df, x_col, y_col, feature_names=None, plotsize=None, *args, **kwargs
+    df,
+    x_col,
+    y_col,
+    numeric=None,
+    grid_size=20,
+    bins=None,
+    dp=2,
+    func=None,
+    size_cutoff=0,
+    percentage=False,
+    condense_last=True,
+    filter=None,
+    feature_names=None,
+    plotsize=None,
 ):
-    output = get_one_way_analysis(df, x_col, y_col, *args, **kwargs)
-    return plot_one_way(
-        df=output,
-        cols=[x_col, y_col],
-        size=output["size"],
+
+    y_col = y_col[0] if len(y_col) == 1 else y_col
+    one_way_func = (
+        _plot_two_one_way_analysis
+        if isinstance(y_col, (list, tuple))
+        else _plot_one_way_analysis
+    )
+    return one_way_func(
+        df=df,
+        x_col=x_col,
+        y_col=y_col,
+        numeric=numeric,
+        grid_size=grid_size,
+        bins=bins,
+        dp=dp,
+        func=func,
+        size_cutoff=size_cutoff,
+        percentage=percentage,
+        condense_last=condense_last,
+        filter=filter,
         feature_names=feature_names,
         plotsize=plotsize,
     )
@@ -96,7 +127,6 @@ def get_two_way_analysis(
     col_1, col_2 = x_cols
     numeric_1 = numeric[0] if numeric[0] else check_cont_col(df[col_1])
     numeric_2 = numeric[1] if numeric[1] else check_cont_col(df[col_2])
-
     if bins:
         if len(bins) != 2:
             raise ValueError("Need two sets of bins to get two-way analysis")
@@ -105,7 +135,6 @@ def get_two_way_analysis(
     else:
         bin_1 = get_bins(df[col_1], grid_size)
         bin_2 = get_bins(df[col_2], grid_size)
-
     filtered_df = df[x_cols + [y_col]].copy()
     filtered_df[col_1] = (
         pd.cut(filtered_df[col_1], bin_1, include_lowest=True)
@@ -167,6 +196,103 @@ def get_two_way_frequency(df, x_cols, *args, **kwargs):
     return output / output.sum(axis=0)
 
 
+def _get_one_way_analysis(
+    df,
+    x_col,
+    y_col,
+    numeric=None,
+    grid_size=20,
+    bins=None,
+    dp=2,
+    func=None,
+    size_cutoff=0,
+    percentage=False,
+    condense_last=True,
+    filter=None,
+):
+
+    df = df.query(filter) if filter else df
+    numeric = ifnone(numeric, check_cont_col(df[x_col]))
+    bins = bins if bins else get_bins(df[x_col], grid_size)
+    filtered_df = df[[x_col, y_col]].copy()
+    filtered_df[x_col] = (
+        pd.cut(filtered_df[x_col], bins, include_lowest=True)
+        if numeric
+        else filtered_df[x_col].astype("category")
+    )
+    func = func if func else lambda x: conditional_mean(x, size_cutoff)
+    one_way_df = filtered_df.groupby(x_col).agg(
+        **{y_col: (y_col, func), "size": (y_col, "count")}
+    )
+    if numeric:
+        one_way_df.index = bin_intervals(
+            one_way_df.index, dp, percentage, condense_last
+        )
+    return one_way_df
+
+
+def _plot_one_way_analysis(
+    df, x_col, y_col, feature_names=None, plotsize=None, *args, **kwargs
+):
+    output = get_one_way_analysis(df, x_col, y_col, *args, **kwargs)
+    return plot_one_way(
+        df=output,
+        cols=[x_col, y_col],
+        size=output["size"],
+        feature_names=feature_names,
+        plotsize=plotsize,
+    )
+
+
+def _get_two_one_way_analysis(
+    df,
+    x_col,
+    y_col,
+    numeric=None,
+    grid_size=20,
+    bins=None,
+    dp=2,
+    func=None,
+    size_cutoff=0,
+    percentage=False,
+    condense_last=True,
+    filter=None,
+):
+    if len(y_col) != 2:
+        raise ValueError("Can only plot up to two columns on y-axis")
+
+    df = df.query(filter) if filter else df
+    numeric = ifnone(numeric, check_cont_col(df[x_col]))
+    bins = bins if bins else get_bins(df[x_col], grid_size)
+    filtered_df = df[[x_col] + y_col].copy()
+    filtered_df[x_col] = (
+        pd.cut(filtered_df[x_col], bins, include_lowest=True)
+        if numeric
+        else filtered_df[x_col].astype("category")
+    )
+    func = func if func else lambda x: conditional_mean(x, size_cutoff)
+    one_way_df = filtered_df.groupby(x_col).agg(
+        **{y_col[0]: (y_col[0], func), y_col[1]: (y_col[1], func)}
+    )
+    if numeric:
+        one_way_df.index = bin_intervals(
+            one_way_df.index, dp, percentage, condense_last
+        )
+    return one_way_df
+
+
+def _plot_two_one_way_analysis(
+    df, x_col, y_col, feature_names=None, plotsize=None, *args, **kwargs
+):
+    output = _get_two_one_way_analysis(df, x_col, y_col, *args, **kwargs)
+    return plot_two_one_way(
+        df=output,
+        cols=[x_col, y_col[0], y_col[1]],
+        feature_names=feature_names,
+        plotsize=plotsize,
+    )
+
+
 def plot_two_way_frequency(
     df,
     x_cols,
@@ -195,24 +321,24 @@ class OneWay:
     def feature_correlation(self, *args, **kwargs):
         return feature_correlation(self.xs, *args, **kwargs)
 
-    def get_one_way_analysis(self, x_col, *args, **kwargs):
-        return get_one_way_analysis(
-            self.df, x_col=x_col, y_col=self.dep_var, *args, **kwargs
-        )
+    def get_one_way_analysis(self, x_col, y_col=None, *args, **kwargs):
+        y_col = ifnone(y_col, self.dep_var)
+        return get_one_way_analysis(self.df, x_col=x_col, y_col=y_col, *args, **kwargs)
 
-    def plot_one_way_analysis(self, x_col, *args, **kwargs):
-        return plot_one_way_analysis(
-            self.df, x_col=x_col, y_col=self.dep_var, *args, **kwargs
-        )
+    def plot_one_way_analysis(self, x_col, y_col=None, *args, **kwargs):
+        y_col = ifnone(y_col, self.dep_var)
+        return plot_one_way_analysis(self.df, x_col=x_col, y_col=y_col, *args, **kwargs)
 
-    def get_two_way_analysis(self, x_cols, *args, **kwargs):
+    def get_two_way_analysis(self, x_cols, y_col=None, *args, **kwargs):
+        y_col = ifnone(y_col, self.dep_var)
         return get_two_way_analysis(
-            self.df, x_cols=x_cols, y_col=self.dep_var, *args, **kwargs
+            self.df, x_cols=x_cols, y_col=y_col, *args, **kwargs
         )
 
-    def plot_two_way_analysis(self, x_cols, *args, **kwargs):
+    def plot_two_way_analysis(self, x_cols, y_col=None, *args, **kwargs):
+        y_col = ifnone(y_col, self.dep_var)
         return plot_two_way_analysis(
-            self.df, x_cols=x_cols, y_col=self.dep_var, *args, **kwargs
+            self.df, x_cols=x_cols, y_col=y_col, *args, **kwargs
         )
 
     def get_two_way_frequency(self, *args, **kwargs):
