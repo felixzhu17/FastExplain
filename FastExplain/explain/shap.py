@@ -1,6 +1,6 @@
 import shap
 import pandas as pd
-from FastExplain.utils import query_df_index, sample_index
+from FastExplain.utils import query_df_index, sample_index, ifnone
 
 SHAP_MAX_SAMPLES = 10_000
 
@@ -10,21 +10,33 @@ class ShapExplain:
         self.m = m
         self.xs = xs
         self.shap_max_samples = shap_max_samples
-        self.sample_index = self._set_sample_index()
+        self.sample_seed = 0
         shap.initjs()
 
-    def shap_force_plot(self, filter=None, index=[]):
+    @property
+    def sample_index(self):
+        if len(self.xs) > self.shap_max_samples:
+            return sample_index(
+                self.xs, n=self.shap_max_samples, random_state=self.sample_seed
+            )
+        else:
+            return list(self.xs.index)
+
+    def shap_force_plot(self, filter=None, index=[], shap_max_samples=None):
         self.set_shap_values()
+        self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.force(self.shap_values[index])
 
-    def shap_summary_plot(self, filter=None, index=[]):
+    def shap_summary_plot(self, filter=None, index=[], shap_max_samples=None):
         self.set_shap_values()
+        self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.beeswarm(self.shap_values[index])
 
-    def shap_dependence_plot(self, col, filter=None, index=[]):
+    def shap_dependence_plot(self, col, filter=None, index=[], shap_max_samples=None):
         self.set_shap_values()
+        self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.scatter(
             self.shap_values[index, col], color=self.shap_values[index]
@@ -55,12 +67,6 @@ class ShapExplain:
 
     def _shap_values_exists(self):
         return hasattr(self, "shap_values")
-
-    def _set_sample_index(self, seed=0):
-        if len(self.xs) > self.shap_max_samples:
-            return sample_index(self.xs, n=self.shap_max_samples, random_state=seed)
-        else:
-            return list(self.xs.index)
 
     def _get_shap_values_df(self):
         shap_values_df = pd.DataFrame(

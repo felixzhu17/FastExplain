@@ -6,7 +6,7 @@
 pip install fast-explain
 ``` 
 ## About FastExplain
-FastExplain provides an **out-of-the-box** methodology for users to **quickly explore data**, with **flexibility to fine-tune** if needed.
+FastExplain provides an **out-of-the-box** methodology for analysts to **quickly explore data**, with **flexibility to fine-tune** if needed.
 - **Automated fitting** of machine learning models with hyperparameter search
 - **Aesthetic display** of explanatory methods ready for reporting
 - **Connected interface** for all models and related explanatory methods
