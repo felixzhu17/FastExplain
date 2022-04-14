@@ -32,7 +32,11 @@ def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
     )
 
     if size is not None:
-        fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
+        fig = create_secondary_axis_plotly(
+            px.line(
+                df, x=df.index, y=cols[1], color_discrete_sequence=[COLOURS["blue"]]
+            )
+        )
         fig.add_trace(
             go.Bar(
                 name="Frequency", x=df.index, y=size, marker={"color": COLOURS["grey"]}
@@ -64,11 +68,15 @@ def plot_two_one_way(df, cols, feature_names=None, plotsize=None):
         feature_names, (clean_text(cols[0]), clean_text(cols[1]), clean_text(cols[2]))
     )
 
-    fig = create_secondary_axis_plotly(px.line(df, x=df.index, y=cols[1]))
-    fig.add_trace(
-        go.Scatter(x=df.index, y=df[cols[2]]),
-        secondary_y=False,
+    fig = create_secondary_axis_plotly(
+        px.line(df, x=df.index, y=cols[1], color_discrete_sequence=[COLOURS["blue"]])
     )
+    [
+        fig.add_trace(i, secondary_y=False)
+        for i in get_plotly_express_traces(
+            px.line(df, x=df.index, y=cols[2], color_discrete_sequence=[COLOURS["red"]])
+        )
+    ]
     _two_axis_layout(fig)
     fig.update_yaxes(title_text=feature_3, secondary_y=False)
     fig.update_yaxes(title_text=feature_2, secondary_y=True)
