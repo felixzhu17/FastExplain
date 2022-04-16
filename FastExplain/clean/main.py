@@ -153,7 +153,7 @@ class PandasClean:
         if self.dep_var:
             self.y = pd.concat([self.train_y, self.val_y])
 
-        self.df = self.xs.assign(**{dep_var: self.y})
+        # self.df = self.xs.assign(**{dep_var: self.y})
 
     def _prepare_classification(self):
         y_cat = self.df[self.dep_var].astype("category")

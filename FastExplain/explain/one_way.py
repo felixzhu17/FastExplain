@@ -127,6 +127,8 @@ def get_two_way_analysis(
     col_1, col_2 = x_cols
     numeric_1 = numeric[0] if numeric[0] else check_cont_col(df[col_1])
     numeric_2 = numeric[1] if numeric[1] else check_cont_col(df[col_2])
+    df = df[~df[col_1].isna()] if numeric_1 else df
+    df = df[~df[col_2].isna()] if numeric_2 else df
     if bins:
         if len(bins) != 2:
             raise ValueError("Need two sets of bins to get two-way analysis")
@@ -213,8 +215,10 @@ def _get_one_way_analysis(
 
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col]))
+    df = df[~df[x_col].isna()] if numeric else df
     bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col, y_col]].copy()
+
     filtered_df[x_col] = (
         pd.cut(filtered_df[x_col], bins, include_lowest=True)
         if numeric
@@ -263,6 +267,7 @@ def _get_two_one_way_analysis(
 
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col]))
+    df = df[~df[x_col].isna()] if numeric else df
     bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col] + y_col].copy()
     filtered_df[x_col] = (
