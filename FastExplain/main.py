@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Optional, List, Type
+from typing import Optional, List
 from FastExplain.explain import Explain
 from FastExplain.clean import prepare_data, check_classification
 from FastExplain.models import (
@@ -81,7 +81,7 @@ class Regression(
         fill_strategy: str = "median",
         fill_const: int = 0,
         na_dummy: bool = True,
-        cont_transformations: List[Type] = [],
+        cont_transformations: List[type] = [],
         reduce_memory: bool = True,
         *args,
         **kwargs,
@@ -218,7 +218,7 @@ class Classification(
         fill_strategy: str = "median",
         fill_const: int = 0,
         na_dummy: bool = True,
-        cont_transformations: List[Type] = [],
+        cont_transformations: List[type] = [],
         reduce_memory: bool = True,
         *args,
         **kwargs,

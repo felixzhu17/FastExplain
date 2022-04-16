@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Optional, List, Type
+from typing import Optional, List
 from FastExplain.clean.encode_categorical import EncodeCategorical
 from FastExplain.clean.fill_missing import FillMissing
 from FastExplain.clean.shrink import df_shrink
@@ -24,7 +24,7 @@ def prepare_data(
     fill_strategy: str = "median",
     fill_const: int = 0,
     na_dummy: bool = True,
-    cont_transformations: List[Type] = [],
+    cont_transformations: List[type] = [],
     reduce_memory: bool = True,
     return_class=False,
 ):
@@ -79,7 +79,7 @@ class PandasClean:
         fill_strategy: str = "median",
         fill_const: int = 0,
         na_dummy: bool = True,
-        cont_transformations: List[Type] = [],
+        cont_transformations: List[type] = [],
         reduce_memory: bool = True,
     ):
         self.df = df.reset_index(drop=True)
@@ -168,10 +168,10 @@ class PandasClean:
         self.df[self.dep_var] = y_cat.cat.codes
         self.stratify = self.df[self.dep_var]
 
-    def _record_transformation(self, transform_class: Type):
+    def _record_transformation(self, transform_class: type):
         self.transformations[type(transform_class).__name__] = transform_class
 
-    def _check_transformation(self, transform_class: Type):
+    def _check_transformation(self, transform_class: type):
         if hasattr(transform_class, "fit_transform") and hasattr(
             transform_class, "transform"
         ):
