@@ -211,7 +211,7 @@ class Ale:
         return ale_summary(self.m, self.xs, *args, **kwargs)
 
     def plot_ale(self, *args, **kwargs):
-        return plot_ale(self.m, self.xs, dep_name= self.dep_var, *args, **kwargs)
+        return plot_ale(self.m, self.xs, dep_name=self.dep_var, *args, **kwargs)
 
     def plot_multi_ale(self, *args, **kwargs):
         return plot_multi_ale(self.m, self.xs, *args, **kwargs)

@@ -1,3 +1,5 @@
+import pandas as pd
+from typing import Optional, List, Union, Callable, Type
 from FastExplain.explain import Explain
 from FastExplain.clean import prepare_data, check_classification
 from FastExplain.models import (
@@ -31,11 +33,11 @@ CLASS_MODELS = {
 
 
 def model_data(
-    df,
-    dep_var,
-    cat_names=None,
-    cont_names=None,
-    model="rf",
+    df: pd.DataFrame,
+    dep_var: str,
+    cat_names: Optional[List[str]] = None,
+    cont_names: Optional[List[str]] = None,
+    model: str = "rf",
     *args,
     **kwargs,
 ):
@@ -67,20 +69,20 @@ class Regression(
 ):
     def __init__(
         self,
-        df,
-        dep_var,
-        cat_names=None,
-        cont_names=None,
-        model="rf",
-        perc_train=0.8,
-        seed=0,
-        splits=None,
-        cat_strategy="ordinal",
-        fill_strategy="median",
-        fill_const=0,
-        na_dummy=True,
-        cont_transformations=[],
-        reduce_memory=True,
+        df: pd.DataFrame,
+        dep_var: str,
+        cat_names: Optional[List[str]] = None,
+        cont_names: Optional[List[str]] = None,
+        model: str = "rf",
+        perc_train: int = 0.8,
+        seed: int = 0,
+        splits: Optional[List[List]] = None,
+        cat_strategy: str = "ordinal",
+        fill_strategy: str = "median",
+        fill_const: int = 0,
+        na_dummy: bool = True,
+        cont_transformations: List[Type] = [],
+        reduce_memory: bool = True,
         *args,
         **kwargs,
     ):
@@ -129,7 +131,7 @@ class Regression(
             self.data.train_xs.columns,
         )
 
-    def plot_one_way_error(self, col=None, *args, **kwargs):
+    def plot_one_way_error(self, col: Optional[str] = None, *args, **kwargs):
         col = col if col else self.data.dep_var
         return plot_one_way_error(
             self.data.df,
@@ -140,7 +142,7 @@ class Regression(
             **kwargs,
         )
 
-    def plot_two_way_error(self, cols, *args, **kwargs):
+    def plot_two_way_error(self, cols: List[str], *args, **kwargs):
         return plot_two_way_error(
             self.data.df,
             self.raw_error["squared_error"]["model"]["overall"],
@@ -204,20 +206,20 @@ class Classification(
 ):
     def __init__(
         self,
-        df,
-        cat_names,
-        cont_names,
-        dep_var,
-        model="rf",
-        perc_train=0.8,
-        seed=0,
-        splits=None,
-        cat_strategy="ordinal",
-        fill_strategy="median",
-        fill_const=0,
-        na_dummy=True,
-        cont_transformations=[],
-        reduce_memory=True,
+        df: pd.DataFrame,
+        dep_var: str,
+        cat_names: Optional[List[str]] = None,
+        cont_names: Optional[List[str]] = None,
+        model: str = "rf",
+        perc_train: int = 0.8,
+        seed: int = 0,
+        splits: Optional[List[List]] = None,
+        cat_strategy: str = "ordinal",
+        fill_strategy: str = "median",
+        fill_const: int = 0,
+        na_dummy: bool = True,
+        cont_transformations: List[Type] = [],
+        reduce_memory: bool = True,
         *args,
         **kwargs,
     ):
@@ -265,7 +267,7 @@ class Classification(
             self.data.train_xs.columns,
         )
 
-    def plot_auc(self, val=True, *args, **kwargs):
+    def plot_auc(self, val: bool = True, *args, **kwargs):
         if val:
             return auc(
                 self.m, self.data.val_xs, self.data.val_y, plot=True, *args, **kwargs
@@ -280,7 +282,7 @@ class Classification(
                 **kwargs,
             )
 
-    def confusion_matrix(self, val=True, *args, **kwargs):
+    def confusion_matrix(self, val: bool = True, *args, **kwargs):
         if val:
             return confusion_matrix(
                 self.m, self.data.val_xs, self.data.val_y, *args, **kwargs
@@ -288,7 +290,7 @@ class Classification(
         else:
             return confusion_matrix(self.m, self.data.xs, self.data.y, *args, **kwargs)
 
-    def plot_one_way_error(self, col=None, *args, **kwargs):
+    def plot_one_way_error(self, col: Optional[str] = None, *args, **kwargs):
         col = ifnone(col, self.data.dep_var)
         return plot_one_way_error(
             self.data.df,
@@ -298,7 +300,7 @@ class Classification(
             **kwargs,
         )
 
-    def plot_two_way_error(self, cols, *args, **kwargs):
+    def plot_two_way_error(self, cols: List[str], *args, **kwargs):
         return plot_two_way_error(
             self.data.df,
             self.raw_error["cross_entropy"]["model"]["overall"],

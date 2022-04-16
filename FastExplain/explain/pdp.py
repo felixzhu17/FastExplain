@@ -65,4 +65,4 @@ class PDP:
         self.dep_var = dep_var
 
     def plot_ice(self, *args, **kwargs):
-        return plot_ice(self.m, self.xs, dep_name= self.dep_var, *args, **kwargs)
+        return plot_ice(self.m, self.xs, dep_name=self.dep_var, *args, **kwargs)

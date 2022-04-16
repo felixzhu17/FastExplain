@@ -94,6 +94,7 @@ class PandasClean:
 
         # Check classification
         if self.dep_var:
+            check_dep_var(self.dep_var)
             self.classification = check_classification(self.df[self.dep_var])
             if self.classification:
                 self._prepare_classification()
@@ -180,3 +181,10 @@ def check_classification(y):
     if unique_y == 1:
         raise ValueError("Dependent Variable only has 1 unique value")
     return unique_y == 2
+
+
+def check_dep_var(dep_var):
+    if isinstance(dep_var, str):
+        return
+    else:
+        raise ValueError("Dependent Variable must be a string")
