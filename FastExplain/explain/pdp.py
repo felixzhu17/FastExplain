@@ -9,8 +9,8 @@ def plot_ice(
     m,
     xs,
     col,
-    feature_name=None,
     dep_name=None,
+    feature_name=None,
     plotsize=None,
     filter=None,
     sample=500,
@@ -59,9 +59,10 @@ def plot_ice(
 
 
 class PDP:
-    def __init__(self, m, xs):
+    def __init__(self, m, xs, dep_var=None):
         self.m = m
         self.xs = xs
+        self.dep_var = dep_var
 
     def plot_ice(self, *args, **kwargs):
-        return plot_ice(self.m, self.xs, *args, **kwargs)
+        return plot_ice(self.m, self.xs, dep_name= self.dep_var, *args, **kwargs)

@@ -79,8 +79,8 @@ def plot_ale(
     m,
     xs,
     col,
-    feature_name=None,
     dep_name=None,
+    feature_name=None,
     model_names=None,
     plotsize=None,
     *args,
@@ -202,15 +202,16 @@ def convert_ale_index(index, dp, percentage, condense_last):
 
 
 class Ale:
-    def __init__(self, m, xs):
+    def __init__(self, m, xs, dep_var=None):
         self.m = m
         self.xs = xs
+        self.dep_var = dep_var
 
     def ale_summary(self, *args, **kwargs):
         return ale_summary(self.m, self.xs, *args, **kwargs)
 
     def plot_ale(self, *args, **kwargs):
-        return plot_ale(self.m, self.xs, *args, **kwargs)
+        return plot_ale(self.m, self.xs, dep_name= self.dep_var, *args, **kwargs)
 
     def plot_multi_ale(self, *args, **kwargs):
         return plot_multi_ale(self.m, self.xs, *args, **kwargs)

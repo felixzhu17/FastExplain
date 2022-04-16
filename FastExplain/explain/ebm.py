@@ -73,8 +73,8 @@ def plot_ebm_explain(
     m,
     xs,
     col,
-    feature_name=None,
     dep_name=None,
+    feature_name=None,
     model_names=None,
     plotsize=None,
     *args,
@@ -150,12 +150,13 @@ def _get_ebm_explain_traces(
 
 
 class EbmExplain:
-    def __init__(self, m, xs):
+    def __init__(self, m, xs, dep_var=None):
         self.m = m
         self.xs = xs
+        self.dep_var=dep_var
 
     def ebm_explain_summary(self, *args, **kwargs):
         return ebm_explain_summary(self.m, self.xs, *args, **kwargs)
 
     def plot_ebm_explain(self, *args, **kwargs):
-        return plot_ebm_explain(self.m, self.xs, *args, **kwargs)
+        return plot_ebm_explain(self.m, self.xs, dep_name= self.dep_var, *args, **kwargs)
