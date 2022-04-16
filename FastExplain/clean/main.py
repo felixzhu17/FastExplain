@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Optional, List, Type
 from FastExplain.clean.encode_categorical import EncodeCategorical
 from FastExplain.clean.fill_missing import FillMissing
 from FastExplain.clean.shrink import df_shrink
@@ -9,20 +10,22 @@ from FastExplain.clean.split import (
 )
 
 
+
+
 def prepare_data(
-    df,
-    dep_var=None,
-    cat_names=None,
-    cont_names=None,
-    perc_train=0.8,
-    seed=0,
-    splits=None,
-    cat_strategy="ordinal",
-    fill_strategy="median",
-    fill_const=0,
-    na_dummy=True,
-    cont_transformations=[],
-    reduce_memory=True,
+    df: pd.DataFrame,
+    dep_var: str,
+    cat_names: Optional[List[str]] = None,
+    cont_names: Optional[List[str]] = None,
+    perc_train: int = 0.8,
+    seed: int = 0,
+    splits: Optional[List[List]] = None,
+    cat_strategy: str = "ordinal",
+    fill_strategy: str = "median",
+    fill_const: int = 0,
+    na_dummy: bool = True,
+    cont_transformations: List[Type] = [],
+    reduce_memory: bool = True,
     return_class=False,
 ):
     pandas_clean = PandasClean(
@@ -59,22 +62,25 @@ def prepare_data(
             )
 
 
+
+
+
 class PandasClean:
     def __init__(
         self,
-        df,
-        dep_var=None,
-        cat_names=None,
-        cont_names=None,
-        perc_train=0.8,
-        seed=0,
-        splits=None,
-        cat_strategy="ordinal",
-        fill_strategy="median",
-        fill_const=0,
-        na_dummy=True,
-        cont_transformations=[],
-        reduce_memory=True,
+        df: pd.DataFrame,
+        dep_var: str,
+        cat_names: Optional[List[str]] = None,
+        cont_names: Optional[List[str]] = None,
+        perc_train: int = 0.8,
+        seed: int = 0,
+        splits: Optional[List[List]] = None,
+        cat_strategy: str = "ordinal",
+        fill_strategy: str = "median",
+        fill_const: int = 0,
+        na_dummy: bool = True,
+        cont_transformations: List[Type] = [],
+        reduce_memory: bool = True,
     ):
         self.df = df.reset_index(drop=True)
         self.cat_mapping = {}
@@ -162,10 +168,10 @@ class PandasClean:
         self.df[self.dep_var] = y_cat.cat.codes
         self.stratify = self.df[self.dep_var]
 
-    def _record_transformation(self, transform_class):
+    def _record_transformation(self, transform_class: Type):
         self.transformations[type(transform_class).__name__] = transform_class
 
-    def _check_transformation(self, transform_class):
+    def _check_transformation(self, transform_class: Type):
         if hasattr(transform_class, "fit_transform") and hasattr(
             transform_class, "transform"
         ):

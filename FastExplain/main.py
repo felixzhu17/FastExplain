@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Optional, List, Union, Callable, Type
+from typing import Optional, List, Type
 from FastExplain.explain import Explain
 from FastExplain.clean import prepare_data, check_classification
 from FastExplain.models import (
