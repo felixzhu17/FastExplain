@@ -1,8 +1,9 @@
-import pandas as pd
+import math
 from collections import Counter
 from functools import reduce
+
 import numpy as np
-import math
+import pandas as pd
 
 
 def percent_cat_agg(series, top=None):

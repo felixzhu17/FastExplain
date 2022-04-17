@@ -1,6 +1,6 @@
-import scipy.spatial.distance as spatial_distance
-import pandas as pd
 import numpy as np
+import pandas as pd
+import scipy.spatial.distance as spatial_distance
 
 
 def get_centroid_distance(kmeans):

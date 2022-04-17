@@ -1,5 +1,6 @@
 from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
-from FastExplain.utils import check_numeric, is_rf, is_xgb, is_ebm
+
+from FastExplain.utils import check_numeric, is_ebm, is_rf, is_xgb
 
 
 def hypertune_model(

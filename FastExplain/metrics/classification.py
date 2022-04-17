@@ -1,9 +1,9 @@
+import numpy as np
 import plotly.express as px
 import plotly.figure_factory as ff
-import numpy as np
-from sklearn.metrics import roc_curve, log_loss
 from sklearn.metrics import auc as _auc
 from sklearn.metrics import confusion_matrix as _confusion_matrix
+from sklearn.metrics import log_loss, roc_curve
 
 
 def get_classification_prediction(m, xs):

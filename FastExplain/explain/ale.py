@@ -1,21 +1,14 @@
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from FastExplain.utils import (
-    COLOURS,
-    merge_multi_df,
-    clean_text,
-    cycle_colours,
-    plot_upper_lower_bound_traces,
-    get_upper_lower_bound_traces,
-    fill_list,
-    plot_two_way,
-    bin_columns,
-    ifnone,
-)
-from FastExplain.clean import check_cont_col
 from sklearn.neighbors import NearestNeighbors
-from FastExplain.explain.bin import quantile_ied, CI_estimate
+
+from FastExplain.clean import check_cont_col
+from FastExplain.explain.bin import CI_estimate, quantile_ied
+from FastExplain.utils import (COLOURS, bin_columns, clean_text, cycle_colours,
+                               fill_list, get_upper_lower_bound_traces, ifnone,
+                               merge_multi_df, plot_two_way,
+                               plot_upper_lower_bound_traces)
 
 
 def ale_summary(m, xs, col, model_names=None, *args, **kwargs):

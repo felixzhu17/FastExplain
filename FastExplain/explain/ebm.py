@@ -1,14 +1,8 @@
 import pandas as pd
-from FastExplain.utils import (
-    COLOURS,
-    merge_multi_df,
-    bin_columns,
-    clean_text,
-    cycle_colours,
-    plot_upper_lower_bound_traces,
-    get_upper_lower_bound_traces,
-    ifnone,
-)
+
+from FastExplain.utils import (COLOURS, bin_columns, clean_text, cycle_colours,
+                               get_upper_lower_bound_traces, ifnone,
+                               merge_multi_df, plot_upper_lower_bound_traces)
 
 
 def _get_ebm_index(m, col):

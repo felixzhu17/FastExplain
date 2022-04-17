@@ -1,6 +1,7 @@
-import shap
 import pandas as pd
-from FastExplain.utils import query_df_index, sample_index, ifnone
+import shap
+
+from FastExplain.utils import ifnone, query_df_index, sample_index
 
 SHAP_MAX_SAMPLES = 10_000
 

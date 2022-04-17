@@ -1,9 +1,7 @@
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from xgboost import XGBRegressor, XGBClassifier
-from interpret.glassbox import (
-    ExplainableBoostingRegressor,
-    ExplainableBoostingClassifier,
-)
+from interpret.glassbox import (ExplainableBoostingClassifier,
+                                ExplainableBoostingRegressor)
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from xgboost import XGBClassifier, XGBRegressor
 
 
 def is_xgb(m):

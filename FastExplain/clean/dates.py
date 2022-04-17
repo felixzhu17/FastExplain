@@ -1,7 +1,9 @@
-import pandas as pd
-import numpy as np
-from FastExplain.utils import ifnone
 import re
+
+import numpy as np
+import pandas as pd
+
+from FastExplain.utils import ifnone
 
 
 def make_date(df, date_field):

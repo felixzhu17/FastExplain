@@ -1,9 +1,10 @@
-from xgboost import XGBRegressor, XGBClassifier
-from FastExplain.metrics import m_cross_entropy, m_rmse
-from FastExplain.models.algorithms.hypertuning import hypertune_model
-from sklearn.utils.class_weight import compute_sample_weight
 import warnings
 
+from sklearn.utils.class_weight import compute_sample_weight
+from xgboost import XGBClassifier, XGBRegressor
+
+from FastExplain.metrics import m_cross_entropy, m_rmse
+from FastExplain.models.algorithms.hypertuning import hypertune_model
 
 XGB_DEFAULT_PARAMS = {
     "max_depth": (3, 18, True),

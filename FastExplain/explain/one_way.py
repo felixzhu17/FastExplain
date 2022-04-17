@@ -1,21 +1,16 @@
-import pandas as pd
-import numpy as np
-from scipy.stats import spearmanr
-from scipy.spatial.distance import squareform
-import scipy.cluster.hierarchy as sch
-import plotly.figure_factory as ff
-from FastExplain.explain.bin import get_bins
-from FastExplain.clean import check_cont_col
-from FastExplain.utils import (
-    conditional_mean,
-    bin_intervals,
-    plot_one_way,
-    plot_two_one_way,
-    bin_intervals,
-    plot_two_way,
-    ifnone,
-)
 import warnings
+
+import numpy as np
+import pandas as pd
+import plotly.figure_factory as ff
+import scipy.cluster.hierarchy as sch
+from scipy.spatial.distance import squareform
+from scipy.stats import spearmanr
+
+from FastExplain.clean import check_cont_col
+from FastExplain.explain.bin import get_bins
+from FastExplain.utils import (bin_intervals, conditional_mean, ifnone,
+                               plot_one_way, plot_two_one_way, plot_two_way)
 
 
 def feature_correlation(xs, plotsize=(1000, 1000)):

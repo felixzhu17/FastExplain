@@ -1,7 +1,10 @@
+from typing import List, Optional
+
 import pandas as pd
-from typing import Optional, List
+
 from FastExplain.clean import check_classification
 from FastExplain.models import Classification, Regression
+
 
 def model_data(
     df: pd.DataFrame,

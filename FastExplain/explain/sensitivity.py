@@ -1,5 +1,6 @@
-from random import sample
 import warnings
+from random import sample
+
 from FastExplain.utils import check_unequal_list, ifnone
 
 

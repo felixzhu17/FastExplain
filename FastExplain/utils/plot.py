@@ -1,9 +1,9 @@
-from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from FastExplain.utils.logic import clean_text, ifnone
+
 from FastExplain.utils.colours import COLOURS
+from FastExplain.utils.logic import clean_text, ifnone
 
 
 def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"):

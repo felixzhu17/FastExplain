@@ -1,21 +1,14 @@
+from typing import List, Optional
+
 import pandas as pd
-from typing import Optional, List
-from FastExplain.explain import Explain
+
 from FastExplain.clean import prepare_data
-from FastExplain.models.algorithms import (
-    rf_class,
-    xgb_class,
-    ebm_class,
-    get_model_parameters,
-)
-from FastExplain.metrics import (
-    get_error,
-    plot_one_way_error,
-    plot_two_way_error,
-    auc,
-    m_cross_entropy,
-    confusion_matrix,
-)
+from FastExplain.explain import Explain
+from FastExplain.metrics import (auc, confusion_matrix, get_error,
+                                 m_cross_entropy, plot_one_way_error,
+                                 plot_two_way_error)
+from FastExplain.models.algorithms import (ebm_class, get_model_parameters,
+                                           rf_class, xgb_class)
 from FastExplain.utils import ifnone
 
 CLASS_MODELS = {

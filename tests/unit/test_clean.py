@@ -1,14 +1,11 @@
-import pytest
-from FastExplain.clean import prepare_data
-from tests.params import (
-    TRAIN_SPLIT,
-    STRATIFY_ERROR_MARGIN,
-    CAT_COLS,
-    CONT_COLS,
-    CLASS_DEP_VAR,
-)
 from math import floor
+
+import pytest
 from sklearn.preprocessing import MinMaxScaler
+
+from FastExplain.clean import prepare_data
+from tests.params import (CAT_COLS, CLASS_DEP_VAR, CONT_COLS,
+                          STRATIFY_ERROR_MARGIN, TRAIN_SPLIT)
 
 
 def test_split(test_csv, rf_class_object):

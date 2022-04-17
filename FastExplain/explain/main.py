@@ -1,10 +1,10 @@
-from FastExplain.explain.one_way import OneWay
 from FastExplain.explain.ale import Ale
 from FastExplain.explain.ebm import EbmExplain
-from FastExplain.explain.pdp import PDP
-from FastExplain.explain.shap import ShapExplain
 from FastExplain.explain.importance import Importance
+from FastExplain.explain.one_way import OneWay
+from FastExplain.explain.pdp import PDP
 from FastExplain.explain.sensitivity import Sensitivity
+from FastExplain.explain.shap import ShapExplain
 
 
 class Explain(OneWay, Ale, PDP, EbmExplain, ShapExplain, Importance, Sensitivity):

@@ -1,5 +1,6 @@
-import pytest
 import pandas as pd
+import pytest
+
 from FastExplain import model_data
 from FastExplain.datasets import load_titanic_data
 from tests.params import *

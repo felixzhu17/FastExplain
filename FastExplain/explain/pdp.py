@@ -1,8 +1,9 @@
 import pandas as pd
 import plotly.express as px
-from sklearn.inspection import partial_dependence
 import plotly.graph_objects as go
-from FastExplain.utils import clean_text, COLOURS, ifnone
+from sklearn.inspection import partial_dependence
+
+from FastExplain.utils import COLOURS, clean_text, ifnone
 
 
 def plot_ice(

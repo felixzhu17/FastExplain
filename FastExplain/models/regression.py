@@ -1,24 +1,17 @@
+from typing import List, Optional
+
 import pandas as pd
-from typing import Optional, List
-from FastExplain.explain import Explain
+
 from FastExplain.clean import prepare_data
-from FastExplain.models.algorithms import (
-    rf_reg,
-    xgb_reg,
-    ebm_reg,
-    get_model_parameters,
-)
-from FastExplain.metrics import (
-    get_benchmark_error,
-    r_mse,
-    get_error,
-    m_rmse,
-    plot_one_way_error,
-    plot_two_way_error,
-)
+from FastExplain.explain import Explain
+from FastExplain.metrics import (get_benchmark_error, get_error, m_rmse,
+                                 plot_one_way_error, plot_two_way_error, r_mse)
+from FastExplain.models.algorithms import (ebm_reg, get_model_parameters,
+                                           rf_reg, xgb_reg)
 from FastExplain.utils import root_mean
 
 REG_MODELS = {"rf": rf_reg, "xgb": xgb_reg, "ebm": ebm_reg}
+
 
 class Regression(
     Explain,
@@ -155,4 +148,3 @@ class Regression(
             ),
         }
         return {"squared_error": squared_error}
-
