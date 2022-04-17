@@ -5,8 +5,11 @@ import pandas as pd
 from FastExplain.clean.encode_categorical import EncodeCategorical
 from FastExplain.clean.fill_missing import FillMissing
 from FastExplain.clean.shrink import df_shrink
-from FastExplain.clean.split import (cont_cat_split, get_train_val_split_index,
-                                     split_train_val)
+from FastExplain.clean.split import (
+    cont_cat_split,
+    get_train_val_split_index,
+    split_train_val,
+)
 
 
 def prepare_data(

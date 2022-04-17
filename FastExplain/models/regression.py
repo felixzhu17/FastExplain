@@ -4,10 +4,15 @@ import pandas as pd
 
 from FastExplain.clean import prepare_data
 from FastExplain.explain import Explain
-from FastExplain.metrics import (get_benchmark_error, get_error, m_rmse,
-                                 plot_one_way_error, plot_two_way_error, r_mse)
-from FastExplain.models.algorithms import (ebm_reg, get_model_parameters,
-                                           rf_reg, xgb_reg)
+from FastExplain.metrics import (
+    get_benchmark_error,
+    get_error,
+    m_rmse,
+    plot_one_way_error,
+    plot_two_way_error,
+    r_mse,
+)
+from FastExplain.models.algorithms import ebm_reg, get_model_parameters, rf_reg, xgb_reg
 from FastExplain.utils import root_mean
 
 REG_MODELS = {"rf": rf_reg, "xgb": xgb_reg, "ebm": ebm_reg}
