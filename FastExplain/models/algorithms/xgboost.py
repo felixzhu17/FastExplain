@@ -1,6 +1,6 @@
 from xgboost import XGBRegressor, XGBClassifier
 from FastExplain.metrics import m_cross_entropy, m_rmse
-from FastExplain.models.hypertuning import hypertune_model
+from FastExplain.models.algorithms.hypertuning import hypertune_model
 from sklearn.utils.class_weight import compute_sample_weight
 import warnings
 
