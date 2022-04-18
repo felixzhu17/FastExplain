@@ -1,5 +1,7 @@
-from interpret.glassbox import (ExplainableBoostingClassifier,
-                                ExplainableBoostingRegressor)
+from interpret.glassbox import (
+    ExplainableBoostingClassifier,
+    ExplainableBoostingRegressor,
+)
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from xgboost import XGBClassifier, XGBRegressor
 

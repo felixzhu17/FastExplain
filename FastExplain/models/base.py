@@ -5,10 +5,12 @@ import pandas as pd
 
 from FastExplain.clean import prepare_data
 from FastExplain.explain import Explain
-from FastExplain.models.algorithms import (Hypertune,
-                                           get_default_hypertune_params,
-                                           get_model_parameters,
-                                           prepare_model_class)
+from FastExplain.models.algorithms import (
+    Hypertune,
+    get_default_hypertune_params,
+    get_model_parameters,
+    prepare_model_class,
+)
 from FastExplain.utils import ifnone
 
 

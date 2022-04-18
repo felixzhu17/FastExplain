@@ -2,8 +2,14 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from FastExplain.metrics import (get_benchmark_error, get_error, m_rmse,
-                                 plot_one_way_error, plot_two_way_error, r_mse)
+from FastExplain.metrics import (
+    get_benchmark_error,
+    get_error,
+    m_rmse,
+    plot_one_way_error,
+    plot_two_way_error,
+    r_mse,
+)
 from FastExplain.models.algorithms import ebm_reg, rf_reg, xgb_reg
 from FastExplain.models.base import Model
 from FastExplain.utils import root_mean

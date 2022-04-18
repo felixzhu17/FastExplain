@@ -148,4 +148,4 @@ def get_model_parameters(m):
     elif is_ebm(m):
         return m.get_params()
     else:
-        raise TypeError
+        return "Model not supported"

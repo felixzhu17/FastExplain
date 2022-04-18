@@ -6,8 +6,13 @@ from sklearn.preprocessing import MinMaxScaler
 
 from FastExplain import model_data
 from FastExplain.clean import prepare_data
-from tests.params import (CAT_COLS, CLASS_DEP_VAR, CONT_COLS,
-                          STRATIFY_ERROR_MARGIN, TRAIN_SPLIT)
+from tests.params import (
+    CAT_COLS,
+    CLASS_DEP_VAR,
+    CONT_COLS,
+    STRATIFY_ERROR_MARGIN,
+    TRAIN_SPLIT,
+)
 
 
 def test_split(test_csv, rf_class_object):
@@ -82,3 +87,14 @@ def test_custom_model(test_csv):
         model=RandomForestClassifier,
     )
     assert hasattr(custom_model, "m")
+
+
+def test_hypertune_defaults(test_csv):
+    custom_model = model_data(
+        test_csv,
+        dep_var=CLASS_DEP_VAR,
+        model="rf",
+        hypertune=True,
+        min_impurity_decrease=1,
+    )
+    assert custom_model.params["min_impurity_decrease"] == 1

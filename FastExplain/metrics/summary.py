@@ -1,5 +1,4 @@
-from FastExplain.explain.one_way import (get_one_way_analysis,
-                                         get_two_way_analysis)
+from FastExplain.explain.one_way import get_one_way_analysis, get_two_way_analysis
 from FastExplain.utils import plot_one_way, plot_two_way
 
 

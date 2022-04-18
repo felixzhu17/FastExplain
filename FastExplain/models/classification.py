@@ -2,10 +2,16 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from FastExplain.metrics import (auc, confusion_matrix, cross_entropy,
-                                 get_benchmark_error, get_error,
-                                 m_cross_entropy, plot_one_way_error,
-                                 plot_two_way_error)
+from FastExplain.metrics import (
+    auc,
+    confusion_matrix,
+    cross_entropy,
+    get_benchmark_error,
+    get_error,
+    m_cross_entropy,
+    plot_one_way_error,
+    plot_two_way_error,
+)
 from FastExplain.models.algorithms import ebm_class, rf_class, xgb_class
 from FastExplain.models.base import Model
 from FastExplain.utils import ifnone
