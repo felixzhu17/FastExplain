@@ -1,9 +1,3 @@
-RF_DEFAULT_PARAMS = {
-    "n_estimators": 40,
-    "max_features": 0.5,
-    "min_samples_leaf": 5,
-}
-
 RF_DEFAULT_HYPERTUNE_PARAMS = {
     "n_estimators": (40, 200, True),
     "max_features": (0.1, 1, False),
@@ -20,3 +14,12 @@ XGB_DEFAULT_HYPERTUNE_PARAMS = {
     "subsample": (0.1, 1, False),
     "min_child_weight": (0.01, 1, False),
 }
+
+
+def get_default_hypertune_params(model):
+    if model == "rf":
+        return RF_DEFAULT_HYPERTUNE_PARAMS
+    elif model == "xgb":
+        return XGB_DEFAULT_HYPERTUNE_PARAMS
+    else:
+        return None

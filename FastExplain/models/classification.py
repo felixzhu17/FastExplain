@@ -1,23 +1,19 @@
-from typing import List, Optional
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from FastExplain.clean import prepare_data
-from FastExplain.explain import Explain
 from FastExplain.metrics import (
     auc,
     confusion_matrix,
+    cross_entropy,
+    get_benchmark_error,
     get_error,
     m_cross_entropy,
     plot_one_way_error,
     plot_two_way_error,
 )
-from FastExplain.models.algorithms import (
-    ebm_class,
-    get_model_parameters,
-    rf_class,
-    xgb_class,
-)
+from FastExplain.models.algorithms import ebm_class, rf_class, xgb_class
+from FastExplain.models.base import Model
 from FastExplain.utils import ifnone
 
 CLASS_MODELS = {
@@ -27,16 +23,14 @@ CLASS_MODELS = {
 }
 
 
-class Classification(
-    Explain,
-):
+class Classification(Model):
     def __init__(
         self,
         df: pd.DataFrame,
         dep_var: str,
         cat_names: Optional[List[str]] = None,
         cont_names: Optional[List[str]] = None,
-        model: str = "rf",
+        model: Union[str, type, Callable] = "rf",
         perc_train: int = 0.8,
         seed: int = 0,
         splits: Optional[List[List]] = None,
@@ -46,15 +40,22 @@ class Classification(
         na_dummy: bool = True,
         cont_transformations: List[type] = [],
         reduce_memory: bool = True,
-        *args,
-        **kwargs,
+        hypertune=False,
+        hypertune_max_evals=100,
+        hypertune_params=None,
+        hypertune_loss_metric=None,
+        *model_args,
+        **model_kwargs,
     ):
 
-        self.data = prepare_data(
+        Model.__init__(
+            self,
             df=df,
+            dep_var=dep_var,
             cat_names=cat_names,
             cont_names=cont_names,
-            dep_var=dep_var,
+            model=model,
+            default_models=CLASS_MODELS,
             perc_train=perc_train,
             seed=seed,
             splits=splits,
@@ -64,33 +65,12 @@ class Classification(
             na_dummy=na_dummy,
             cont_transformations=cont_transformations,
             reduce_memory=reduce_memory,
-            return_class=True,
-        )
-
-        if model in CLASS_MODELS:
-
-            self.m = CLASS_MODELS[model](
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                *args,
-                **kwargs,
-            )
-        else:
-            raise ValueError(f"Model can only be one of {', '. join(CLASS_MODELS)}")
-
-        self.error = self._get_error()
-        self.raw_error = self._get_raw_error()
-        self.params = get_model_parameters(self.m)
-
-        Explain.__init__(
-            self,
-            self.m,
-            self.data.xs,
-            self.data.df,
-            self.data.dep_var,
-            self.data.train_xs.columns,
+            hypertune=hypertune,
+            hypertune_max_evals=hypertune_max_evals,
+            hypertune_params=hypertune_params,
+            hypertune_loss_metric=hypertune_loss_metric,
+            *model_args,
+            **model_kwargs,
         )
 
     def plot_auc(self, val: bool = True, *args, **kwargs):
@@ -150,7 +130,15 @@ class Classification(
             ),
         }
 
-        cross_entropy = {
+        cross_entropy_error = {
+            "benchmark": get_benchmark_error(
+                cross_entropy,
+                self.benchmark,
+                self.data.train_y,
+                self.data.val_y,
+                self.data.y,
+                True,
+            ),
             "model": get_error(
                 m_cross_entropy,
                 self.m,
@@ -161,13 +149,21 @@ class Classification(
                 self.data.xs,
                 self.data.y,
                 True,
-            )
+            ),
         }
 
-        return {"auc": auc_score, "cross_entropy": cross_entropy}
+        return {"auc": auc_score, "cross_entropy": cross_entropy_error}
 
     def _get_raw_error(self):
         cross_entropy_prob = {
+            "benchmark": get_benchmark_error(
+                cross_entropy,
+                self.benchmark,
+                self.data.train_y,
+                self.data.val_y,
+                self.data.y,
+                False,
+            ),
             "model": get_error(
                 m_cross_entropy,
                 self.m,
@@ -178,6 +174,6 @@ class Classification(
                 self.data.xs,
                 self.data.y,
                 False,
-            )
+            ),
         }
         return {"cross_entropy": cross_entropy_prob}

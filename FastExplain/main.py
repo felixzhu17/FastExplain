@@ -43,7 +43,7 @@ def model_data(
             cont_transformations=cont_transformations,
             reduce_memory=reduce_memory,
             *args,
-            **kwargs
+            **kwargs,
         )
     else:
         return Regression(
@@ -62,5 +62,5 @@ def model_data(
             cont_transformations=cont_transformations,
             reduce_memory=reduce_memory,
             *args,
-            **kwargs
+            **kwargs,
         )

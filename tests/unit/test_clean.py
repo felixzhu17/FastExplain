@@ -1,8 +1,10 @@
 from math import floor
 
 import pytest
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import MinMaxScaler
 
+from FastExplain import model_data
 from FastExplain.clean import prepare_data
 from tests.params import (
     CAT_COLS,
@@ -76,3 +78,23 @@ def test_custom_transformation(test_csv):
     )
     assert min_max_transform.train_xs.Age.max() == 1
     assert min_max_transform.train_xs.Age.min() == 0
+
+
+def test_custom_model(test_csv):
+    custom_model = model_data(
+        test_csv,
+        dep_var=CLASS_DEP_VAR,
+        model=RandomForestClassifier,
+    )
+    assert hasattr(custom_model, "m")
+
+
+def test_hypertune_defaults(test_csv):
+    custom_model = model_data(
+        test_csv,
+        dep_var=CLASS_DEP_VAR,
+        model="rf",
+        hypertune=True,
+        min_impurity_decrease=1,
+    )
+    assert custom_model.params["min_impurity_decrease"] == 1

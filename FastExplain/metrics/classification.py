@@ -1,9 +1,11 @@
+from collections.abc import Iterable
+
 import numpy as np
 import plotly.express as px
 import plotly.figure_factory as ff
 from sklearn.metrics import auc as _auc
 from sklearn.metrics import confusion_matrix as _confusion_matrix
-from sklearn.metrics import log_loss, roc_curve
+from sklearn.metrics import roc_curve
 
 
 def get_classification_prediction(m, xs):
@@ -21,6 +23,9 @@ def _cross_entropy(pred, y, eps=1e-15):
 
 
 def cross_entropy(pred, y, mean=True, eps=1e-15):
+
+    if not isinstance(pred, Iterable):
+        pred = [pred for i in y]
     if mean:
         return np.mean([_cross_entropy(i, j, eps) for i, j in zip(pred, y)])
     else:
