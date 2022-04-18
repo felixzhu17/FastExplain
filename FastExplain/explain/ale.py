@@ -5,18 +5,10 @@ from sklearn.neighbors import NearestNeighbors
 
 from FastExplain.clean import check_cont_col
 from FastExplain.explain.bin import CI_estimate, quantile_ied
-from FastExplain.utils import (
-    COLOURS,
-    bin_columns,
-    clean_text,
-    cycle_colours,
-    fill_list,
-    get_upper_lower_bound_traces,
-    ifnone,
-    merge_multi_df,
-    plot_two_way,
-    plot_upper_lower_bound_traces,
-)
+from FastExplain.utils import (COLOURS, bin_columns, clean_text, cycle_colours,
+                               fill_list, get_upper_lower_bound_traces, ifnone,
+                               merge_multi_df, plot_two_way,
+                               plot_upper_lower_bound_traces)
 
 
 def ale_summary(m, xs, col, model_names=None, *args, **kwargs):

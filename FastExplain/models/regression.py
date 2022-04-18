@@ -1,25 +1,18 @@
-from typing import List, Optional
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from FastExplain.clean import prepare_data
-from FastExplain.explain import Explain
-from FastExplain.metrics import (
-    get_benchmark_error,
-    get_error,
-    m_rmse,
-    plot_one_way_error,
-    plot_two_way_error,
-    r_mse,
-)
-from FastExplain.models.algorithms import ebm_reg, get_model_parameters, rf_reg, xgb_reg
+from FastExplain.metrics import (get_benchmark_error, get_error, m_rmse,
+                                 plot_one_way_error, plot_two_way_error, r_mse)
+from FastExplain.models.algorithms import ebm_reg, rf_reg, xgb_reg
+from FastExplain.models.base import Model
 from FastExplain.utils import root_mean
 
 REG_MODELS = {"rf": rf_reg, "xgb": xgb_reg, "ebm": ebm_reg}
 
 
 class Regression(
-    Explain,
+    Model,
 ):
     def __init__(
         self,
@@ -27,7 +20,7 @@ class Regression(
         dep_var: str,
         cat_names: Optional[List[str]] = None,
         cont_names: Optional[List[str]] = None,
-        model: str = "rf",
+        model: Union[str, type, Callable] = "rf",
         perc_train: int = 0.8,
         seed: int = 0,
         splits: Optional[List[List]] = None,
@@ -37,15 +30,22 @@ class Regression(
         na_dummy: bool = True,
         cont_transformations: List[type] = [],
         reduce_memory: bool = True,
-        *args,
-        **kwargs,
+        hypertune=False,
+        hypertune_max_evals=100,
+        hypertune_params=None,
+        hypertune_loss_metric=None,
+        *model_args,
+        **model_kwargs,
     ):
 
-        self.data = prepare_data(
+        Model.__init__(
+            self,
             df=df,
             dep_var=dep_var,
             cat_names=cat_names,
             cont_names=cont_names,
+            model=model,
+            default_models=REG_MODELS,
             perc_train=perc_train,
             seed=seed,
             splits=splits,
@@ -55,34 +55,12 @@ class Regression(
             na_dummy=na_dummy,
             cont_transformations=cont_transformations,
             reduce_memory=reduce_memory,
-            return_class=True,
-        )
-
-        self.benchmark = self.data.train_y.mean()
-        if model in REG_MODELS:
-            self.m = REG_MODELS[model](
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                *args,
-                **kwargs,
-            )
-        else:
-            raise ValueError(f"Model can only be one of {', '. join(REG_MODELS)}")
-
-        self.error = self._get_error()
-        self.raw_error = self._get_raw_error()
-
-        self.params = get_model_parameters(self.m)
-
-        Explain.__init__(
-            self,
-            self.m,
-            self.data.xs,
-            self.data.df,
-            self.data.dep_var,
-            self.data.train_xs.columns,
+            hypertune=hypertune,
+            hypertune_max_evals=hypertune_max_evals,
+            hypertune_params=hypertune_params,
+            hypertune_loss_metric=hypertune_loss_metric,
+            *model_args,
+            **model_kwargs,
         )
 
     def plot_one_way_error(self, col: Optional[str] = None, *args, **kwargs):

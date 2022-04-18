@@ -1,7 +1,5 @@
-from interpret.glassbox import (
-    ExplainableBoostingClassifier,
-    ExplainableBoostingRegressor,
-)
+from interpret.glassbox import (ExplainableBoostingClassifier,
+                                ExplainableBoostingRegressor)
 
 
 def ebm_reg(xs, y, val_xs=None, val_y=None, *args, **kwargs):

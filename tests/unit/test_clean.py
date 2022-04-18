@@ -1,16 +1,13 @@
 from math import floor
 
 import pytest
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import MinMaxScaler
 
+from FastExplain import model_data
 from FastExplain.clean import prepare_data
-from tests.params import (
-    CAT_COLS,
-    CLASS_DEP_VAR,
-    CONT_COLS,
-    STRATIFY_ERROR_MARGIN,
-    TRAIN_SPLIT,
-)
+from tests.params import (CAT_COLS, CLASS_DEP_VAR, CONT_COLS,
+                          STRATIFY_ERROR_MARGIN, TRAIN_SPLIT)
 
 
 def test_split(test_csv, rf_class_object):
@@ -76,3 +73,12 @@ def test_custom_transformation(test_csv):
     )
     assert min_max_transform.train_xs.Age.max() == 1
     assert min_max_transform.train_xs.Age.min() == 0
+
+
+def test_custom_model(test_csv):
+    custom_model = model_data(
+        test_csv,
+        dep_var=CLASS_DEP_VAR,
+        model=RandomForestClassifier,
+    )
+    assert hasattr(custom_model, "m")

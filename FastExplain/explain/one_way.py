@@ -9,14 +9,8 @@ from scipy.stats import spearmanr
 
 from FastExplain.clean import check_cont_col
 from FastExplain.explain.bin import get_bins
-from FastExplain.utils import (
-    bin_intervals,
-    conditional_mean,
-    ifnone,
-    plot_one_way,
-    plot_two_one_way,
-    plot_two_way,
-)
+from FastExplain.utils import (bin_intervals, conditional_mean, ifnone,
+                               plot_one_way, plot_two_one_way, plot_two_way)
 
 
 def feature_correlation(xs, plotsize=(1000, 1000)):
