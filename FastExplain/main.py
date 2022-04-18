@@ -12,6 +12,15 @@ def model_data(
     cat_names: Optional[List[str]] = None,
     cont_names: Optional[List[str]] = None,
     model: str = "rf",
+    perc_train: int = 0.8,
+    seed: int = 0,
+    splits: Optional[List[List]] = None,
+    cat_strategy: str = "ordinal",
+    fill_strategy: str = "median",
+    fill_const: int = 0,
+    na_dummy: bool = True,
+    cont_transformations: List[type] = [],
+    reduce_memory: bool = True,
     *args,
     **kwargs,
 ):
@@ -23,8 +32,17 @@ def model_data(
             cat_names=cat_names,
             cont_names=cont_names,
             model=model,
+            perc_train=perc_train,
+            seed=seed,
+            splits=splits,
+            cat_strategy=cat_strategy,
+            fill_strategy=fill_strategy,
+            fill_const=fill_const,
+            na_dummy=na_dummy,
+            cont_transformations=cont_transformations,
+            reduce_memory=reduce_memory,
             *args,
-            **kwargs,
+            **kwargs
         )
     else:
         return Regression(
@@ -33,6 +51,15 @@ def model_data(
             cat_names=cat_names,
             cont_names=cont_names,
             model=model,
+            perc_train=perc_train,
+            seed=seed,
+            splits=splits,
+            cat_strategy=cat_strategy,
+            fill_strategy=fill_strategy,
+            fill_const=fill_const,
+            na_dummy=na_dummy,
+            cont_transformations=cont_transformations,
+            reduce_memory=reduce_memory,
             *args,
-            **kwargs,
+            **kwargs
         )

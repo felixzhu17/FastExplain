@@ -1,15 +1,8 @@
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
 from FastExplain.metrics import m_cross_entropy, m_rmse
+from FastExplain.models.algorithms.params import RF_DEFAULT_HYPERTUNE_PARAMS
 from FastExplain.models.algorithms.hypertuning import hypertune_model
-
-RF_DEFAULT_PARAMS = {
-    "n_estimators": (40, 200, True),
-    "max_features": (0.1, 1, False),
-    "min_samples_leaf": (0.001, 0.1, False),
-    "min_samples_split": (0.001, 0.1, False),
-}
-
 
 def rf_reg(
     xs,
@@ -18,7 +11,7 @@ def rf_reg(
     val_y=None,
     hypertune=False,
     max_evals=100,
-    hypertune_params=RF_DEFAULT_PARAMS,
+    hypertune_params=RF_DEFAULT_HYPERTUNE_PARAMS,
     n_estimators=40,
     max_features=0.5,
     min_samples_leaf=5,
@@ -56,7 +49,7 @@ def rf_class(
     val_y=None,
     hypertune=False,
     max_evals=100,
-    hypertune_params=RF_DEFAULT_PARAMS,
+    hypertune_params=RF_DEFAULT_HYPERTUNE_PARAMS,
     n_estimators=40,
     max_features=0.5,
     min_samples_leaf=5,

@@ -4,17 +4,8 @@ from sklearn.utils.class_weight import compute_sample_weight
 from xgboost import XGBClassifier, XGBRegressor
 
 from FastExplain.metrics import m_cross_entropy, m_rmse
+from FastExplain.models.algorithms.params import XGB_DEFAULT_HYPERTUNE_PARAMS
 from FastExplain.models.algorithms.hypertuning import hypertune_model
-
-XGB_DEFAULT_PARAMS = {
-    "max_depth": (3, 18, True),
-    "gamma": (0, 10, False),
-    "colsample_bytree": (0.3, 1, False),
-    "colsample_bylevel": (0.3, 1, False),
-    "learning_rate": (0.05, 0.3, False),
-    "subsample": (0.1, 1, False),
-    "min_child_weight": (0.01, 1, False),
-}
 
 
 def xgb_reg(
@@ -24,7 +15,7 @@ def xgb_reg(
     val_y=None,
     hypertune=False,
     max_evals=100,
-    hypertune_params=XGB_DEFAULT_PARAMS,
+    hypertune_params=XGB_DEFAULT_HYPERTUNE_PARAMS,
     *args,
     **kwargs
 ):
@@ -53,7 +44,7 @@ def xgb_class(
     val_y=None,
     hypertune=False,
     max_evals=100,
-    hypertune_params=XGB_DEFAULT_PARAMS,
+    hypertune_params=XGB_DEFAULT_HYPERTUNE_PARAMS,
     *args,
     **kwargs
 ):
