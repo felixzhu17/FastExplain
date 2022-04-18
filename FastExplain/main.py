@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import pandas as pd
 
-from FastExplain.clean import check_classification
+from FastExplain.clean import check_classification, check_dep_var
 from FastExplain.models import Classification, Regression
 
 
@@ -24,6 +24,7 @@ def model_data(
     *args,
     **kwargs,
 ):
+    check_dep_var(dep_var)
     classification = check_classification(df[dep_var])
     if classification:
         return Classification(
