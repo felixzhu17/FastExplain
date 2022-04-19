@@ -44,7 +44,11 @@ def plot_ice(
     )
     fig.update_traces(showlegend=False)
     feature_name = ifnone(feature_name, clean_text(col))
-    title = f"ICE Plot of {feature_name} vs {clean_text(dep_name)}" if dep_name else f"ICE Plot of {feature_name}" 
+    title = (
+        f"ICE Plot of {feature_name} vs {clean_text(dep_name)}"
+        if dep_name
+        else f"ICE Plot of {feature_name}"
+    )
     fig.update_layout(
         title=title,
         xaxis_title=feature_name,
@@ -52,9 +56,7 @@ def plot_ice(
     )
     if dep_name:
         fig.update_layout(yaxis_title=clean_text(dep_name))
-        
-    
-    
+
     if plotsize:
         fig.update_layout(
             width=plotsize[0],

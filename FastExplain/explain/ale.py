@@ -139,8 +139,12 @@ def plot_ale(
         y_axis_title=dep_name,
         plotsize=plotsize,
     )
-    
-    title = f"ALE {feature_name} vs {clean_text(dep_name)}" if dep_name else f"ALE {feature_name}" 
+
+    title = (
+        f"ALE {feature_name} vs {clean_text(dep_name)}"
+        if dep_name
+        else f"ALE {feature_name}"
+    )
     fig.update_layout(
         title=title,
     )
@@ -187,18 +191,24 @@ def plot_2d_ale(
     condense_last=True,
     plotsize=None,
     colorscale="Blues",
-    dep_name = None,
+    dep_name=None,
     *args,
     **kwargs,
 ):
 
-    feature_1, feature_2 = feature_names if feature_names is not None else clean_text(cols[0]), clean_text(cols[1]) 
+    feature_1, feature_2 = feature_names if feature_names is not None else clean_text(
+        cols[0]
+    ), clean_text(cols[1])
     df = _aleplot_2D_continuous(xs, m, cols, *args, **kwargs)
     df = df - df.min().min()
     df.index = convert_ale_index(df.index, dp, percentage, condense_last)
     df.columns = convert_ale_index(df.columns, dp, percentage, condense_last)
     fig = plot_two_way(df, cols, feature_names, plotsize, colorscale)
-    title = f"ALE {feature_1} and {feature_2} vs {clean_text(dep_name)}" if dep_name else f"ALE {feature_1} and {feature_2}" 
+    title = (
+        f"ALE {feature_1} and {feature_2} vs {clean_text(dep_name)}"
+        if dep_name
+        else f"ALE {feature_1} and {feature_2}"
+    )
     fig.update_layout(
         title=title,
     )

@@ -78,10 +78,10 @@ def plot_two_one_way(df, cols, feature_names=None, plotsize=None):
         )
     ]
     _two_axis_layout(fig)
-    fig['data'][0]['name'] = feature_2
-    fig['data'][0]['showlegend']=True
-    fig['data'][1]['name'] = feature_3
-    fig['data'][1]['showlegend']=True
+    fig["data"][0]["name"] = feature_2
+    fig["data"][0]["showlegend"] = True
+    fig["data"][1]["name"] = feature_3
+    fig["data"][1]["showlegend"] = True
     fig.update_yaxes(title_text=feature_3, secondary_y=False)
     fig.update_yaxes(title_text=feature_2, secondary_y=True)
 

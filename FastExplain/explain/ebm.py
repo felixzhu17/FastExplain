@@ -126,7 +126,7 @@ def plot_ebm_explain(
             **kwargs,
         )
 
-    fig =  plot_upper_lower_bound_traces(
+    fig = plot_upper_lower_bound_traces(
         traces,
         x,
         size,
@@ -134,11 +134,16 @@ def plot_ebm_explain(
         y_axis_title=dep_name,
         plotsize=plotsize,
     )
-    title = f"EBM {feature_name} vs {clean_text(dep_name)}" if dep_name else f"EBM {feature_name}" 
+    title = (
+        f"EBM {feature_name} vs {clean_text(dep_name)}"
+        if dep_name
+        else f"EBM {feature_name}"
+    )
     fig.update_layout(
         title=title,
     )
     return fig
+
 
 def _get_ebm_explain_traces(
     m, xs, col, model_name, color, return_index_size=True, *args, **kwargs
