@@ -58,6 +58,7 @@ classification.error
 - Random Forest
 - XGBoost
 - Explainable Boosting Machine
+- ANY Model Class with *fit* and *predict* attributes
 
 ## Exploratory Methods Supported:
 - One-way Analysis
