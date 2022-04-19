@@ -61,7 +61,6 @@ def prepare_model_class(model_fit_func):
 
     return func
 
-
 def _check_model_fit_func(model_fit_func: type):
     if hasattr(model_fit_func, "fit") and hasattr(model_fit_func, "predict"):
         return
