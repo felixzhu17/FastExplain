@@ -162,7 +162,6 @@ def plot_upper_lower_bound_traces(
             height=plotsize[1],
         )
     _two_axis_layout(fig)
-
     fig.update_xaxes(title_text=x_axis_title)
     fig.update_yaxes(title_text="Frequency", secondary_y=False)
     if y_axis_title:
