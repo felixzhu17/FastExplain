@@ -57,7 +57,7 @@ def _clean_ale(
     xs = xs.query(filter) if filter else xs
     numeric = ifnone(numeric, check_cont_col(xs[col]))
     bins = bins if numeric else sorted(list(xs[col].unique()))
-    df = aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
+    df = _aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
     df = df[~df.index.duplicated(keep="last")]
     adjust = -1 * df.iloc[0]["eff"]
     df["eff"] += adjust
@@ -184,7 +184,7 @@ def plot_2d_ale(
     *args,
     **kwargs,
 ):
-    df = aleplot_2D_continuous(xs, m, cols, *args, **kwargs)
+    df = _aleplot_2D_continuous(xs, m, cols, *args, **kwargs)
     df = df - df.min().min()
     df.index = convert_ale_index(df.index, dp, percentage, condense_last)
     df.columns = convert_ale_index(df.columns, dp, percentage, condense_last)
@@ -221,10 +221,12 @@ class Ale:
         return plot_2d_ale(self.m, self.xs, *args, **kwargs)
 
 
-def aleplot_1D_continuous(
+def _aleplot_1D_continuous(
     X, model, feature, grid_size=20, bins=None, include_CI=True, C=0.95
 ):
-    """Compute the accumulated local effect of a numeric continuous feature.
+    """
+    https://github.com/DanaJomar/PyALE
+    Compute the accumulated local effect of a numeric continuous feature.
 
     This function divides the feature in question into grid_size intervals (bins)
     and computes the difference in prediction between the first and last value
@@ -293,8 +295,10 @@ def aleplot_1D_continuous(
     return res_df
 
 
-def aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
-    """Compute the two dimentional accumulated local effect of a two numeric continuous features.
+def _aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
+    """
+    https://github.com/DanaJomar/PyALE
+    Compute the two dimentional accumulated local effect of a two numeric continuous features.
 
     This function divides the space of the two features into a grid of size
     grid_size*grid_size and computes the difference in prediction between the four
