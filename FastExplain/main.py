@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
@@ -11,7 +11,7 @@ def model_data(
     dep_var: str,
     cat_names: Optional[List[str]] = None,
     cont_names: Optional[List[str]] = None,
-    model: str = "rf",
+    model: Union[str, type, Callable] = "rf",
     perc_train: int = 0.8,
     seed: int = 0,
     splits: Optional[List[List]] = None,

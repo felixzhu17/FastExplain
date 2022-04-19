@@ -47,7 +47,7 @@ class Classification(Model):
         *model_args,
         **model_kwargs,
     ):
-        self.classification=True
+        self.classification = True
         Model.__init__(
             self,
             df=df,

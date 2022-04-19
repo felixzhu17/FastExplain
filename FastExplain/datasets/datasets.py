@@ -13,4 +13,3 @@ def load_titanic_data():
         return pd.read_csv(TITANIC_CSV_PATH)
     except:
         return pd.read_csv(TITANIC_URL)
-

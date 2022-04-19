@@ -43,7 +43,7 @@ class Regression(
         *model_args,
         **model_kwargs,
     ):
-        self.classification=False
+        self.classification = False
         Model.__init__(
             self,
             df=df,
