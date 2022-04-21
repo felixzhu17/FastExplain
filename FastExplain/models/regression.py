@@ -72,9 +72,9 @@ class Regression(
     def plot_one_way_error(self, col: Optional[str] = None, *args, **kwargs):
         col = col if col else self.data.dep_var
         return plot_one_way_error(
-            self.data.df,
-            self.raw_error["squared_error"]["model"]["overall"],
-            col,
+            df=self.data.df,
+            error=self.raw_error["squared_error"]["model"]["overall"],
+            x_col=col,
             func=root_mean,
             *args,
             **kwargs,
@@ -82,9 +82,9 @@ class Regression(
 
     def plot_two_way_error(self, cols: List[str], *args, **kwargs):
         return plot_two_way_error(
-            self.data.df,
-            self.raw_error["squared_error"]["model"]["overall"],
-            cols,
+            df=self.data.df,
+            error=self.raw_error["squared_error"]["model"]["overall"],
+            x_cols=cols,
             func=root_mean,
             *args,
             **kwargs,
@@ -93,23 +93,23 @@ class Regression(
     def _get_error(self):
         rmse = {
             "benchmark": get_benchmark_error(
-                r_mse,
-                self.benchmark,
-                self.data.train_y,
-                self.data.val_y,
-                self.data.y,
-                True,
+                func=r_mse,
+                benchmark=self.benchmark,
+                train_y=self.data.train_y,
+                val_y=self.data.val_y,
+                y=self.data.y,
+                mean=True,
             ),
             "model": get_error(
-                m_rmse,
-                self.m,
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                self.data.xs,
-                self.data.y,
-                True,
+                func=m_rmse,
+                m=self.m,
+                train_xs=self.data.train_xs,
+                train_y=self.data.train_y,
+                val_xs=self.data.val_xs,
+                val_y=self.data.val_y,
+                xs=self.data.xs,
+                y=self.data.y,
+                mean=True,
             ),
         }
         return {"rmse": rmse}
@@ -117,23 +117,23 @@ class Regression(
     def _get_raw_error(self):
         squared_error = {
             "benchmark": get_benchmark_error(
-                r_mse,
-                self.benchmark,
-                self.data.train_y,
-                self.data.val_y,
-                self.data.y,
-                False,
+                func=r_mse,
+                benchmark=self.benchmark,
+                train_y=self.data.train_y,
+                val_y=self.data.val_y,
+                y=self.data.y,
+                mean=False,
             ),
             "model": get_error(
-                m_rmse,
-                self.m,
-                self.data.train_xs,
-                self.data.train_y,
-                self.data.val_xs,
-                self.data.val_y,
-                self.data.xs,
-                self.data.y,
-                False,
+                func=m_rmse,
+                m=self.m,
+                train_xs=self.data.train_xs,
+                train_y=self.data.train_y,
+                val_xs=self.data.val_xs,
+                val_y=self.data.val_y,
+                xs=self.data.xs,
+                y=self.data.y,
+                mean=False,
             ),
         }
         return {"squared_error": squared_error}

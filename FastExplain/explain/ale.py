@@ -97,11 +97,11 @@ def plot_ale(
             model, x_values, model_name, color = ale_info
             if count == 0:
                 traces, x, size = _get_ale_traces(
-                    model,
-                    x_values,
-                    col,
-                    model_name,
-                    color,
+                    m=model,
+                    xs=x_values,
+                    col=col,
+                    model_name=model_name,
+                    color=color,
                     return_index_size=True,
                     *args,
                     **kwargs,
@@ -109,11 +109,11 @@ def plot_ale(
             else:
                 traces.extend(
                     _get_ale_traces(
-                        model,
-                        x_values,
-                        col,
-                        model_name,
-                        color,
+                        m=model,
+                        xs=x_values,
+                        col=col,
+                        model_name=model_name,
+                        color=color,
                         return_index_size=False,
                         *args,
                         **kwargs,
@@ -121,11 +121,11 @@ def plot_ale(
                 )
     else:
         traces, x, size = _get_ale_traces(
-            m,
-            xs,
-            col,
-            feature_name,
-            COLOURS["blue"],
+            m=m,
+            xs=xs,
+            col=col,
+            model_name=feature_name,
+            color=COLOURS["blue"],
             return_index_size=True,
             *args,
             **kwargs,
