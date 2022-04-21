@@ -98,3 +98,6 @@ def test_hypertune_defaults(test_csv):
         min_impurity_decrease=1,
     )
     assert custom_model.params["min_impurity_decrease"] == 1
+
+def test_empty_clean(test_csv):
+    

@@ -17,7 +17,10 @@ def get_train_val_split_index(df, perc_train, seed=0, stratify=None):
 
 
 def split_train_val(xs, y, splits):
-    return xs.loc[splits[0]], y.loc[splits[0]], xs.loc[splits[1]], y.loc[splits[1]]
+    if y is None:
+        return xs.loc[splits[0]], xs.loc[splits[1]]
+    else:
+        return xs.loc[splits[0]], y.loc[splits[0]], xs.loc[splits[1]], y.loc[splits[1]]
 
 
 def cont_cat_split(dfs, max_card=20, dep_var=None):

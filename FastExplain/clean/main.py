@@ -14,7 +14,7 @@ from FastExplain.clean.split import (
 
 def prepare_data(
     df: pd.DataFrame,
-    dep_var: str,
+    dep_var: Optional[str] = None,
     cat_names: Optional[List[str]] = None,
     cont_names: Optional[List[str]] = None,
     perc_train: int = 0.8,
@@ -26,7 +26,7 @@ def prepare_data(
     na_dummy: bool = True,
     cont_transformations: List[type] = [],
     reduce_memory: bool = True,
-    return_class=False,
+    return_class=True,
 ):
     pandas_clean = PandasClean(
         df=df,
@@ -92,8 +92,8 @@ class PandasClean:
             self.df = df_shrink(self.df, int2uint=True)
 
         cont, cat = cont_cat_split(df, dep_var=self.dep_var)
-        self.cat_names = cat_names.copy() if cat_names else cat.copy()
-        self.cont_names = cont_names.copy() if cont_names else cont.copy()
+        self.cat_names = cat.copy() if cat_names is None else cat_names
+        self.cont_names = cont.copy() if cont_names is None else cont_names
 
         # Check classification
         if self.dep_var:
@@ -124,9 +124,15 @@ class PandasClean:
             self.splits = get_train_val_split_index(
                 self.df, self.perc_train, seed=self.seed, stratify=self.stratify
             )
-        self.train_xs, self.train_y, self.val_xs, self.val_y = split_train_val(
-            self.xs, self.y, self.splits
-        )
+        if self.dep_var:
+            self.train_xs, self.train_y, self.val_xs, self.val_y = split_train_val(
+                xs=self.xs, y=self.y, splits=self.splits
+            )
+        else:
+            (
+                self.train_xs,
+                self.val_xs,
+            ) = split_train_val(xs=self.xs, y=None, splits=self.splits)
 
         # Fill Missing
         fill_missing = FillMissing(
