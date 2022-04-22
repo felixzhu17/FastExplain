@@ -143,9 +143,9 @@ def plot_ale(
     )
     main_title = ifnone(main_title, title)
     fig = plot_upper_lower_bound_traces(
-        traces,
-        x,
-        size,
+        traces=traces,
+        x=x,
+        size=size,
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
@@ -164,7 +164,14 @@ def _get_ale_traces(
     y_lower = df["lowerCI_95%"]
     y_upper = df["upperCI_95%"]
     return get_upper_lower_bound_traces(
-        x, y, y_lower, y_upper, size, color, model_name, return_index_size
+        x=x,
+        y=y,
+        y_lower=y_lower,
+        y_upper=y_upper,
+        size=size,
+        color=color,
+        line_name=model_name,
+        return_index_size=return_index_size,
     )
 
 
@@ -204,9 +211,19 @@ def plot_2d_ale(
     ), clean_text(cols[1])
     df = _aleplot_2D_continuous(xs, m, cols, *args, **kwargs)
     df = df - df.min().min()
-    df.index = convert_ale_index(df.index, dp, percentage, condense_last)
-    df.columns = convert_ale_index(df.columns, dp, percentage, condense_last)
-    fig = plot_two_way(df, cols, feature_names, plotsize, colorscale)
+    df.index = convert_ale_index(
+        index=df.index, dp=dp, percentage=percentage, condense_last=condense_last
+    )
+    df.columns = convert_ale_index(
+        index=df.columns, dp=dp, percentage=percentage, condense_last=condense_last
+    )
+    fig = plot_two_way(
+        df=df,
+        cols=cols,
+        feature_names=feature_names,
+        plotsize=plotsize,
+        colorscale=colorscale,
+    )
     title = (
         f"ALE {feature_1} and {feature_2} vs {clean_text(dep_name)}"
         if dep_name
@@ -215,6 +232,7 @@ def plot_2d_ale(
     fig.update_layout(
         title=title,
     )
+    return fig
 
 
 def convert_ale_index(index, dp, percentage, condense_last):

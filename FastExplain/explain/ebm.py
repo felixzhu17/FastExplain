@@ -95,11 +95,11 @@ def plot_ebm_explain(
             model, x_values, model_name, color = ale_info
             if count == 0:
                 traces, x, size = _get_ebm_explain_traces(
-                    model,
-                    x_values,
-                    col,
-                    model_name,
-                    color,
+                    m=model,
+                    xs=x_values,
+                    col=col,
+                    model_name=model_name,
+                    color=color,
                     return_index_size=True,
                     *args,
                     **kwargs,
@@ -107,11 +107,11 @@ def plot_ebm_explain(
             else:
                 traces.extend(
                     _get_ebm_explain_traces(
-                        model,
-                        x_values,
-                        col,
-                        model_name,
-                        color,
+                        m=model,
+                        xs=x_values,
+                        col=col,
+                        model_name=model_name,
+                        color=color,
                         return_index_size=False,
                         *args,
                         **kwargs,
@@ -119,11 +119,11 @@ def plot_ebm_explain(
                 )
     else:
         traces, x, size = _get_ebm_explain_traces(
-            m,
-            xs,
-            col,
-            feature_name,
-            COLOURS["blue"],
+            m=m,
+            xs=xs,
+            col=col,
+            model_name=feature_name,
+            color=COLOURS["blue"],
             return_index_size=True,
             *args,
             **kwargs,
@@ -137,17 +137,13 @@ def plot_ebm_explain(
     main_title = ifnone(main_title, title)
 
     fig = plot_upper_lower_bound_traces(
-        traces,
-        x,
-        size,
+        traces=traces,
+        x=x,
+        size=size,
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
         main_title=main_title,
-    )
-
-    fig.update_layout(
-        title=title,
     )
     return fig
 
@@ -162,7 +158,14 @@ def _get_ebm_explain_traces(
     y_lower = df["lower"]
     y_upper = df["upper"]
     return get_upper_lower_bound_traces(
-        x, y, y_lower, y_upper, size, color, model_name, return_index_size
+        x=x,
+        y=y,
+        y_lower=y_lower,
+        y_upper=y_upper,
+        size=size,
+        color=color,
+        line_name=model_name,
+        return_index_size=return_index_size,
     )
 
 
