@@ -17,6 +17,7 @@ def prepare_data(
     dep_var: Optional[str] = None,
     cat_names: Optional[List[str]] = None,
     cont_names: Optional[List[str]] = None,
+    max_card: int = 20,
     perc_train: int = 0.8,
     seed: int = 0,
     splits: Optional[List[List]] = None,
@@ -26,13 +27,14 @@ def prepare_data(
     na_dummy: bool = True,
     cont_transformations: List[type] = [],
     reduce_memory: bool = True,
-    return_class=True,
+    return_class: bool = True,
 ):
     pandas_clean = PandasClean(
         df=df,
         dep_var=dep_var,
         cat_names=cat_names,
         cont_names=cont_names,
+        max_card=max_card,
         perc_train=perc_train,
         seed=seed,
         splits=splits,
@@ -69,6 +71,7 @@ class PandasClean:
         dep_var: str,
         cat_names: Optional[List[str]] = None,
         cont_names: Optional[List[str]] = None,
+        max_card=20,
         perc_train: int = 0.8,
         seed: int = 0,
         splits: Optional[List[List]] = None,
@@ -91,7 +94,7 @@ class PandasClean:
         if reduce_memory:
             self.df = df_shrink(self.df, int2uint=True)
 
-        cont, cat = cont_cat_split(df, dep_var=self.dep_var)
+        cont, cat = cont_cat_split(df, max_card=max_card, dep_var=self.dep_var)
         self.cat_names = cat.copy() if cat_names is None else cat_names
         self.cont_names = cont.copy() if cont_names is None else cont_names
 
