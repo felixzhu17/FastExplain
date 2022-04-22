@@ -30,7 +30,16 @@ def model_data(
     **model_kwargs,
 ):
     """
-    Performs the full modelling pipeling returning a class that is a connected interface for all data, models and related explanatory methods.
+    Performs the full modelling pipeling returning a class that is a connected interface for all data, models and related explanatory methods. Out of the box, it will:
+
+    1. Checks for Classification
+    2. Identifies continuous and categorical columns
+    3. Encode categorical columns with ordinal or one-hot encoding
+    4. Split data with stratification
+    5. Fill missing values with median, constant or mode
+    6. Apply additional numeric transformations specified by user
+    7. Fit a Random Forest, Explainable Boosting Machine, XGBoost or other model specified by user
+    8. Optionally, hypertune model using Bayesian Optimization
 
     Args:
         df (pd.DataFrame): Pandas DataFrame with columns including the dependent and predictor variables.
