@@ -79,6 +79,7 @@ def plot_ebm_explain(
     dep_name=None,
     feature_name=None,
     model_names=None,
+    main_title=None,
     plotsize=None,
     *args,
     **kwargs,
@@ -128,6 +129,13 @@ def plot_ebm_explain(
             **kwargs,
         )
 
+    title = (
+        f"EBM {feature_name} vs {clean_text(dep_name)}"
+        if dep_name
+        else f"EBM {feature_name}"
+    )
+    main_title = ifnone(main_title, title)
+
     fig = plot_upper_lower_bound_traces(
         traces,
         x,
@@ -135,12 +143,9 @@ def plot_ebm_explain(
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
+        main_title=main_title,
     )
-    title = (
-        f"EBM {feature_name} vs {clean_text(dep_name)}"
-        if dep_name
-        else f"EBM {feature_name}"
-    )
+
     fig.update_layout(
         title=title,
     )
@@ -170,5 +175,8 @@ class EbmExplain:
     def ebm_explain_summary(self, *args, **kwargs):
         return ebm_explain_summary(self.m, self.xs, *args, **kwargs)
 
-    def plot_ebm_explain(self, *args, **kwargs):
-        return plot_ebm_explain(self.m, self.xs, dep_name=self.dep_var, *args, **kwargs)
+    def plot_ebm_explain(self, col, dep_name=None, *args, **kwargs):
+        dep_name = ifnone(dep_name, self.dep_var)
+        return plot_ebm_explain(
+            self.m, self.xs, col, dep_name=dep_name, *args, **kwargs
+        )

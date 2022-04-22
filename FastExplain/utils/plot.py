@@ -147,7 +147,13 @@ def get_upper_lower_bound_traces(
 
 
 def plot_upper_lower_bound_traces(
-    traces, x, size, x_axis_title=None, y_axis_title=None, plotsize=None
+    traces,
+    x,
+    size,
+    x_axis_title=None,
+    y_axis_title=None,
+    plotsize=None,
+    main_title=None,
 ):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     for i in traces:
@@ -164,6 +170,9 @@ def plot_upper_lower_bound_traces(
     _two_axis_layout(fig)
     fig.update_xaxes(title_text=x_axis_title)
     fig.update_yaxes(title_text="Frequency", secondary_y=False)
+    fig.update_layout(
+        title=main_title,
+    )
     if y_axis_title:
         fig.update_yaxes(title_text=clean_text(y_axis_title), secondary_y=True)
     return fig

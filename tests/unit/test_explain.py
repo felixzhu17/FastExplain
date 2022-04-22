@@ -23,7 +23,13 @@ def test_multi_ebm(ebm_class_object):
 
 def test_ale(rf_class_object, xgb_class_object):
     rf_class_object.plot_ale("Age", bins=[1, 2, 3, 4, 5])
-    xgb_class_object.plot_ale("Age", filter="Age < 30")
+    xgb_class_object.plot_ale(
+        "Age",
+        filter="Age < 30",
+        main_title="Test",
+        dep_name="Test",
+        feature_name="Test",
+    )
     assert True
 
 
@@ -31,12 +37,14 @@ def test_ale_class(rf_class_object, xgb_class_object):
     assert len(rf_class_object.ale_summary("Sex").index) == 2
     assert len(xgb_class_object.ale_summary("Cabin", numeric=False).index) == 148
     rf_class_object.plot_ale("Sex", filter="Age < 30")
-    xgb_class_object.plot_ale("Sex")
+    xgb_class_object.plot_ale(
+        "Sex", main_title="Test", dep_name="Test", feature_name="Test"
+    )
     assert True
 
 
 def test_ebm(ebm_class_object):
-    ebm_class_object.plot_ebm_explain("Age")
+    ebm_class_object.plot_ebm_explain("Age", main_title="Test")
     assert True
 
 

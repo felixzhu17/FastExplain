@@ -87,6 +87,7 @@ def plot_ale(
     dep_name=None,
     feature_name=None,
     model_names=None,
+    main_title=None,
     plotsize=None,
     *args,
     **kwargs,
@@ -135,6 +136,12 @@ def plot_ale(
             **kwargs,
         )
 
+    title = (
+        f"ALE {feature_name} vs {clean_text(dep_name)}"
+        if dep_name
+        else f"ALE {feature_name}"
+    )
+    main_title = ifnone(main_title, title)
     fig = plot_upper_lower_bound_traces(
         traces,
         x,
@@ -142,15 +149,7 @@ def plot_ale(
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
-    )
-
-    title = (
-        f"ALE {feature_name} vs {clean_text(dep_name)}"
-        if dep_name
-        else f"ALE {feature_name}"
-    )
-    fig.update_layout(
-        title=title,
+        main_title=main_title,
     )
     return fig
 
@@ -238,8 +237,9 @@ class Ale:
     def ale_summary(self, *args, **kwargs):
         return ale_summary(self.m, self.xs, *args, **kwargs)
 
-    def plot_ale(self, *args, **kwargs):
-        return plot_ale(self.m, self.xs, dep_name=self.dep_var, *args, **kwargs)
+    def plot_ale(self, col, dep_name=None, *args, **kwargs):
+        dep_name = ifnone(dep_name, self.dep_var)
+        return plot_ale(self.m, self.xs, col, dep_name=dep_name, *args, **kwargs)
 
     def plot_multi_ale(self, *args, **kwargs):
         return plot_multi_ale(self.m, self.xs, *args, **kwargs)
