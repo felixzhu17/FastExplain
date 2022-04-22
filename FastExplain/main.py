@@ -21,8 +21,8 @@ def model_data(
     na_dummy: bool = True,
     cont_transformations: List[type] = [],
     reduce_memory: bool = True,
-    *args,
-    **kwargs,
+    *model_args,
+    **model_kwargs,
 ):
     check_dep_var(dep_var)
     classification = check_classification(df[dep_var])
@@ -42,8 +42,8 @@ def model_data(
             na_dummy=na_dummy,
             cont_transformations=cont_transformations,
             reduce_memory=reduce_memory,
-            *args,
-            **kwargs,
+            *model_args,
+            **model_kwargs,
         )
     else:
         return Regression(
@@ -61,6 +61,6 @@ def model_data(
             na_dummy=na_dummy,
             cont_transformations=cont_transformations,
             reduce_memory=reduce_memory,
-            *args,
-            **kwargs,
+            *model_args,
+            **model_kwargs,
         )
