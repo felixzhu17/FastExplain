@@ -120,7 +120,9 @@ def _get_space(params):
 
 def _check_param_dict(params):
     if not isinstance(params, dict):
-        raise ValueError(f"Praams must be supplied in a dictionary format (hypertune_params)")
+        raise ValueError(
+            f"Praams must be supplied in a dictionary format (hypertune_params)"
+        )
     param_checks = {k: _check_param_input(v) for k, v in params.items()}
     param_checked = [k for k, v in param_checks.items() if v is False]
     if len(param_checked) > 0:

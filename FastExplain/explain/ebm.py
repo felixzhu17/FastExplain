@@ -26,13 +26,15 @@ def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
             model, x_values = ale_info
             if count == len(m) - 1:
                 ebms.append(
-                    _clean_ebm_explain(model, x_values, col, *args, **kwargs)[
+                    _clean_ebm_explain(m=model, xs=x_values, col=col, *args, **kwargs)[
                         ["eff", "size"]
                     ]
                 )
             else:
                 ebms.append(
-                    _clean_ebm_explain(model, x_values, col, *args, **kwargs)[["eff"]]
+                    _clean_ebm_explain(m=model, xs=x_values, col=col, *args, **kwargs)[
+                        ["eff"]
+                    ]
                 )
 
         output = merge_multi_df(ebms, left_index=True, right_index=True)

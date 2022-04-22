@@ -27,10 +27,14 @@ def ale_summary(m, xs, col, model_names=None, *args, **kwargs):
             model, x_values = ale_info
             if count == len(m) - 1:
                 ales.append(
-                    _clean_ale(model, x_values, col, *args, **kwargs)[["eff", "size"]]
+                    _clean_ale(m=model, xs=x_values, col=col, *args, **kwargs)[
+                        ["eff", "size"]
+                    ]
                 )
             else:
-                ales.append(_clean_ale(model, x_values, col, *args, **kwargs)[["eff"]])
+                ales.append(
+                    _clean_ale(m=model, xs=x_values, col=col, *args, **kwargs)[["eff"]]
+                )
 
         output = merge_multi_df(ales, left_index=True, right_index=True)
         output.columns = model_names + ["size"]
