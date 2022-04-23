@@ -183,7 +183,7 @@ class Classification(Model):
             df=self.data.df,
             error=self.raw_error["cross_entropy"]["model"]["overall"],
             x_col=col,
-            y_axis_name = "Cross Entropy",
+            y_axis_name="Cross Entropy",
             *args,
             **kwargs,
         )
@@ -193,7 +193,7 @@ class Classification(Model):
             df=self.data.df,
             error=self.raw_error["cross_entropy"]["model"]["overall"],
             x_cols=cols,
-            dep_name = "Cross Entropy",
+            dep_name="Cross Entropy",
             *args,
             **kwargs,
         )

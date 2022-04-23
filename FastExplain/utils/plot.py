@@ -56,9 +56,7 @@ def plot_one_way(
 
     if size is not None:
         fig = create_secondary_axis_plotly(
-            px.line(
-                df, x=df.index, y=y_col, color_discrete_sequence=[COLOURS["blue"]]
-            )
+            px.line(df, x=df.index, y=y_col, color_discrete_sequence=[COLOURS["blue"]])
         )
         fig.add_trace(
             go.Bar(

@@ -1,5 +1,5 @@
 import warnings
-from typing import List, Optional, Callable, Union
+from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -12,12 +12,12 @@ from FastExplain.clean import check_cont_col
 from FastExplain.explain.bin import get_bins
 from FastExplain.utils import (
     bin_intervals,
+    clean_text,
     conditional_mean,
     ifnone,
     plot_one_way,
     plot_two_one_way,
     plot_two_way,
-    clean_text,
 )
 
 
@@ -300,7 +300,9 @@ def get_two_way_analysis(
     )
     df = df[~df[col_1].isna()] if numeric_1 else df
     df = df[~df[col_2].isna()] if numeric_2 else df
-    bin_1, bin_2 = ifnone(bins, (get_bins(df[col_1], grid_size), get_bins(df[col_2], grid_size)))
+    bin_1, bin_2 = ifnone(
+        bins, (get_bins(df[col_1], grid_size), get_bins(df[col_2], grid_size))
+    )
     filtered_df = df[x_cols + [y_col]].copy()
     filtered_df[col_1] = (
         pd.cut(filtered_df[col_1], bin_1, include_lowest=True)
@@ -351,7 +353,7 @@ def plot_two_way_analysis(
     dep_name: Optional[str] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
-    colorscale: Union[List[str], str]="Blues",
+    colorscale: Union[List[str], str] = "Blues",
 ):
 
     """
@@ -531,7 +533,7 @@ def plot_two_way_frequency(
     feature_names: Optional[List[str]] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
-    colorscale: Union[List[str], str]="Blues",
+    colorscale: Union[List[str], str] = "Blues",
 ):
 
     """
