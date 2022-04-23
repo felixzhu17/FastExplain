@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class Clean(ABC):
+    """Base for clean classes"""
     @abstractmethod
     def fit(self):
         pass

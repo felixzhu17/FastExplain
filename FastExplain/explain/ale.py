@@ -206,9 +206,9 @@ def plot_2d_ale(
     **kwargs,
 ):
 
-    feature_1, feature_2 = feature_names if feature_names is not None else clean_text(
-        cols[0]
-    ), clean_text(cols[1])
+    feature_1, feature_2 = ifnone(
+        feature_names, clean_text(cols[0]), clean_text(cols[1])
+    )
     df = _aleplot_2D_continuous(xs, m, cols, *args, **kwargs)
     df = df - df.min().min()
     df.index = convert_ale_index(

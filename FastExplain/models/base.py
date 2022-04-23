@@ -15,6 +15,9 @@ from FastExplain.utils import ifnone
 
 
 class Model(Explain, ABC):
+    """
+    Base class for full modelling pipeline
+    """
     def __init__(
         self,
         df: pd.DataFrame,
