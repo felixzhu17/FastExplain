@@ -20,14 +20,16 @@ from FastExplain.utils import (
 )
 
 
-def ale_summary(
-    m,
+def ale(
+    m: Union[List[type], type],
     xs: Union[List[pd.DataFrame], pd.DataFrame],
     col: str,
     grid_size: int = 20,
     bins: Optional[List[float]] = None,
     numeric: Optional[bool] = None,
-    normalize: bool = True,
+    max_card: int=20,
+    normalize_quantiles: bool = True,
+    standardize_values: bool=True,
     percentage: bool = False,
     condense_last: bool = True,
     remove_last_bins: Optional[int] = None,
@@ -35,7 +37,50 @@ def ale_summary(
     filter: Optional[str] = None,
     model_names: Optional[List[str]] = None,
 ):
+    """
+    Calculate ALE values for a predictor feature in a model
 
+    Args:
+        m (Union[List[type], type]): 
+            Model class that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
+        xs (Union[List[pd.DataFrame], pd.DataFrame]): 
+            Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
+        col (str): 
+            Name of predictor feature to use for ALE
+        grid_size (int, optional): 
+            Number of predictor quantiles to bin data into. Defaults to 20.
+        bins (Optional[List[float]], optional): 
+            Optionally, provide a list of values to bin predictor into, in place of quantile segmentation. Defaults to None.
+        numeric (Optional[bool], optional): 
+            Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_cards. Defaults to None.
+        max_card (int, optional): 
+            Maximum number of unique values for categorical variable. Defaults to 20.
+        normalize_quantiles (bool, optional): 
+            Whether to display bins as ranges instead of values. Defaults to True.
+        percentage (bool, optional): 
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional): 
+            Whether to bin last value with a greater than. Defaults to True.
+        remove_last_bins (Optional[int], optional): 
+            Number of bins to remove. Defaults to None.
+        dp (int, optional): 
+            Decimal points to format. Defaults to 2.
+        filter (Optional[str], optional): 
+            The query string to evaluate.
+            You can refer to variables
+            in the environment by prefixing them with an '@' character like
+            ``@a + b``.
+            You can refer to column names that are not valid Python variable names
+            by surrounding them in backticks. Thus, column names containing spaces
+            or punctuations (besides underscores) or starting with digits must be
+            surrounded by backticks. (For example, a column named "Area (cm^2)" would
+            be referenced as ```Area (cm^2)```). Column names which are Python keywords
+            (like "list", "for", "import", etc) cannot be used.
+            For example, if one of your columns is called ``a a`` and you want
+            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+        model_names (Optional[List[str]], optional): 
+            Name of models to use as columns if supplying multiple models. Defaults to None.
+    """
     if isinstance(m, (list, tuple)):
         model_names = ifnone(model_names, [f"Model {i}" for i in range(len(m))])
         ales = []
@@ -50,7 +95,9 @@ def ale_summary(
                         grid_size=grid_size,
                         bins=bins,
                         numeric=numeric,
-                        normalize=normalize,
+                        max_card=max_card,
+                        normalize_quantiles=normalize_quantiles,
+                        standardize_values=standardize_values,
                         percentage=percentage,
                         condense_last=condense_last,
                         remove_last_bins=remove_last_bins,
@@ -67,7 +114,9 @@ def ale_summary(
                         grid_size=grid_size,
                         bins=bins,
                         numeric=numeric,
-                        normalize=normalize,
+                        max_card=max_card,
+                        normalize_quantiles=normalize_quantiles,
+                        standardize_values=standardize_values,
                         percentage=percentage,
                         condense_last=condense_last,
                         remove_last_bins=remove_last_bins,
@@ -87,7 +136,9 @@ def ale_summary(
             grid_size=grid_size,
             bins=bins,
             numeric=numeric,
-            normalize=normalize,
+            max_card=max_card,
+            normalize_quantiles=normalize_quantiles,
+            standardize_values=standardize_values,
             percentage=percentage,
             condense_last=condense_last,
             remove_last_bins=remove_last_bins,
@@ -97,21 +148,24 @@ def ale_summary(
 
 
 def _clean_ale(
-    m,
-    xs,
-    col,
+    m: Union[List[type], type],
+    xs: Union[List[pd.DataFrame], pd.DataFrame],
+    col: str,
     grid_size: int = 20,
     bins: Optional[List[float]] = None,
-    numeric=None,
-    normalize=True,
-    percentage=False,
-    condense_last=True,
-    remove_last_bins=None,
-    dp=2,
-    filter=None,
+    numeric: Optional[bool] = None,
+    max_card: int=20,
+    normalize_quantiles: bool = True,
+    standardize_values: bool=True,
+    percentage: bool = False,
+    condense_last: bool = True,
+    remove_last_bins: Optional[int] = None,
+    dp: int = 2,
+    filter: Optional[str] = None,
 ):
+    """Base function for cleaning ALE"""
     xs = xs.query(filter) if filter else xs
-    numeric = ifnone(numeric, check_cont_col(xs[col]))
+    numeric = ifnone(numeric, check_cont_col(xs[col],max_card=max_card))
     bins = bins if numeric else sorted(list(xs[col].unique()))
     df = _aleplot_1D_continuous(
         xs,
@@ -121,15 +175,16 @@ def _clean_ale(
         grid_size=grid_size,
     )
     df = df[~df.index.duplicated(keep="last")]
-    adjust = -1 * df.iloc[0]["eff"]
-    df["eff"] += adjust
-    df["lowerCI_95%"] += adjust
-    df["upperCI_95%"] += adjust
+    if standardize_values:
+        adjust = -1 * df.iloc[0]["eff"]
+        df["eff"] += adjust
+        df["lowerCI_95%"] += adjust
+        df["upperCI_95%"] += adjust
 
     if numeric is False:
         df["size"] = list(xs[col].value_counts().sort_index())
 
-    if normalize and numeric:
+    if normalize_quantiles and numeric:
         df.index = convert_ale_index(
             pd.to_numeric(df.index), dp, percentage, condense_last
         )
@@ -140,15 +195,24 @@ def _clean_ale(
 
 def plot_ale(
     m,
-    xs,
-    col,
-    dep_name=None,
-    feature_name=None,
-    model_names=None,
-    main_title=None,
-    plotsize=None,
-    *args,
-    **kwargs,
+    xs: Union[List[pd.DataFrame], pd.DataFrame],
+    col: str,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    numeric: Optional[bool] = None,
+    max_card: int=20,
+    normalize_quantiles: bool = True,
+    standardize_values:bool =True,
+    percentage: bool = False,
+    condense_last: bool = True,
+    remove_last_bins: Optional[int] = None,
+    dp: int = 2,
+    filter: Optional[str] = None,
+    dep_name: Optional[str] = None,
+    feature_name: Optional[str] = None,
+    model_names: Optional[List[str]] = None,
+    main_title: Optional[str] = None,
+    plotsize: Optional[List[int]] = None,
 ):
 
     feature_name = ifnone(feature_name, clean_text(col))
@@ -166,8 +230,17 @@ def plot_ale(
                     model_name=model_name,
                     color=color,
                     return_index_size=True,
-                    *args,
-                    **kwargs,
+                    grid_size=grid_size,
+                    bins=bins,
+                    numeric=numeric,
+                    max_card=max_card,
+                    normalize_quantiles=normalize_quantiles,
+                    standardize_values=standardize_values,
+                    percentage=percentage,
+                    condense_last=condense_last,
+                    remove_last_bins=remove_last_bins,
+                    dp=dp,
+                    filter=filter,
                 )
             else:
                 traces.extend(
@@ -178,8 +251,17 @@ def plot_ale(
                         model_name=model_name,
                         color=color,
                         return_index_size=False,
-                        *args,
-                        **kwargs,
+                        grid_size=grid_size,
+                        bins=bins,
+                        numeric=numeric,
+                        max_card=max_card,
+                        normalize_quantiles=normalize_quantiles,
+                        standardize_values=standardize_values,
+                        percentage=percentage,
+                        condense_last=condense_last,
+                        remove_last_bins=remove_last_bins,
+                        dp=dp,
+                        filter=filter,
                     )
                 )
     else:
@@ -190,8 +272,17 @@ def plot_ale(
             model_name=feature_name,
             color=COLOURS["blue"],
             return_index_size=True,
-            *args,
-            **kwargs,
+            grid_size=grid_size,
+            bins=bins,
+            numeric=numeric,
+            max_card=max_card,
+            normalize_quantiles=normalize_quantiles,
+            standardize_values=standardize_values,
+            percentage=percentage,
+            condense_last=condense_last,
+            remove_last_bins=remove_last_bins,
+            dp=dp,
+            filter=filter,
         )
 
     title = (
@@ -213,9 +304,40 @@ def plot_ale(
 
 
 def _get_ale_traces(
-    m, xs, col, model_name, color, return_index_size=True, *args, **kwargs
+    m,
+    xs: pd.DataFrame,
+    col: str,
+    model_name: str,
+    color: str,
+    return_index_size: bool = True,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    numeric: Optional[bool] = None,
+    max_card:int=20,
+    normalize_quantiles: bool = True,
+    standardize_values: bool=True,
+    percentage: bool = False,
+    condense_last: bool = True,
+    remove_last_bins: Optional[int] = None,
+    dp: int = 2,
+    filter: Optional[str] = None,
 ):
-    df = ale_summary(m, xs, col, *args, **kwargs)
+    df = ale(
+        m,
+        xs,
+        col,
+        grid_size=grid_size,
+        bins=bins,
+        numeric=numeric,
+        max_card=max_card,
+        normalize_quantiles=normalize_quantiles,
+        standardize_values=standardize_values,
+        percentage=percentage,
+        condense_last=condense_last,
+        remove_last_bins=remove_last_bins,
+        dp=dp,
+        filter=filter,
+    )
     x = df.index
     y = df["eff"]
     size = df["size"]
@@ -235,7 +357,7 @@ def _get_ale_traces(
 
 def plot_multi_ale(m, xs, cols, index, plotsize=None, *args, **kwargs):
     pdp = {
-        i: fill_list(list(ale_summary(m, xs, i, *args, **kwargs)["eff"]), len(index))
+        i: fill_list(list(ale(m, xs, i, *args, **kwargs)["eff"]), len(index))
         for i in cols
     }
     pdp_df = pd.DataFrame(pdp, index=index)
@@ -310,8 +432,8 @@ class Ale:
         self.xs = xs
         self.dep_var = dep_var
 
-    def ale_summary(self, *args, **kwargs):
-        return ale_summary(self.m, self.xs, *args, **kwargs)
+    def ale(self, *args, **kwargs):
+        return ale(self.m, self.xs, *args, **kwargs)
 
     def plot_ale(self, col, dep_name=None, *args, **kwargs):
         dep_name = ifnone(dep_name, self.dep_var)
@@ -361,7 +483,6 @@ def _aleplot_1D_continuous(
     bins = np.unique(bins)
     feat_cut = pd.cut(X[feature], bins, include_lowest=True)
     bin_codes = feat_cut.cat.codes
-    bin_codes_unique = np.unique(bin_codes)
 
     X1 = X.copy()
     X2 = X.copy()
