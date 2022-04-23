@@ -34,8 +34,6 @@ def ale_summary(
     dp: int = 2,
     filter: Optional[str] = None,
     model_names: Optional[List[str]] = None,
-    include_CI: bool = True,
-    C: float = 0.95,
 ):
 
     if isinstance(m, (list, tuple)):
@@ -58,8 +56,6 @@ def ale_summary(
                         remove_last_bins=remove_last_bins,
                         dp=dp,
                         filter=filter,
-                        include_CI=include_CI,
-                        C=C,
                     )[["eff", "size"]]
                 )
             else:
@@ -77,8 +73,6 @@ def ale_summary(
                         remove_last_bins=remove_last_bins,
                         dp=dp,
                         filter=filter,
-                        include_CI=include_CI,
-                        C=C,
                     )[["eff"]]
                 )
 
@@ -99,8 +93,6 @@ def ale_summary(
             remove_last_bins=remove_last_bins,
             dp=dp,
             filter=filter,
-            include_CI=include_CI,
-            C=C,
         )
 
 
@@ -117,8 +109,6 @@ def _clean_ale(
     remove_last_bins=None,
     dp=2,
     filter=None,
-    include_CI: bool = True,
-    C: float = 0.95,
 ):
     xs = xs.query(filter) if filter else xs
     numeric = ifnone(numeric, check_cont_col(xs[col]))
@@ -129,8 +119,6 @@ def _clean_ale(
         feature=col,
         bins=bins,
         grid_size=grid_size,
-        include_CI=include_CI,
-        C=C,
     )
     df = df[~df.index.duplicated(keep="last")]
     adjust = -1 * df.iloc[0]["eff"]
