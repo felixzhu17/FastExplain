@@ -56,7 +56,18 @@ class Classification(Model):
         hypertune_params (Optional[dict], optional): Dictionary containing parameters of model to hypertune. Key for each parameter must be an array of [lower (numeric), upper (numeric), is_integer (bool)]. Defaults to None.
         hypertune_loss_metric (Optional[Callable], optional): Function to minimise when hypertuning. Arguments of function must contain m (the model), xs (predictors) and y (target). If not specified, cross entropy is used. Defaults to None.
         *model_args, **model_kwargs: Additional arguments for the model
+
+    Attributes:
+        data: Class containing data used for modelling. (See FastExplain.clean.main.PandasClean)
+        m: Fitted model
+        params: Parameters of the fitted model
+        model_fit_func: Function used to fit the data and return model
+        hypertune: If hypertuned, class containing hypertuning information (See FastExplain.models.algorithms.hypertuning.Hypertune)
+        benchmark: Average of training dependent variables, used as benchmark for fit metrics
+        error: AUC and Cross Entropy error on training and validation for benchmark and model
+        error_raw: Cross Entropy error by observation on training and validation for benchmark and model
     """
+    
     def __init__(
         self,
         df: pd.DataFrame,
