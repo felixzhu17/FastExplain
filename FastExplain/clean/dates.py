@@ -1,4 +1,4 @@
-"""Date cleaning functions taken from FastAI"""
+"""Date cleaning functions taken from FastAI https://github.com/fastai/fastai/blob/master/fastai/tabular/core.py"""
 
 import re
 
