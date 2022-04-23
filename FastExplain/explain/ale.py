@@ -43,7 +43,7 @@ def ale(
 
     Args:
         m (Union[List[type], type]):
-            Model class that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
+            Trained model that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
         xs (Union[List[pd.DataFrame], pd.DataFrame]):
             Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
         col (str):
@@ -175,7 +175,7 @@ def plot_ale(
 
     Args:
         m (Union[List[type], type]):
-            Model class that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
+            Trained model that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
         xs (Union[List[pd.DataFrame], pd.DataFrame]):
             Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
         col (str):
@@ -328,7 +328,7 @@ def ale_2d(
 
     Args:
         m (type):
-            Model class that uses features as a predictor.
+            Trained model that uses features as a predictor.
         xs (pd.DataFrame):
             Dataframe used by model to predict.
         col (List[str]):
@@ -406,7 +406,7 @@ def plot_ale_2d(
 
     Args:
         m (type):
-            Model class that uses features as a predictor.
+            Trained model that uses features as a predictor.
         xs (pd.DataFrame):
             Dataframe used by model to predict.
         col (List[str]):
