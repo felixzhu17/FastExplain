@@ -1,3 +1,5 @@
+from typing import List, Optional, Union
+
 import pandas as pd
 
 from FastExplain.utils import (
@@ -12,7 +14,38 @@ from FastExplain.utils import (
 )
 
 
-def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
+def ebm_explain(
+    m: (Union[List[type], type]),
+    xs: (Union[List[pd.DataFrame], pd.DataFrame]),
+    col: str,
+    standardize_values: bool = True,
+    dp: int = 2,
+    percentage: bool = False,
+    condense_last: bool = True,
+    model_names: Optional[List[str]] = None,
+):
+    """
+    Calculate EBM values for a predictor feature in a model
+
+    Args:
+        m (Union[List[type], type]):
+            Trained EBM model that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
+        xs (Union[List[pd.DataFrame], pd.DataFrame]):
+            Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
+        col (str):
+            Name of predictor feature to use for ALE
+        standardize_values (bool, optional):
+            Whether to standardize the first bin as 0. Defaults to True.
+        dp (int, optional):
+            Decimal points to format. Defaults to 2.
+        percentage (bool, optional):
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional):
+            Whether to bin last value with a greater than. Defaults to True.
+        model_names (Optional[List[str]], optional):
+            Name of models to use as columns if supplying multiple models. Defaults to None.
+    """
+
     if isinstance(m, (list, tuple)):
         model_names = ifnone(model_names, [f"Model {i}" for i in range(len(m))])
         ebms = []
@@ -20,64 +53,88 @@ def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
             model, x_values = ale_info
             if count == len(m) - 1:
                 ebms.append(
-                    _clean_ebm_explain(m=model, xs=x_values, col=col, *args, **kwargs)[
-                        ["eff", "size"]
-                    ]
+                    _clean_ebm_explain(
+                        m=model,
+                        xs=x_values,
+                        col=col,
+                        standardize_values=standardize_values,
+                        dp=dp,
+                        percentage=percentage,
+                        condense_last=condense_last,
+                    )[["eff", "size"]]
                 )
             else:
                 ebms.append(
-                    _clean_ebm_explain(m=model, xs=x_values, col=col, *args, **kwargs)[
-                        ["eff"]
-                    ]
+                    _clean_ebm_explain(
+                        m=model,
+                        xs=x_values,
+                        col=col,
+                        standardize_values=standardize_values,
+                        dp=dp,
+                        percentage=percentage,
+                        condense_last=condense_last,
+                    )[["eff"]]
                 )
 
         output = merge_multi_df(ebms, left_index=True, right_index=True)
         output.columns = model_names + ["size"]
         return output
     else:
-        return _clean_ebm_explain(m, xs, col, *args, **kwargs)
-
-
-def _clean_ebm_explain(m, xs, col, dp=2, percentage=False, condense_last=True):
-
-    ebm_global = m.explain_global()
-    index = _get_ebm_index(m, col)
-    binned = pd.cut(xs[col], ebm_global.data(index)["names"], include_lowest=True)
-    binned_count = list(binned.groupby(binned).count())
-    df = pd.DataFrame(
-        {
-            "eff": ebm_global.data(index)["scores"],
-            "upper": ebm_global.data(index)["upper_bounds"],
-            "lower": ebm_global.data(index)["lower_bounds"],
-            "size": binned_count,
-        },
-        index=bin_columns(
-            ebm_global.data(index)["names"],
+        return _clean_ebm_explain(
+            m,
+            xs,
+            col,
+            standardize_values=standardize_values,
             dp=dp,
             percentage=percentage,
             condense_last=condense_last,
-        ),
-    )
-    df = df[~df.index.duplicated(keep="last")]
-    adjust = -1 * df.iloc[0]["eff"]
-    df["eff"] += adjust
-    df["lower"] += adjust
-    df["upper"] += adjust
-    return df
+        )
 
 
 def plot_ebm_explain(
-    m,
-    xs,
-    col,
+    m: (Union[List[type], type]),
+    xs: (Union[List[pd.DataFrame], pd.DataFrame]),
+    col: str,
+    standardize_values: bool = True,
+    dp: int = 2,
+    percentage: bool = False,
+    condense_last: bool = True,
+    model_names: Optional[List[str]] = None,
     dep_name=None,
     feature_name=None,
-    model_names=None,
     main_title=None,
     plotsize=None,
-    *args,
-    **kwargs,
 ):
+
+    """
+    Plot EBM values for a predictor feature in a model
+
+    Args:
+        m (Union[List[type], type]):
+            Trained EBM model that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
+        xs (Union[List[pd.DataFrame], pd.DataFrame]):
+            Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
+        col (str):
+            Name of predictor feature to use for ALE
+        standardize_values (bool, optional):
+            Whether to standardize the first bin as 0. Defaults to True.
+        dp (int, optional):
+            Decimal points to format. Defaults to 2.
+        percentage (bool, optional):
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional):
+            Whether to bin last value with a greater than. Defaults to True.
+        model_names (Optional[List[str]], optional):
+            Name of models to use as columns if supplying multiple models. Defaults to None.
+        dep_name (Optional[str], optional):
+            Custom name to use for dependent variable on plot. Defaults to None.
+        feature_names (Optional[str], optional):
+            Custom names to use for predictor variable on plot. Defaults to None.
+        main_title (Optional[str], optional):
+            Custom name to use for title of plot. Defaults to None.
+        plotsize (Optional[List[int]], optional):
+            Custom plotsize supplied as (width, height). Defaults to None.
+    """
 
     feature_name = ifnone(feature_name, clean_text(col))
 
@@ -95,8 +152,10 @@ def plot_ebm_explain(
                     model_name=model_name,
                     color=color,
                     return_index_size=True,
-                    *args,
-                    **kwargs,
+                    standardize_values=standardize_values,
+                    dp=dp,
+                    percentage=percentage,
+                    condense_last=condense_last,
                 )
             else:
                 traces.extend(
@@ -107,8 +166,10 @@ def plot_ebm_explain(
                         model_name=model_name,
                         color=color,
                         return_index_size=False,
-                        *args,
-                        **kwargs,
+                        standardize_values=standardize_values,
+                        dp=dp,
+                        percentage=percentage,
+                        condense_last=condense_last,
                     )
                 )
     else:
@@ -119,8 +180,10 @@ def plot_ebm_explain(
             model_name=feature_name,
             color=COLOURS["blue"],
             return_index_size=True,
-            *args,
-            **kwargs,
+            standardize_values=standardize_values,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
         )
 
     title = (
@@ -142,10 +205,82 @@ def plot_ebm_explain(
     return fig
 
 
-def _get_ebm_explain_traces(
-    m, xs, col, model_name, color, return_index_size=True, *args, **kwargs
+class EbmExplain:
+    def __init__(self, m, xs, dep_var=None):
+        self.m = m
+        self.xs = xs
+        self.dep_var = dep_var
+
+    def ebm_explain(self, *args, **kwargs):
+        return ebm_explain(self.m, self.xs, *args, **kwargs)
+
+    def plot_ebm_explain(self, col, dep_name=None, *args, **kwargs):
+        dep_name = ifnone(dep_name, self.dep_var)
+        return plot_ebm_explain(
+            self.m, self.xs, col, dep_name=dep_name, *args, **kwargs
+        )
+
+
+def _get_ebm_index(m, col):
+    """Get index of feature from EBM"""
+    ebm_global = m.explain_global()
+    col_dict = {i: count for count, i in enumerate(ebm_global.data()["names"])}
+    return col_dict[col]
+
+
+def _clean_ebm_explain(
+    m, xs, col, standardize_values=True, dp=2, percentage=False, condense_last=True
 ):
-    df = ebm_explain_summary(m, xs, col, *args, **kwargs)
+    """Base function for cleaning EBM"""
+    ebm_global = m.explain_global()
+    index = _get_ebm_index(m, col)
+    binned = pd.cut(xs[col], ebm_global.data(index)["names"], include_lowest=True)
+    binned_count = list(binned.groupby(binned).count())
+    df = pd.DataFrame(
+        {
+            "eff": ebm_global.data(index)["scores"],
+            "upper": ebm_global.data(index)["upper_bounds"],
+            "lower": ebm_global.data(index)["lower_bounds"],
+            "size": binned_count,
+        },
+        index=bin_columns(
+            ebm_global.data(index)["names"],
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+        ),
+    )
+    df = df[~df.index.duplicated(keep="last")]
+    if standardize_values:
+        adjust = -1 * df.iloc[0]["eff"]
+        df["eff"] += adjust
+        df["lower"] += adjust
+        df["upper"] += adjust
+    return df
+
+
+def _get_ebm_explain_traces(
+    m,
+    xs,
+    col,
+    model_name,
+    color,
+    return_index_size=True,
+    standardize_values: bool = True,
+    dp=2,
+    percentage=False,
+    condense_last=True,
+):
+    """Base function for plotting EBM"""
+    df = ebm_explain(
+        m,
+        xs,
+        col,
+        standardize_values=standardize_values,
+        dp=dp,
+        percentage=percentage,
+        condense_last=condense_last,
+    )
     x = df.index
     y = df["eff"]
     size = df["size"]
@@ -161,25 +296,3 @@ def _get_ebm_explain_traces(
         line_name=model_name,
         return_index_size=return_index_size,
     )
-
-
-class EbmExplain:
-    def __init__(self, m, xs, dep_var=None):
-        self.m = m
-        self.xs = xs
-        self.dep_var = dep_var
-
-    def ebm_explain_summary(self, *args, **kwargs):
-        return ebm_explain_summary(self.m, self.xs, *args, **kwargs)
-
-    def plot_ebm_explain(self, col, dep_name=None, *args, **kwargs):
-        dep_name = ifnone(dep_name, self.dep_var)
-        return plot_ebm_explain(
-            self.m, self.xs, col, dep_name=dep_name, *args, **kwargs
-        )
-
-
-def _get_ebm_index(m, col):
-    ebm_global = m.explain_global()
-    col_dict = {i: count for count, i in enumerate(ebm_global.data()["names"])}
-    return col_dict[col]

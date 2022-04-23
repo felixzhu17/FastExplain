@@ -1,4 +1,5 @@
 import warnings
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -19,7 +20,16 @@ from FastExplain.utils import (
 )
 
 
-def feature_correlation(xs, plotsize=(1000, 1000)):
+def feature_correlation(xs: pd.DataFrame, plotsize: List[int] = (1000, 1000)):
+    """
+    Plot dendogram of hierarchical clustering of spearman correlation between variables
+
+    Args:
+        xs (pd.DataFrame):
+            Dataframe containing variables
+        plotsize (List[int], optional):
+            Custom plotsize supplied as (width, height). Defaults to (1000, 1000).
+    """
     keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
     corr = np.round(spearmanr(xs[keep_cols]).correlation, 4)
     fig = ff.create_dendrogram(
@@ -34,12 +44,12 @@ def feature_correlation(xs, plotsize=(1000, 1000)):
 
 
 def get_one_way_analysis(
-    df,
-    x_col,
-    y_col,
-    numeric=None,
-    grid_size=20,
-    bins=None,
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    numeric: Optional[bool]=None,
+    grid_size: int=20,
+    bins: Optional[List[float]]=None,
     dp=2,
     func=None,
     size_cutoff=0,

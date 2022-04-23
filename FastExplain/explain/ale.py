@@ -2,7 +2,6 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
 from sklearn.neighbors import NearestNeighbors
 
 from FastExplain.clean import check_cont_col
@@ -57,6 +56,8 @@ def ale(
             Maximum number of unique values for categorical variable. Defaults to 20.
         normalize_quantiles (bool, optional):
             Whether to display bins as ranges instead of values. Defaults to True.
+        standardize_values (bool, optional):
+            Whether to standardize the first bin as 0. Defaults to True.
         percentage (bool, optional):
             Whether to format bins as percentages. Defaults to False.
         condense_last (bool, optional):
@@ -77,7 +78,9 @@ def ale(
             be referenced as ```Area (cm^2)```). Column names which are Python keywords
             (like "list", "for", "import", etc) cannot be used.
             For example, if one of your columns is called ``a a`` and you want
-            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+            to sum it with ``b``, your query should be ```a a` + b``.
+            For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+            Defaults to None.
         model_names (Optional[List[str]], optional):
             Name of models to use as columns if supplying multiple models. Defaults to None.
     """
@@ -189,6 +192,8 @@ def plot_ale(
             Maximum number of unique values for categorical variable. Defaults to 20.
         normalize_quantiles (bool, optional):
             Whether to display bins as ranges instead of values. Defaults to True.
+        standardize_values (bool, optional):
+            Whether to standardize the first bin as 0. Defaults to True.
         percentage (bool, optional):
             Whether to format bins as percentages. Defaults to False.
         condense_last (bool, optional):
@@ -209,7 +214,9 @@ def plot_ale(
             be referenced as ```Area (cm^2)```). Column names which are Python keywords
             (like "list", "for", "import", etc) cannot be used.
             For example, if one of your columns is called ``a a`` and you want
-            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+            to sum it with ``b``, your query should be ```a a` + b``.
+            For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+            Defaults to None.
         dep_name (Optional[str], optional):
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_names (Optional[str], optional):
@@ -316,6 +323,7 @@ def ale_2d(
     cols: List[str],
     grid_size: int = 40,
     max_card: int = 20,
+    standardize_values: bool = True,
     dp: int = 2,
     percentage: bool = False,
     condense_last: bool = True,
@@ -336,6 +344,8 @@ def ale_2d(
             Number of predictor quantiles to bin data into. Defaults to 40.
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
+        standardize_values (bool, optional):
+            Whether to standardize the minimum as 0. Defaults to True.
         dp (int, optional):
             Decimal points to format. Defaults to 2.
         percentage (bool, optional):
@@ -354,7 +364,9 @@ def ale_2d(
             be referenced as ```Area (cm^2)```). Column names which are Python keywords
             (like "list", "for", "import", etc) cannot be used.
             For example, if one of your columns is called ``a a`` and you want
-            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+            to sum it with ``b``, your query should be ```a a` + b``.
+            For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+            Defaults to None.
     """
 
     numeric_1, numeric_2 = (
@@ -370,7 +382,8 @@ def ale_2d(
     df = _aleplot_2D_continuous(
         X=xs, model=m, features=cols, grid_size=grid_size, bins_0=bins_0, bins_1=bins_1
     )
-    df = df - df.min().min()
+    if standardize_values:
+        df = df - df.min().min()
 
     if numeric_1:
         df.index = convert_ale_index(
@@ -389,6 +402,7 @@ def plot_ale_2d(
     cols: List[str],
     grid_size: int = 40,
     max_card: int = 20,
+    standardize_values: bool = True,
     dp: int = 2,
     percentage: bool = False,
     condense_last: bool = True,
@@ -414,6 +428,8 @@ def plot_ale_2d(
             Number of predictor quantiles to bin data into. Defaults to 40.
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
+        standardize_values (bool, optional):
+            Whether to standardize the minimum as 0. Defaults to True.
         dp (int, optional):
             Decimal points to format. Defaults to 2.
         percentage (bool, optional):
@@ -432,7 +448,9 @@ def plot_ale_2d(
             be referenced as ```Area (cm^2)```). Column names which are Python keywords
             (like "list", "for", "import", etc) cannot be used.
             For example, if one of your columns is called ``a a`` and you want
-            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+            to sum it with ``b``, your query should be ```a a` + b``.
+            For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+            Defaults to None.
         dep_name (Optional[str], optional):
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_names (Optional[str], optional):
@@ -456,6 +474,7 @@ def plot_ale_2d(
         cols=cols,
         grid_size=grid_size,
         max_card=max_card,
+        standardize_values=standardize_values,
         dp=dp,
         percentage=percentage,
         condense_last=condense_last,
@@ -877,6 +896,7 @@ def _get_ale_traces(
 
 
 def convert_ale_index(index, dp, percentage, condense_last):
+    """Format ALE binned values"""
     if percentage:
         return [f"{index[0]:,.{dp}%}"] + bin_columns(
             index, dp=dp, percentage=percentage, condense_last=condense_last
