@@ -12,12 +12,6 @@ from FastExplain.utils import (
 )
 
 
-def _get_ebm_index(m, col):
-    ebm_global = m.explain_global()
-    col_dict = {i: count for count, i in enumerate(ebm_global.data()["names"])}
-    return col_dict[col]
-
-
 def ebm_explain_summary(m, xs, col, model_names=None, *args, **kwargs):
     if isinstance(m, (list, tuple)):
         model_names = ifnone(model_names, [f"Model {i}" for i in range(len(m))])
@@ -183,3 +177,9 @@ class EbmExplain:
         return plot_ebm_explain(
             self.m, self.xs, col, dep_name=dep_name, *args, **kwargs
         )
+
+
+def _get_ebm_index(m, col):
+    ebm_global = m.explain_global()
+    col_dict = {i: count for count, i in enumerate(ebm_global.data()["names"])}
+    return col_dict[col]

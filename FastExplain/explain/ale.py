@@ -1,8 +1,10 @@
+import warnings
+from typing import List, Optional, Union
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 from sklearn.neighbors import NearestNeighbors
-from typing import Union, Optional, List
 
 from FastExplain.clean import check_cont_col
 from FastExplain.explain.bin import CI_estimate, quantile_ied
@@ -11,7 +13,6 @@ from FastExplain.utils import (
     bin_columns,
     clean_text,
     cycle_colours,
-    fill_list,
     get_upper_lower_bound_traces,
     ifnone,
     merge_multi_df,
@@ -27,9 +28,9 @@ def ale(
     grid_size: int = 20,
     bins: Optional[List[float]] = None,
     numeric: Optional[bool] = None,
-    max_card: int=20,
+    max_card: int = 20,
     normalize_quantiles: bool = True,
-    standardize_values: bool=True,
+    standardize_values: bool = True,
     percentage: bool = False,
     condense_last: bool = True,
     remove_last_bins: Optional[int] = None,
@@ -41,31 +42,31 @@ def ale(
     Calculate ALE values for a predictor feature in a model
 
     Args:
-        m (Union[List[type], type]): 
+        m (Union[List[type], type]):
             Model class that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
-        xs (Union[List[pd.DataFrame], pd.DataFrame]): 
+        xs (Union[List[pd.DataFrame], pd.DataFrame]):
             Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
-        col (str): 
+        col (str):
             Name of predictor feature to use for ALE
-        grid_size (int, optional): 
+        grid_size (int, optional):
             Number of predictor quantiles to bin data into. Defaults to 20.
-        bins (Optional[List[float]], optional): 
+        bins (Optional[List[float]], optional):
             Optionally, provide a list of values to bin predictor into, in place of quantile segmentation. Defaults to None.
-        numeric (Optional[bool], optional): 
+        numeric (Optional[bool], optional):
             Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_cards. Defaults to None.
-        max_card (int, optional): 
+        max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
-        normalize_quantiles (bool, optional): 
+        normalize_quantiles (bool, optional):
             Whether to display bins as ranges instead of values. Defaults to True.
-        percentage (bool, optional): 
+        percentage (bool, optional):
             Whether to format bins as percentages. Defaults to False.
-        condense_last (bool, optional): 
+        condense_last (bool, optional):
             Whether to bin last value with a greater than. Defaults to True.
-        remove_last_bins (Optional[int], optional): 
+        remove_last_bins (Optional[int], optional):
             Number of bins to remove. Defaults to None.
-        dp (int, optional): 
+        dp (int, optional):
             Decimal points to format. Defaults to 2.
-        filter (Optional[str], optional): 
+        filter (Optional[str], optional):
             The query string to evaluate.
             You can refer to variables
             in the environment by prefixing them with an '@' character like
@@ -78,7 +79,7 @@ def ale(
             (like "list", "for", "import", etc) cannot be used.
             For example, if one of your columns is called ``a a`` and you want
             to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
-        model_names (Optional[List[str]], optional): 
+        model_names (Optional[List[str]], optional):
             Name of models to use as columns if supplying multiple models. Defaults to None.
     """
     if isinstance(m, (list, tuple)):
@@ -147,52 +148,6 @@ def ale(
         )
 
 
-def _clean_ale(
-    m: Union[List[type], type],
-    xs: Union[List[pd.DataFrame], pd.DataFrame],
-    col: str,
-    grid_size: int = 20,
-    bins: Optional[List[float]] = None,
-    numeric: Optional[bool] = None,
-    max_card: int=20,
-    normalize_quantiles: bool = True,
-    standardize_values: bool=True,
-    percentage: bool = False,
-    condense_last: bool = True,
-    remove_last_bins: Optional[int] = None,
-    dp: int = 2,
-    filter: Optional[str] = None,
-):
-    """Base function for cleaning ALE"""
-    xs = xs.query(filter) if filter else xs
-    numeric = ifnone(numeric, check_cont_col(xs[col],max_card=max_card))
-    bins = bins if numeric else sorted(list(xs[col].unique()))
-    df = _aleplot_1D_continuous(
-        xs,
-        model=m,
-        feature=col,
-        bins=bins,
-        grid_size=grid_size,
-    )
-    df = df[~df.index.duplicated(keep="last")]
-    if standardize_values:
-        adjust = -1 * df.iloc[0]["eff"]
-        df["eff"] += adjust
-        df["lowerCI_95%"] += adjust
-        df["upperCI_95%"] += adjust
-
-    if numeric is False:
-        df["size"] = list(xs[col].value_counts().sort_index())
-
-    if normalize_quantiles and numeric:
-        df.index = convert_ale_index(
-            pd.to_numeric(df.index), dp, percentage, condense_last
-        )
-    if remove_last_bins:
-        df = df.iloc[:-remove_last_bins]
-    return df
-
-
 def plot_ale(
     m,
     xs: Union[List[pd.DataFrame], pd.DataFrame],
@@ -200,9 +155,9 @@ def plot_ale(
     grid_size: int = 20,
     bins: Optional[List[float]] = None,
     numeric: Optional[bool] = None,
-    max_card: int=20,
+    max_card: int = 20,
     normalize_quantiles: bool = True,
-    standardize_values:bool =True,
+    standardize_values: bool = True,
     percentage: bool = False,
     condense_last: bool = True,
     remove_last_bins: Optional[int] = None,
@@ -214,6 +169,59 @@ def plot_ale(
     main_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
 ):
+
+    """
+    Plot ALE values for a predictor feature in a model
+
+    Args:
+        m (Union[List[type], type]):
+            Model class that uses feature as a predictor. Can supply a list of models with the same feature and dependent variable to create a cross-comparison
+        xs (Union[List[pd.DataFrame], pd.DataFrame]):
+            Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
+        col (str):
+            Name of predictor feature to use for ALE
+        grid_size (int, optional):
+            Number of predictor quantiles to bin data into. Defaults to 20.
+        bins (Optional[List[float]], optional):
+            Optionally, provide a list of values to bin predictor into, in place of quantile segmentation. Defaults to None.
+        numeric (Optional[bool], optional):
+            Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_cards. Defaults to None.
+        max_card (int, optional):
+            Maximum number of unique values for categorical variable. Defaults to 20.
+        normalize_quantiles (bool, optional):
+            Whether to display bins as ranges instead of values. Defaults to True.
+        percentage (bool, optional):
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional):
+            Whether to bin last value with a greater than. Defaults to True.
+        remove_last_bins (Optional[int], optional):
+            Number of bins to remove. Defaults to None.
+        dp (int, optional):
+            Decimal points to format. Defaults to 2.
+        filter (Optional[str], optional):
+            The query string to evaluate.
+            You can refer to variables
+            in the environment by prefixing them with an '@' character like
+            ``@a + b``.
+            You can refer to column names that are not valid Python variable names
+            by surrounding them in backticks. Thus, column names containing spaces
+            or punctuations (besides underscores) or starting with digits must be
+            surrounded by backticks. (For example, a column named "Area (cm^2)" would
+            be referenced as ```Area (cm^2)```). Column names which are Python keywords
+            (like "list", "for", "import", etc) cannot be used.
+            For example, if one of your columns is called ``a a`` and you want
+            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+        dep_name (Optional[str], optional):
+            Custom name to use for dependent variable on plot. Defaults to None.
+        feature_names (Optional[str], optional):
+            Custom names to use for predictor variable on plot. Defaults to None.
+        model_names (Optional[List[str]], optional):
+            Name of models if supplying multiple models. Defaults to None.
+        main_title (Optional[str], optional):
+            Custom name to use for title of plot. Defaults to None.
+        plotsize (Optional[List[int]], optional):
+            Custom plotsize supplied as (width, height). Defaults to None.
+    """
 
     feature_name = ifnone(feature_name, clean_text(col))
     if isinstance(m, (list, tuple)):
@@ -303,99 +311,156 @@ def plot_ale(
     return fig
 
 
-def _get_ale_traces(
-    m,
+def ale_2d(
+    m: type,
     xs: pd.DataFrame,
-    col: str,
-    model_name: str,
-    color: str,
-    return_index_size: bool = True,
-    grid_size: int = 20,
-    bins: Optional[List[float]] = None,
-    numeric: Optional[bool] = None,
-    max_card:int=20,
-    normalize_quantiles: bool = True,
-    standardize_values: bool=True,
+    cols: List[str],
+    grid_size: int = 40,
+    max_card: int = 20,
+    dp: int = 2,
     percentage: bool = False,
     condense_last: bool = True,
-    remove_last_bins: Optional[int] = None,
-    dp: int = 2,
     filter: Optional[str] = None,
 ):
-    df = ale(
-        m,
-        xs,
-        col,
-        grid_size=grid_size,
-        bins=bins,
-        numeric=numeric,
-        max_card=max_card,
-        normalize_quantiles=normalize_quantiles,
-        standardize_values=standardize_values,
-        percentage=percentage,
-        condense_last=condense_last,
-        remove_last_bins=remove_last_bins,
-        dp=dp,
-        filter=filter,
-    )
-    x = df.index
-    y = df["eff"]
-    size = df["size"]
-    y_lower = df["lowerCI_95%"]
-    y_upper = df["upperCI_95%"]
-    return get_upper_lower_bound_traces(
-        x=x,
-        y=y,
-        y_lower=y_lower,
-        y_upper=y_upper,
-        size=size,
-        color=color,
-        line_name=model_name,
-        return_index_size=return_index_size,
+
+    """
+    Calculate ALE values for a pair of predictor features in a model
+
+    Args:
+        m (type):
+            Model class that uses features as a predictor.
+        xs (pd.DataFrame):
+            Dataframe used by model to predict.
+        col (List[str]):
+            Name of the predictor feature pair to use for ALE
+        grid_size (int, optional):
+            Number of predictor quantiles to bin data into. Defaults to 40.
+        max_card (int, optional):
+            Maximum number of unique values for categorical variable. Defaults to 20.
+        dp (int, optional):
+            Decimal points to format. Defaults to 2.
+        percentage (bool, optional):
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional):
+            Whether to bin last value with a greater than. Defaults to True.
+        filter (Optional[str], optional):
+            The query string to evaluate.
+            You can refer to variables
+            in the environment by prefixing them with an '@' character like
+            ``@a + b``.
+            You can refer to column names that are not valid Python variable names
+            by surrounding them in backticks. Thus, column names containing spaces
+            or punctuations (besides underscores) or starting with digits must be
+            surrounded by backticks. (For example, a column named "Area (cm^2)" would
+            be referenced as ```Area (cm^2)```). Column names which are Python keywords
+            (like "list", "for", "import", etc) cannot be used.
+            For example, if one of your columns is called ``a a`` and you want
+            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+    """
+
+    numeric_1, numeric_2 = (
+        check_cont_col(xs[cols[0]], max_card=max_card),
+        check_cont_col(xs[cols[1]], max_card=max_card),
     )
 
+    bins = [None, None]
+    bins_0 = bins[0] if numeric_1 else sorted(list(xs[cols[0]].unique()))
+    bins_1 = bins[1] if numeric_2 else sorted(list(xs[cols[1]].unique()))
 
-def plot_multi_ale(m, xs, cols, index, plotsize=None, *args, **kwargs):
-    pdp = {
-        i: fill_list(list(ale(m, xs, i, *args, **kwargs)["eff"]), len(index))
-        for i in cols
-    }
-    pdp_df = pd.DataFrame(pdp, index=index)
-    fig = px.line(pdp_df, x=pdp_df.index, y=pdp_df.columns)
-    if plotsize:
-        fig.update_layout(
-            width=plotsize[0],
-            height=plotsize[1],
+    xs = xs.query(filter) if filter else xs
+    df = _aleplot_2D_continuous(
+        X=xs, model=m, features=cols, grid_size=grid_size, bins_0=bins_0, bins_1=bins_1
+    )
+    df = df - df.min().min()
+
+    if numeric_1:
+        df.index = convert_ale_index(
+            index=df.index, dp=dp, percentage=percentage, condense_last=condense_last
         )
-    fig.update_layout(plot_bgcolor="white")
-    return fig
+    if numeric_2:
+        df.columns = convert_ale_index(
+            index=df.columns, dp=dp, percentage=percentage, condense_last=condense_last
+        )
+    return df
 
 
-def plot_2d_ale(
-    m,
-    xs,
-    cols,
-    dp=2,
-    feature_names=None,
-    percentage=False,
-    condense_last=True,
-    plotsize=None,
-    colorscale="Blues",
-    dep_name=None,
-    *args,
-    **kwargs,
+def plot_ale_2d(
+    m: type,
+    xs: pd.DataFrame,
+    cols: List[str],
+    grid_size: int = 40,
+    max_card: int = 20,
+    dp: int = 2,
+    percentage: bool = False,
+    condense_last: bool = True,
+    filter: Optional[str] = None,
+    dep_name: Optional[str] = None,
+    feature_names: Optional[List[str]] = None,
+    main_title: Optional[str] = None,
+    plotsize: Optional[List[int]] = None,
+    colorscale: Union[List[str], str] = "Blues",
 ):
 
+    """
+    Calculate ALE values for a pair of predictor features in a model
+
+    Args:
+        m (type):
+            Model class that uses features as a predictor.
+        xs (pd.DataFrame):
+            Dataframe used by model to predict.
+        col (List[str]):
+            Name of the predictor feature pair to use for ALE
+        grid_size (int, optional):
+            Number of predictor quantiles to bin data into. Defaults to 40.
+        max_card (int, optional):
+            Maximum number of unique values for categorical variable. Defaults to 20.
+        dp (int, optional):
+            Decimal points to format. Defaults to 2.
+        percentage (bool, optional):
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional):
+            Whether to bin last value with a greater than. Defaults to True.
+        filter (Optional[str], optional):
+            The query string to evaluate.
+            You can refer to variables
+            in the environment by prefixing them with an '@' character like
+            ``@a + b``.
+            You can refer to column names that are not valid Python variable names
+            by surrounding them in backticks. Thus, column names containing spaces
+            or punctuations (besides underscores) or starting with digits must be
+            surrounded by backticks. (For example, a column named "Area (cm^2)" would
+            be referenced as ```Area (cm^2)```). Column names which are Python keywords
+            (like "list", "for", "import", etc) cannot be used.
+            For example, if one of your columns is called ``a a`` and you want
+            to sum it with ``b``, your query should be ```a a` + b``.. Defaults to None.
+        dep_name (Optional[str], optional):
+            Custom name to use for dependent variable on plot. Defaults to None.
+        feature_names (Optional[str], optional):
+            Custom names to use for predictor variables on plot. Defaults to None.
+        main_title (Optional[str], optional):
+            Custom name to use for title of plot. Defaults to None.
+        plotsize (Optional[List[int]], optional):
+            Custom plotsize supplied as (width, height). Defaults to None.
+        colorscale(Union[List[str], str], optional):
+            Colormap used to map scalar data to colors (for a 2D image).
+            If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
+            For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
+    """
+
     feature_1, feature_2 = ifnone(
-        feature_names, clean_text(cols[0]), clean_text(cols[1])
+        feature_names, (clean_text(cols[0]), clean_text(cols[1]))
     )
-    df = _aleplot_2D_continuous(xs, m, cols, *args, **kwargs)
-    df = df - df.min().min()
-    df.index = convert_ale_index(
-        index=df.index, dp=dp, percentage=percentage, condense_last=condense_last
-    )
-    df.columns = convert_ale_index(
-        index=df.columns, dp=dp, percentage=percentage, condense_last=condense_last
+    df = ale_2d(
+        m=m,
+        xs=xs,
+        cols=cols,
+        grid_size=grid_size,
+        max_card=max_card,
+        dp=dp,
+        percentage=percentage,
+        condense_last=condense_last,
+        filter=filter,
     )
     fig = plot_two_way(
         df=df,
@@ -409,21 +474,11 @@ def plot_2d_ale(
         if dep_name
         else f"ALE {feature_1} and {feature_2}"
     )
+    main_title = ifnone(main_title, title)
     fig.update_layout(
-        title=title,
+        title=main_title,
     )
     return fig
-
-
-def convert_ale_index(index, dp, percentage, condense_last):
-    if percentage:
-        return [f"{index[0]:,.{dp}%}"] + bin_columns(
-            index, dp=dp, percentage=percentage, condense_last=condense_last
-        )
-    else:
-        return [f"{index[0]:,.{dp}f}"] + bin_columns(
-            index, dp=dp, percentage=percentage, condense_last=condense_last
-        )
 
 
 class Ale:
@@ -439,11 +494,11 @@ class Ale:
         dep_name = ifnone(dep_name, self.dep_var)
         return plot_ale(self.m, self.xs, col, dep_name=dep_name, *args, **kwargs)
 
-    def plot_multi_ale(self, *args, **kwargs):
-        return plot_multi_ale(self.m, self.xs, *args, **kwargs)
+    def ale_2d(self, *args, **kwargs):
+        return ale_2d(self.m, self.xs, *args, **kwargs)
 
-    def plot_2d_ale(self, *args, **kwargs):
-        return plot_2d_ale(self.m, self.xs, *args, **kwargs)
+    def plot_ale_2d(self, *args, **kwargs):
+        return plot_ale_2d(self.m, self.xs, *args, **kwargs)
 
 
 def _aleplot_1D_continuous(
@@ -456,17 +511,6 @@ def _aleplot_1D_continuous(
     This function divides the feature in question into grid_size intervals (bins)
     and computes the difference in prediction between the first and last value
     of each interval and then centers the results.
-
-    Arguments:
-    X -- A pandas DataFrame to pass to the model for prediction.
-    model -- Any python model with a predict method that accepts X as input.
-    feature -- String, the name of the column holding the feature being studied.
-    grid_size -- An integer indicating the number of intervals into which the
-    feature range is divided.
-    bins -- Bins indicating what intervals the feature range is divided
-    include_CI -- A boolean, if True the confidence interval
-    of the effect is returned with the results.
-    C -- A float the confidence level for which to compute the confidence interval
 
     Return: A pandas DataFrame containing for each bin: the size of the sample in it
     and the accumulated centered effect of this bin.
@@ -519,7 +563,7 @@ def _aleplot_1D_continuous(
     return res_df
 
 
-def _aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
+def _aleplot_2D_continuous(X, model, features, grid_size=40, bins_0=None, bins_1=None):
     """
     https://github.com/DanaJomar/PyALE
     Compute the two dimentional accumulated local effect of a two numeric continuous features.
@@ -528,37 +572,24 @@ def _aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
     grid_size*grid_size and computes the difference in prediction between the four
     edges (corners) of each bin in the grid and then centers the results.
 
-    Arguments:
-    X -- A pandas DataFrame to pass to the model for prediction.
-    model -- Any python model with a predict method that accepts X as input.
-    features -- A list of twos strings indicating the names of the columns
-    holding the features in question.
-    grid_size -- An integer indicating the number of intervals into which each
-    feature range is divided.
-    bins -- Bins indicating what intervals the feature range is divided
-
     Return: A pandas DataFrame containing for each bin in the grid
     the accumulated centered effect of this bin.
     """
 
     # reset index to avoid index missmatches when replacing the values with the codes (lines 50 - 73)
     X = X.reset_index(drop=True)
+    quantiles = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
 
-    if bins is None:
-        quantiles = np.append(
-            0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size)
-        )
+    if bins_0 is None:
         bins_0 = [X[features[0]].min()] + quantile_ied(
             X[features[0]], quantiles
         ).to_list()
-        bins_0 = np.unique(bins_0)
+    bins_0 = np.unique(bins_0)
+    if bins_1 is None:
         bins_1 = [X[features[1]].min()] + quantile_ied(
             X[features[1]], quantiles
         ).to_list()
-        bins_1 = np.unique(bins_1)
-
-    else:
-        bins_0, bins_1 = bins
+    bins_1 = np.unique(bins_1)
 
     feat_cut_0 = pd.cut(X[features[0]], bins_0, include_lowest=True)
     bin_codes_0 = feat_cut_0.cat.codes
@@ -675,7 +706,8 @@ def _aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
             )
             / 2
         )
-        .sum(level=0)
+        .groupby(level=0)
+        .sum()
         .div(sizes_0)
         .fillna(0)
         .cumsum()
@@ -688,7 +720,8 @@ def _aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
             * (eff_df_1.groupby(level=1).shift(periods=1, fill_value=0) + eff_df_1)
             / 2
         )
-        .sum(level=1)
+        .groupby(level=1)
+        .sum()
         .div(sizes_1)
         .fillna(0)
         .cumsum()
@@ -730,8 +763,10 @@ def _aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
                 ].values
             )
             / 4
-        ).sum()
-        / sizes_df.sum()
+        )
+        .groupby(level=1)
+        .sum()
+        / sizes_df.groupby(level=1).sum()
     )
 
     # renaming and preparing final output
@@ -741,3 +776,113 @@ def _aleplot_2D_continuous(X, model, features, grid_size=40, bins=None):
     eff_grid = eff_df.pivot_table(columns=features[1], values="eff", index=features[0])
 
     return eff_grid
+
+
+def _clean_ale(
+    m: Union[List[type], type],
+    xs: Union[List[pd.DataFrame], pd.DataFrame],
+    col: str,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    numeric: Optional[bool] = None,
+    max_card: int = 20,
+    normalize_quantiles: bool = True,
+    standardize_values: bool = True,
+    percentage: bool = False,
+    condense_last: bool = True,
+    remove_last_bins: Optional[int] = None,
+    dp: int = 2,
+    filter: Optional[str] = None,
+):
+    """Base function for cleaning ALE"""
+    xs = xs.query(filter) if filter else xs
+    numeric = ifnone(numeric, check_cont_col(xs[col], max_card=max_card))
+    bins = bins if numeric else sorted(list(xs[col].unique()))
+    df = _aleplot_1D_continuous(
+        X=xs,
+        model=m,
+        feature=col,
+        bins=bins,
+        grid_size=grid_size,
+    )
+    df = df[~df.index.duplicated(keep="last")]
+    if standardize_values:
+        adjust = -1 * df.iloc[0]["eff"]
+        df["eff"] += adjust
+        df["lowerCI_95%"] += adjust
+        df["upperCI_95%"] += adjust
+
+    if numeric is False:
+        df["size"] = list(xs[col].value_counts().sort_index())
+
+    if normalize_quantiles and numeric:
+        df.index = convert_ale_index(
+            pd.to_numeric(df.index), dp, percentage, condense_last
+        )
+    if remove_last_bins:
+        df = df.iloc[:-remove_last_bins]
+    return df
+
+
+def _get_ale_traces(
+    m,
+    xs: pd.DataFrame,
+    col: str,
+    model_name: str,
+    color: str,
+    return_index_size: bool = True,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    numeric: Optional[bool] = None,
+    max_card: int = 20,
+    normalize_quantiles: bool = True,
+    standardize_values: bool = True,
+    percentage: bool = False,
+    condense_last: bool = True,
+    remove_last_bins: Optional[int] = None,
+    dp: int = 2,
+    filter: Optional[str] = None,
+):
+    """Base function for plotting ALE"""
+    df = ale(
+        m,
+        xs,
+        col,
+        grid_size=grid_size,
+        bins=bins,
+        numeric=numeric,
+        max_card=max_card,
+        normalize_quantiles=normalize_quantiles,
+        standardize_values=standardize_values,
+        percentage=percentage,
+        condense_last=condense_last,
+        remove_last_bins=remove_last_bins,
+        dp=dp,
+        filter=filter,
+    )
+    x = df.index
+    y = df["eff"]
+    size = df["size"]
+    y_lower = df["lowerCI_95%"]
+    y_upper = df["upperCI_95%"]
+    return get_upper_lower_bound_traces(
+        x=x,
+        y=y,
+        y_lower=y_lower,
+        y_upper=y_upper,
+        size=size,
+        color=color,
+        line_name=model_name,
+        return_index_size=return_index_size,
+    )
+
+
+def convert_ale_index(index, dp, percentage, condense_last):
+    if percentage:
+        return [f"{index[0]:,.{dp}%}"] + bin_columns(
+            index, dp=dp, percentage=percentage, condense_last=condense_last
+        )
+    else:
+        return [f"{index[0]:,.{dp}f}"] + bin_columns(
+            index, dp=dp, percentage=percentage, condense_last=condense_last
+        )

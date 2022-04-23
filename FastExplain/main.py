@@ -42,45 +42,45 @@ def model_data(
     8. Optionally, hypertune model using Bayesian Optimization
 
     Args:
-        df (pd.DataFrame): 
+        df (pd.DataFrame):
             Pandas DataFrame with columns including the dependent and predictor variables.
-        dep_var (str): 
+        dep_var (str):
             Column name of dependent variable
-        cat_names (Optional[List[str]], optional): 
+        cat_names (Optional[List[str]], optional):
             Column names of categorical predictor variables. If both cat_names and cont_names is None, they are automatically extracted based on max_card. Defaults to None.
-        cont_names (Optional[List[str]], optional): 
+        cont_names (Optional[List[str]], optional):
             Column names of continuous predictor variables. If both cat_names and cont_names is None, they are automatically extracted based on max_card. Defaults to None.
-        max_card (int, optional): 
+        max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
-        model (Union[str, type, Callable], optional): 
+        model (Union[str, type, Callable], optional):
             Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
-        perc_train (int, optional): 
+        perc_train (int, optional):
             Percentage of data to split as training. Defaults to 0.8.
-        seed (int, optional): 
+        seed (int, optional):
             Seed for splitting data. Defaults to 0.
-        splits (Optional[List[List]], optional): 
+        splits (Optional[List[List]], optional):
             Index of df to split data on. If not specified, data will be split based on perc_train. Defaults to None.
-        cat_strategy (str, optional): 
+        cat_strategy (str, optional):
             Categorical encoding strategy. Can pick from 'ordinal' or 'one-hot'. Defaults to "ordinal".
-        fill_strategy (str, optional): 
+        fill_strategy (str, optional):
             NA filling strategy. Can pick from 'median', 'constant' or 'mode' . Defaults to "median".
-        fill_const (int, optional): 
+        fill_const (int, optional):
             Value to fill NAs with if fill_strategy is 'constant'. Defaults to 0.
-        na_dummy (bool, optional): 
+        na_dummy (bool, optional):
             Whether to create a dummy column for NA values. Defaults to True.
-        cont_transformations (List[type], optional): 
+        cont_transformations (List[type], optional):
             Additional transformations for continuous predictor variables. Transformations must be supplied as a class with fit_transform and transform attributes. Defaults to [].
-        reduce_memory (bool, optional): 
+        reduce_memory (bool, optional):
             Whether to reduce the memory of df in storage. Defaults to True.
-        hypertune (bool, optional): 
+        hypertune (bool, optional):
             Whether to hypertune model with Bayesian Optimization. Defaults to False.
-        hypertune_max_evals (int, optional): 
+        hypertune_max_evals (int, optional):
             Number of evaluations to hypertune. Defaults to 100.
-        hypertune_params (Optional[dict], optional): 
+        hypertune_params (Optional[dict], optional):
             Dictionary containing parameters of model to hypertune. Key for each parameter must be an array of [lower (numeric), upper (numeric), is_integer (bool)]. Defaults to None.
-        hypertune_loss_metric (Optional[Callable], optional): 
+        hypertune_loss_metric (Optional[Callable], optional):
             Function to minimise when hypertuning. Arguments of function must contain m (the model), xs (predictors) and y (target). If not specified, cross entropy is used for classification and mean squared errr for regression. Defaults to None.
-        *model_args, **model_kwargs: 
+        *model_args, **model_kwargs:
             Additional arguments for the model
     """
 

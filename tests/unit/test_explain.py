@@ -33,6 +33,18 @@ def test_ale(rf_class_object, xgb_class_object):
     assert True
 
 
+def test_ale_2d(rf_class_object, xgb_class_object):
+    rf_class_object.plot_ale_2d(["Age", "SibSp"])
+    xgb_class_object.plot_ale_2d(
+        ["Age", "SibSp"],
+        filter="Age < 30",
+        main_title="Test",
+        dep_name="Test",
+        feature_names=["Test", "Test"],
+    )
+    assert True
+
+
 def test_ale_class(rf_class_object, xgb_class_object):
     assert len(rf_class_object.ale("Sex").index) == 2
     assert len(xgb_class_object.ale("Cabin", numeric=False).index) == 148

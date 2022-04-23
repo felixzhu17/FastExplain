@@ -38,6 +38,7 @@ def quantile_ied(x_vec, q):
 
 def get_bins(x, grid_size):
     """
+    https://github.com/DanaJomar/PyALE
     Return quantiled bin values with number of quantiles equal to 'grid_size'
     """
     quantiles = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
