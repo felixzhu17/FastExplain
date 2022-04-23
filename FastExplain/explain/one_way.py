@@ -300,7 +300,7 @@ def get_two_way_analysis(
     )
     df = df[~df[col_1].isna()] if numeric_1 else df
     df = df[~df[col_2].isna()] if numeric_2 else df
-    bin_1, bin_2 = ifnone(bins, get_bins(df[col_1], grid_size), get_bins(df[col_2], grid_size))
+    bin_1, bin_2 = ifnone(bins, (get_bins(df[col_1], grid_size), get_bins(df[col_2], grid_size)))
     filtered_df = df[x_cols + [y_col]].copy()
     filtered_df[col_1] = (
         pd.cut(filtered_df[col_1], bin_1, include_lowest=True)
