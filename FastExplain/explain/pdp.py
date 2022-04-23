@@ -13,7 +13,7 @@ def plot_ice(
     dep_name=None,
     feature_name=None,
     plotsize=None,
-    main_title=None,
+    plot_title=None,
     filter=None,
     sample=500,
     *args,
@@ -50,9 +50,9 @@ def plot_ice(
         if dep_name
         else f"ICE Plot of {feature_name}"
     )
-    main_title = ifnone(main_title, title)
+    plot_title = ifnone(plot_title, title)
     fig.update_layout(
-        title=main_title,
+        title=plot_title,
         xaxis_title=feature_name,
         plot_bgcolor="white",
     )

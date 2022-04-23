@@ -6,15 +6,29 @@ from FastExplain.utils.colours import COLOURS
 from FastExplain.utils.logic import clean_text, ifnone
 
 
-def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"):
+def plot_two_way(
+    df,
+    x_cols,
+    feature_names=None,
+    dep_name=None,
+    plot_title=None,
+    plotsize=None,
+    colorscale="Blues",
+):
     fig = px.imshow(df, color_continuous_scale=colorscale)
 
     feature_1, feature_2 = ifnone(
-        feature_names, (clean_text(cols[0]), clean_text(cols[1]))
+        feature_names, (clean_text(x_cols[0]), clean_text(x_cols[1]))
     )
 
+    plot_title = ifnone(
+        plot_title,
+        f"{feature_1} and {feature_2} vs {dep_name}"
+        if dep_name
+        else f"{feature_1} and {feature_2}",
+    )
     fig.update_layout(
-        title=f"Joint Distribution of {feature_1} and {feature_2}",
+        title=plot_title,
         xaxis_title=feature_2,
         yaxis_title=feature_1,
     )
@@ -26,15 +40,24 @@ def plot_two_way(df, cols, feature_names=None, plotsize=None, colorscale="Blues"
     return fig
 
 
-def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
-    feature_1, feature_2 = ifnone(
-        feature_names, (clean_text(cols[0]), clean_text(cols[1]))
-    )
+def plot_one_way(
+    df,
+    x_col,
+    y_col,
+    size=None,
+    x_axis_name=None,
+    y_axis_name=None,
+    plot_title=None,
+    plotsize=None,
+):
+
+    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
+    y_axis_name = ifnone(y_axis_name, clean_text(y_col))
 
     if size is not None:
         fig = create_secondary_axis_plotly(
             px.line(
-                df, x=df.index, y=cols[1], color_discrete_sequence=[COLOURS["blue"]]
+                df, x=df.index, y=y_col, color_discrete_sequence=[COLOURS["blue"]]
             )
         )
         fig.add_trace(
@@ -45,14 +68,16 @@ def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
         )
         _two_axis_layout(fig)
         fig.update_yaxes(title_text="Frequency", secondary_y=False)
-        fig.update_yaxes(title_text=feature_2, secondary_y=True)
+        fig.update_yaxes(title_text=y_axis_name, secondary_y=True)
     else:
-        fig = px.line(df, x=df.index, y=cols[1])
-        fig.update_yaxes(title_text=feature_2)
+        fig = px.line(df, x=df.index, y=y_col)
+        fig.update_yaxes(title_text=y_axis_name)
+
+    plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
 
     fig.update_layout(
-        title=f"{feature_1} vs {feature_2}",
-        xaxis_title=feature_1,
+        title=plot_title,
+        xaxis_title=x_axis_name,
         plot_bgcolor="white",
     )
     if plotsize:
@@ -63,31 +88,40 @@ def plot_one_way(df, cols, size=None, feature_names=None, plotsize=None):
     return fig
 
 
-def plot_two_one_way(df, cols, feature_names=None, plotsize=None):
-    feature_1, feature_2, feature_3 = ifnone(
-        feature_names, (clean_text(cols[0]), clean_text(cols[1]), clean_text(cols[2]))
+def plot_two_one_way(
+    df, x_col, y_col, x_axis_name=None, y_axis_name=None, plot_title=None, plotsize=None
+):
+
+    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
+    y_axis_name_1, y_axis_name_2 = ifnone(
+        y_axis_name, (clean_text(y_col[0]), clean_text(y_col[1]))
     )
 
     fig = create_secondary_axis_plotly(
-        px.line(df, x=df.index, y=cols[1], color_discrete_sequence=[COLOURS["blue"]])
+        px.line(df, x=df.index, y=y_col[0], color_discrete_sequence=[COLOURS["blue"]])
     )
     [
         fig.add_trace(i, secondary_y=False)
         for i in get_plotly_express_traces(
-            px.line(df, x=df.index, y=cols[2], color_discrete_sequence=[COLOURS["red"]])
+            px.line(
+                df, x=df.index, y=y_col[1], color_discrete_sequence=[COLOURS["red"]]
+            )
         )
     ]
     _two_axis_layout(fig)
-    fig["data"][0]["name"] = feature_2
+    fig["data"][0]["name"] = y_axis_name_1
     fig["data"][0]["showlegend"] = True
-    fig["data"][1]["name"] = feature_3
+    fig["data"][1]["name"] = y_axis_name_2
     fig["data"][1]["showlegend"] = True
-    fig.update_yaxes(title_text=feature_3, secondary_y=False)
-    fig.update_yaxes(title_text=feature_2, secondary_y=True)
+    fig.update_yaxes(title_text=y_axis_name_2, secondary_y=False)
+    fig.update_yaxes(title_text=y_axis_name_1, secondary_y=True)
 
+    plot_title = ifnone(
+        plot_title, f"{x_axis_name} vs {y_axis_name_1} and {y_axis_name_2}"
+    )
     fig.update_layout(
-        title=f"{feature_1} vs {feature_2} and {feature_3}",
-        xaxis_title=feature_1,
+        title=plot_title,
+        xaxis_title=x_axis_name,
         plot_bgcolor="white",
     )
     if plotsize:
@@ -153,7 +187,7 @@ def plot_upper_lower_bound_traces(
     x_axis_title=None,
     y_axis_title=None,
     plotsize=None,
-    main_title=None,
+    plot_title=None,
 ):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     for i in traces:
@@ -171,7 +205,7 @@ def plot_upper_lower_bound_traces(
     fig.update_xaxes(title_text=x_axis_title)
     fig.update_yaxes(title_text="Frequency", secondary_y=False)
     fig.update_layout(
-        title=main_title,
+        title=plot_title,
     )
     if y_axis_title:
         fig.update_yaxes(title_text=clean_text(y_axis_title), secondary_y=True)

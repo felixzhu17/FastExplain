@@ -25,14 +25,17 @@ def get_one_way_error(df, error, x_col, *args, **kwargs):
 
 
 def plot_one_way_error(
-    df, error, x_col, feature_names=None, plotsize=None, *args, **kwargs
+    df, error, x_col, x_axis_name=None, plot_title=None, plotsize=None, *args, **kwargs
 ):
-    output = get_one_way_error(df, error, x_col, *args, **kwargs)
+    one_way_error_df = get_one_way_error(df, error, x_col, *args, **kwargs)
     return plot_one_way(
-        output,
-        [x_col, "error"],
-        size=output["size"],
-        feature_names=feature_names,
+        df=one_way_error_df,
+        x_col=x_col,
+        y_col="error",
+        size=one_way_error_df["size"],
+        x_axis_name=x_axis_name,
+        y_axis_name="Error",
+        plot_title=plot_title,
         plotsize=plotsize,
     )
 

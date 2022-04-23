@@ -51,7 +51,7 @@ def ale(
         bins (Optional[List[float]], optional):
             Optionally, provide a list of values to bin predictor into, in place of quantile segmentation. Defaults to None.
         numeric (Optional[bool], optional):
-            Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_cards. Defaults to None.
+            Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
         normalize_quantiles (bool, optional):
@@ -168,7 +168,7 @@ def plot_ale(
     dep_name: Optional[str] = None,
     feature_name: Optional[str] = None,
     model_names: Optional[List[str]] = None,
-    main_title: Optional[str] = None,
+    plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
 ):
 
@@ -187,7 +187,7 @@ def plot_ale(
         bins (Optional[List[float]], optional):
             Optionally, provide a list of values to bin predictor into, in place of quantile segmentation. Defaults to None.
         numeric (Optional[bool], optional):
-            Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_cards. Defaults to None.
+            Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
         normalize_quantiles (bool, optional):
@@ -223,7 +223,7 @@ def plot_ale(
             Custom names to use for predictor variable on plot. Defaults to None.
         model_names (Optional[List[str]], optional):
             Name of models if supplying multiple models. Defaults to None.
-        main_title (Optional[str], optional):
+        plot_title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -304,7 +304,7 @@ def plot_ale(
         if dep_name
         else f"ALE {feature_name}"
     )
-    main_title = ifnone(main_title, title)
+    plot_title = ifnone(plot_title, title)
     fig = plot_upper_lower_bound_traces(
         traces=traces,
         x=x,
@@ -312,7 +312,7 @@ def plot_ale(
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
-        main_title=main_title,
+        plot_title=plot_title,
     )
     return fig
 
@@ -409,7 +409,7 @@ def plot_ale_2d(
     filter: Optional[str] = None,
     dep_name: Optional[str] = None,
     feature_names: Optional[List[str]] = None,
-    main_title: Optional[str] = None,
+    plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     colorscale: Union[List[str], str] = "Blues",
 ):
@@ -455,11 +455,11 @@ def plot_ale_2d(
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_names (Optional[str], optional):
             Custom names to use for predictor variables on plot. Defaults to None.
-        main_title (Optional[str], optional):
+        plot_title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
-        colorscale(Union[List[str], str], optional):
+        colorscale (Union[List[str], str], optional):
             Colormap used to map scalar data to colors (for a 2D image).
             If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
             For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
@@ -480,21 +480,20 @@ def plot_ale_2d(
         condense_last=condense_last,
         filter=filter,
     )
-    fig = plot_two_way(
-        df=df,
-        cols=cols,
-        feature_names=feature_names,
-        plotsize=plotsize,
-        colorscale=colorscale,
-    )
+
     title = (
         f"ALE {feature_1} and {feature_2} vs {clean_text(dep_name)}"
         if dep_name
         else f"ALE {feature_1} and {feature_2}"
     )
-    main_title = ifnone(main_title, title)
-    fig.update_layout(
-        title=main_title,
+    plot_title = ifnone(plot_title, title)
+    fig = plot_two_way(
+        df=df,
+        x_cols=cols,
+        feature_names=feature_names,
+        plot_title=plot_title,
+        plotsize=plotsize,
+        colorscale=colorscale,
     )
     return fig
 

@@ -102,7 +102,7 @@ def plot_ebm_explain(
     model_names: Optional[List[str]] = None,
     dep_name=None,
     feature_name=None,
-    main_title=None,
+    plot_title=None,
     plotsize=None,
 ):
 
@@ -130,7 +130,7 @@ def plot_ebm_explain(
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_names (Optional[str], optional):
             Custom names to use for predictor variable on plot. Defaults to None.
-        main_title (Optional[str], optional):
+        plot_title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -191,7 +191,7 @@ def plot_ebm_explain(
         if dep_name
         else f"EBM {feature_name}"
     )
-    main_title = ifnone(main_title, title)
+    plot_title = ifnone(plot_title, title)
 
     fig = plot_upper_lower_bound_traces(
         traces=traces,
@@ -200,7 +200,7 @@ def plot_ebm_explain(
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
-        main_title=main_title,
+        plot_title=plot_title,
     )
     return fig
 
