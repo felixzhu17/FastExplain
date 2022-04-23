@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from sklearn.neighbors import NearestNeighbors
+from typing import Union, Optional, List
 
 from FastExplain.clean import check_cont_col
 from FastExplain.explain.bin import CI_estimate, quantile_ied
@@ -19,7 +20,24 @@ from FastExplain.utils import (
 )
 
 
-def ale_summary(m, xs, col, model_names=None, *args, **kwargs):
+def ale_summary(
+    m,
+    xs: Union[List[pd.DataFrame], pd.DataFrame],
+    col: str,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    numeric: Optional[bool] = None,
+    normalize: bool = True,
+    percentage: bool = False,
+    condense_last: bool = True,
+    remove_last_bins: Optional[int] = None,
+    dp: int = 2,
+    filter: Optional[str] = None,
+    model_names: Optional[List[str]] = None,
+    include_CI: bool = True,
+    C: float = 0.95,
+):
+
     if isinstance(m, (list, tuple)):
         model_names = ifnone(model_names, [f"Model {i}" for i in range(len(m))])
         ales = []
@@ -27,26 +45,71 @@ def ale_summary(m, xs, col, model_names=None, *args, **kwargs):
             model, x_values = ale_info
             if count == len(m) - 1:
                 ales.append(
-                    _clean_ale(m=model, xs=x_values, col=col, *args, **kwargs)[
-                        ["eff", "size"]
-                    ]
+                    _clean_ale(
+                        m=model,
+                        xs=x_values,
+                        col=col,
+                        grid_size=grid_size,
+                        bins=bins,
+                        numeric=numeric,
+                        normalize=normalize,
+                        percentage=percentage,
+                        condense_last=condense_last,
+                        remove_last_bins=remove_last_bins,
+                        dp=dp,
+                        filter=filter,
+                        include_CI=include_CI,
+                        C=C,
+                    )[["eff", "size"]]
                 )
             else:
                 ales.append(
-                    _clean_ale(m=model, xs=x_values, col=col, *args, **kwargs)[["eff"]]
+                    _clean_ale(
+                        m=model,
+                        xs=x_values,
+                        col=col,
+                        grid_size=grid_size,
+                        bins=bins,
+                        numeric=numeric,
+                        normalize=normalize,
+                        percentage=percentage,
+                        condense_last=condense_last,
+                        remove_last_bins=remove_last_bins,
+                        dp=dp,
+                        filter=filter,
+                        include_CI=include_CI,
+                        C=C,
+                    )[["eff"]]
                 )
 
         output = merge_multi_df(ales, left_index=True, right_index=True)
         output.columns = model_names + ["size"]
         return output
     else:
-        return _clean_ale(m, xs, col, *args, **kwargs)
+        return _clean_ale(
+            m=m,
+            xs=xs,
+            col=col,
+            grid_size=grid_size,
+            bins=bins,
+            numeric=numeric,
+            normalize=normalize,
+            percentage=percentage,
+            condense_last=condense_last,
+            remove_last_bins=remove_last_bins,
+            dp=dp,
+            filter=filter,
+            include_CI=include_CI,
+            C=C,
+        )
 
 
 def _clean_ale(
     m,
     xs,
     col,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
     numeric=None,
     normalize=True,
     percentage=False,
@@ -54,14 +117,21 @@ def _clean_ale(
     remove_last_bins=None,
     dp=2,
     filter=None,
-    bins=None,
-    *args,
-    **kwargs,
+    include_CI: bool = True,
+    C: float = 0.95,
 ):
     xs = xs.query(filter) if filter else xs
     numeric = ifnone(numeric, check_cont_col(xs[col]))
     bins = bins if numeric else sorted(list(xs[col].unique()))
-    df = _aleplot_1D_continuous(xs, model=m, feature=col, bins=bins, *args, **kwargs)
+    df = _aleplot_1D_continuous(
+        xs,
+        model=m,
+        feature=col,
+        bins=bins,
+        grid_size=grid_size,
+        include_CI=include_CI,
+        C=C,
+    )
     df = df[~df.index.duplicated(keep="last")]
     adjust = -1 * df.iloc[0]["eff"]
     df["eff"] += adjust

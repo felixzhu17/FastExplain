@@ -121,7 +121,7 @@ class PandasClean:
         cont_transformations (List[type], optional): Additional transformations for continuous predictor variables. Transformations must be supplied as a class with fit_transform and transform attributes. Defaults to [].
         reduce_memory (bool, optional): Whether to reduce the memory of df in storage. Defaults to True.
         return_class (bool, optional): Whether to return a class storing cleaning information. Defaults to True.
-    
+
     Attributes:
         df: Original Pandas DataFrame supplied
         xs: DataFrame of cleaned predictor values
@@ -139,9 +139,9 @@ class PandasClean:
         stratify: Whether splits were stratified on dependent variable
         seed: Random seed used for splitting
         na_dummy: Whether dummy column was used for numerical NA values
-        transformations: List of transformation classes applied to variables. 
+        transformations: List of transformation classes applied to variables.
     """
-    
+
     def __init__(
         self,
         df: pd.DataFrame,

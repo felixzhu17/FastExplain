@@ -67,7 +67,7 @@ class Classification(Model):
         error: AUC and Cross Entropy error on training and validation for benchmark and model
         error_raw: Cross Entropy error by observation on training and validation for benchmark and model
     """
-    
+
     def __init__(
         self,
         df: pd.DataFrame,

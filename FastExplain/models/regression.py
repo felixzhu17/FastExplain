@@ -63,6 +63,7 @@ class Regression(
         error: Root Mean Squared error on training and validation for benchmark and model
         error_raw: Root Mean Squared error by observation on training and validation for benchmark and model
     """
+
     def __init__(
         self,
         df: pd.DataFrame,
