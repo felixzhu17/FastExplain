@@ -25,7 +25,7 @@ def get_one_way_error(df, error, x_col, *args, **kwargs):
 
 
 def plot_one_way_error(
-    df, error, x_col, x_axis_name=None, plot_title=None, plotsize=None, *args, **kwargs
+    df, error, x_col, x_axis_name=None, y_axis_name=None, plot_title=None, plotsize=None, *args, **kwargs
 ):
     one_way_error_df = get_one_way_error(df, error, x_col, *args, **kwargs)
     return plot_one_way(
@@ -34,7 +34,7 @@ def plot_one_way_error(
         y_col="error",
         size=one_way_error_df["size"],
         x_axis_name=x_axis_name,
-        y_axis_name="Error",
+        y_axis_name=y_axis_name,
         plot_title=plot_title,
         plotsize=plotsize,
     )
@@ -51,10 +51,12 @@ def plot_two_way_error(
     error,
     x_cols,
     feature_names=None,
+    dep_name=None,
+    plot_title=None,
     plotsize=None,
     colorscale="Blues",
     *args,
     **kwargs,
 ):
     output = get_two_way_error(df, error, x_cols, *args, **kwargs)
-    return plot_two_way(output, x_cols, feature_names, plotsize, colorscale)
+    return plot_two_way(output, x_cols, feature_names, dep_name, plot_title, plotsize, colorscale)
