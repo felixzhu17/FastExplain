@@ -351,7 +351,7 @@ def plot_two_way_analysis(
     dep_name: Optional[str] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
-    colorscale="Blues",
+    colorscale: Union[List[str], str]="Blues",
 ):
 
     """
@@ -409,6 +409,7 @@ def plot_two_way_analysis(
             Colormap used to map scalar data to colors (for a 2D image).
             If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
             For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
+            Defaults to "Blues".
     """
 
     two_way_df = get_two_way_analysis(
@@ -530,7 +531,7 @@ def plot_two_way_frequency(
     feature_names: Optional[List[str]] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
-    colorscale="Blues",
+    colorscale: Union[List[str], str]="Blues",
 ):
 
     """
@@ -582,6 +583,7 @@ def plot_two_way_frequency(
             Colormap used to map scalar data to colors (for a 2D image).
             If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
             For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
+            Defaults to "Blues".
     """
     frequency_df = get_two_way_frequency(
         df,

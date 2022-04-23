@@ -463,6 +463,7 @@ def plot_ale_2d(
             Colormap used to map scalar data to colors (for a 2D image).
             If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
             For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
+            Defaults to "Blues".
     """
 
     feature_1, feature_2 = ifnone(
