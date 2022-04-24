@@ -136,6 +136,7 @@ class Shap:
 
     def shap_dependence_plot(
         self,
+        col,
         filter: Optional[str] = None,
         index: Optional[list[Any]] = None,
         shap_max_samples: Optional[int] = None,
@@ -146,6 +147,8 @@ class Shap:
         Create a SHAP dependence scatter plot, colored by an interaction feature.
 
         Args:
+            col (str):
+                Name of predictor feature to use for SHAP
             filter (Optional[str], optional):
                 The query string to evaluate.
                 You can refer to variables
