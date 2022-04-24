@@ -9,10 +9,12 @@ from sklearn.metrics import roc_curve
 
 
 def get_classification_prediction(m, xs):
+    """Predict probabilities of classification model"""
     return m.predict_proba(xs)[:, 1]
 
 
 def _cross_entropy(pred, y, eps=1e-15):
+    """Cross entropy per observation"""
 
     pred = max(eps, min(1 - eps, pred))
 
@@ -23,6 +25,7 @@ def _cross_entropy(pred, y, eps=1e-15):
 
 
 def cross_entropy(pred, y, mean=True, eps=1e-15):
+    """Cross entropy of vector"""
 
     if not isinstance(pred, Iterable):
         pred = [pred for i in y]
@@ -33,6 +36,7 @@ def cross_entropy(pred, y, mean=True, eps=1e-15):
 
 
 def m_cross_entropy(m, xs, y, mean=True, eps=1e-15):
+    """Model prediction cross entropy"""
     return cross_entropy(get_classification_prediction(m, xs), y, mean, eps)
 
 

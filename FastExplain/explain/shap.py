@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 import pandas as pd
 import shap
@@ -59,7 +59,7 @@ class Shap:
     def shap_force_plot(
         self,
         filter: Optional[str] = None,
-        index: Optional[list[Any]] = None,
+        index: Optional[List[Any]] = None,
         shap_max_samples: Optional[int] = None,
         *args,
         **kwargs,
@@ -83,7 +83,7 @@ class Shap:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
-            index (Optional[list[Any]], optional):
+            index (Optional[List[Any]], optional):
                 Provide index for shap_values, based on Shap.xs with reset index. Defaults to None.
             shap_max_samples (Optional[int], optional):
                 Maximum number of samples for plotting. If provided, sets the new default for other plots. If None, uses default from class. Defaults to None.
@@ -98,7 +98,7 @@ class Shap:
     def shap_summary_plot(
         self,
         filter: Optional[str] = None,
-        index: Optional[list[Any]] = None,
+        index: Optional[List[Any]] = None,
         shap_max_samples: Optional[int] = None,
         *args,
         **kwargs,
@@ -122,7 +122,7 @@ class Shap:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
-            index (Optional[list[Any]], optional):
+            index (Optional[List[Any]], optional):
                 Provide index for shap_values, based on Shap.xs with reset index. Defaults to None.
             shap_max_samples (Optional[int], optional):
                 Maximum number of samples for plotting. If provided, sets the new default for other plots. If None, uses default from class. Defaults to None.
@@ -138,7 +138,7 @@ class Shap:
         self,
         col,
         filter: Optional[str] = None,
-        index: Optional[list[Any]] = None,
+        index: Optional[List[Any]] = None,
         shap_max_samples: Optional[int] = None,
         *args,
         **kwargs,
@@ -164,7 +164,7 @@ class Shap:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
-            index (Optional[list[Any]], optional):
+            index (Optional[List[Any]], optional):
                 Provide index for shap_values, based on Shap.xs with reset index. Defaults to None.
             shap_max_samples (Optional[int], optional):
                 Maximum number of samples for plotting. If provided, sets the new default for other plots. If None, uses default from class. Defaults to None.
