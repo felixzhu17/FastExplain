@@ -53,7 +53,7 @@ def sensitivity_test(
         percent_replace (Union[List[float], float], optional):
             Percentage of observations meeting the replacement conditions to replace. Defaults to 0.2.
         metric_agg_func (Callable, optional):
-            Function for aggregating predictions. Defaults to sum.
+            Function for aggregating list of predictions. Defaults to sum.
         replace_func (Optional[Callable], optional):
             Optional function for replacing features. Function must contain df as an argument. Defaults to None.
     """
