@@ -151,7 +151,7 @@ def ale(
 
 
 def plot_ale(
-    m,
+    m: Union[List[type], type],
     xs: Union[List[pd.DataFrame], pd.DataFrame],
     col: str,
     grid_size: int = 20,
