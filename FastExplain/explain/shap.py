@@ -6,8 +6,36 @@ from FastExplain.utils import ifnone, query_df_index, sample_index
 SHAP_MAX_SAMPLES = 10_000
 
 
-class ShapExplain:
-    def __init__(self, m, xs, shap_max_samples=SHAP_MAX_SAMPLES):
+class Shap:
+    """
+    Class used to prepare and plot SHAP values
+
+    Args:
+        m (type):
+            Fitted model
+        xs (pd.DataFrame):
+            Dataframe used by model to predict.
+        shap_max_samples (int, optional):
+            Maximum samples for plotting SHAP. Defaults to 10000.
+        sample_seed (int, optional):
+            Seed used to sample index. Defaults to 0.
+
+    Attributes:
+        m:
+            Fitted model
+        xs:
+            Dataframe used by model to predict.
+        shap_max_samples:
+            Maximum samples for plotting SHAP
+        sample_seed:
+            Seed used to sample index
+        shap_values:
+            Calculated SHAP values
+        shap_value_df:
+            
+
+    """
+    def __init__(self, m: type, xs: pd.DataFrame, shap_max_samples: int=SHAP_MAX_SAMPLES):
         self.m = m
         self.xs = xs
         self.shap_max_samples = shap_max_samples
@@ -61,7 +89,7 @@ class ShapExplain:
         if len(self.shap_values.shape) == 3:
             self.shap_values = self.shap_values[:, :, 1]
         self.shap_value_df = self._get_shap_values_df()
-        self.xs = self.xs.reset_index(drop=True)
+        self._xs = self.xs.reset_index(drop=True)
 
     def _explainer_exists(self):
         return hasattr(self, "explainer")
@@ -78,7 +106,7 @@ class ShapExplain:
 
     def get_shap_index(self, filter, index):
         if filter:
-            return query_df_index(self.xs, filter)[: self.shap_max_samples]
+            return query_df_index(self._xs, filter)[: self.shap_max_samples]
         elif index:
             return index
         else:
