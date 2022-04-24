@@ -1,8 +1,9 @@
 from random import sample
-from typing import Optional, Callable, List, Any, Union
+from typing import Any, Callable, List, Optional, Union
+
 import pandas as pd
 
-from FastExplain.utils import check_unequal_list, ifnone, fill_list
+from FastExplain.utils import check_unequal_list, fill_list, ifnone
 
 
 def sensitivity_test(

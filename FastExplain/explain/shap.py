@@ -1,4 +1,4 @@
-from typing import Optional, Any, List
+from typing import Any, List, Optional
 
 import pandas as pd
 import shap
