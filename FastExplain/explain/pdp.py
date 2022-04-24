@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -7,20 +9,58 @@ from FastExplain.utils import COLOURS, clean_text, ifnone
 
 
 def plot_ice(
-    m,
-    xs,
-    col,
-    dep_name=None,
-    feature_name=None,
-    plotsize=None,
-    plot_title=None,
-    filter=None,
-    sample=500,
-    *args,
-    **kwargs,
+    m: type,
+    xs: pd.DataFrame,
+    col: str,
+    sample: int = 500,
+    filter: Optional[str] = None,
+    dep_name: Optional[str] = None,
+    feature_name: Optional[str] = None,
+    plot_title: Optional[str] = None,
+    plotsize: Optional[List[int]] = None,
+    *pdp_args,
+    **pdp_kwargs,
 ):
+
+    """
+    Plot ICE values for a predictor feature in a model
+
+    Args:
+        m (type):
+            Trained model that uses feature as a predictor.
+        xs (pd.DataFrame):
+            Dataframe used by model to predict.
+        col (str):
+            Name of predictor feature to use for ICE
+        filter (Optional[str], optional):
+            The query string to evaluate.
+            You can refer to variables
+            in the environment by prefixing them with an '@' character like
+            ``@a + b``.
+            You can refer to column names that are not valid Python variable names
+            by surrounding them in backticks. Thus, column names containing spaces
+            or punctuations (besides underscores) or starting with digits must be
+            surrounded by backticks. (For example, a column named "Area (cm^2)" would
+            be referenced as ```Area (cm^2)```). Column names which are Python keywords
+            (like "list", "for", "import", etc) cannot be used.
+            For example, if one of your columns is called ``a a`` and you want
+            to sum it with ``b``, your query should be ```a a` + b``.
+            For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+            Defaults to None.
+        dep_name (Optional[str], optional):
+            Custom name to use for dependent variable on plot. Defaults to None.
+        feature_name (Optional[str], optional):
+            Custom name to use for predictor variable on plot. Defaults to None.
+        plot_title (Optional[str], optional):
+            Custom name to use for title of plot. Defaults to None.
+        plotsize (Optional[List[int]], optional):
+            Custom plotsize supplied as (width, height). Defaults to None.
+        *pdp_args, **pdp_kwargs:
+            Additional arguments for SKlearn partial dependence function. See https://scikit-learn.org/stable/modules/generated/sklearn.inspection.partial_dependence.html
+    """
+
     xs = xs.query(filter) if filter else xs.sample(sample)
-    ice = partial_dependence(m, xs, col, kind="individual", *args, **kwargs)
+    ice = partial_dependence(m, xs, col, kind="individual", *pdp_args, **pdp_kwargs)
     ice_df = pd.DataFrame(ice["individual"][0]).T
     ice_df.index = ice["values"][0]
     average_effect = ice_df.mean(axis=1)
