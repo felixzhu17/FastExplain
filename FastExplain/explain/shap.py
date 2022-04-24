@@ -23,19 +23,19 @@ class ShapExplain:
         else:
             return list(self.xs.index)
 
-    def shap_force_plot(self, filter=None, index=[], shap_max_samples=None):
+    def shap_force_plot(self, filter=None, index=None, shap_max_samples=None):
         self.set_shap_values()
         self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.force(self.shap_values[index])
 
-    def shap_summary_plot(self, filter=None, index=[], shap_max_samples=None):
+    def shap_summary_plot(self, filter=None, index=None, shap_max_samples=None):
         self.set_shap_values()
         self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.beeswarm(self.shap_values[index])
 
-    def shap_dependence_plot(self, col, filter=None, index=[], shap_max_samples=None):
+    def shap_dependence_plot(self, col, filter=None, index=None, shap_max_samples=None):
         self.set_shap_values()
         self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
@@ -79,7 +79,7 @@ class ShapExplain:
     def get_shap_index(self, filter, index):
         if filter:
             return query_df_index(self.xs, filter)[: self.shap_max_samples]
-        elif len(index) > 0:
+        elif index:
             return index
         else:
             return self.sample_index
