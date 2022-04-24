@@ -22,7 +22,7 @@ setup(
         "plotly_express",
         "xgboost",
         "statsmodels",
-        "shap",
+        "shap==0.40.0",
         "numpy==1.21",
         "pytest",
         "hyperopt",
