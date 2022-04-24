@@ -8,11 +8,11 @@ from FastExplain.explain.shap import ShapExplain
 
 
 class Explain(OneWay, Ale, PDP, EbmExplain, ShapExplain, Importance, Sensitivity):
-    def __init__(self, m, xs, df=None, dep_var=None, m_cols=None):
+    def __init__(self, m, xs, df=None, dep_var=None):
         OneWay.__init__(self, m, xs, df, dep_var)
         Ale.__init__(self, m, xs, dep_var)
         PDP.__init__(self, m, xs, dep_var)
         EbmExplain.__init__(self, m, xs, dep_var)
         ShapExplain.__init__(self, m, xs)
         Importance.__init__(self, m, xs)
-        Sensitivity.__init__(self, m, xs, m_cols)
+        Sensitivity.__init__(self, m, xs)

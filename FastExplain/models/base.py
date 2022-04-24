@@ -110,7 +110,6 @@ class Model(Explain, ABC):
             self.data.xs,
             self.data.df,
             self.data.dep_var,
-            self.data.train_xs.columns,
         )
 
     @abstractmethod
