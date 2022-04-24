@@ -664,20 +664,22 @@ class OneWay:
 
 
 def _get_one_way_analysis(
-    df,
-    x_col,
-    y_col,
-    numeric=None,
-    max_card=20,
-    grid_size=20,
-    bins=None,
-    dp=2,
-    func=None,
-    size_cutoff=0,
-    percentage=False,
-    condense_last=True,
-    filter=None,
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    numeric: Optional[bool] = None,
+    max_card: int = 20,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    func: Optional[Callable] = None,
+    size_cutoff: int = 0,
+    dp: int = 2,
+    percentage: bool = False,
+    condense_last: bool = True,
+    filter: Optional[str] = None,
 ):
+
+    """Base function to get one way analysis"""
 
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
@@ -702,17 +704,19 @@ def _get_one_way_analysis(
 
 
 def _plot_one_way_analysis(
-    df,
-    x_col,
-    y_col,
-    x_axis_name=None,
-    y_axis_name=None,
-    plot_title=None,
-    plotsize=None,
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    x_axis_name: Optional[str] = None,
+    y_axis_name: Optional[str] = None,
+    plot_title: Optional[str] = None,
+    plotsize: Optional[List[int]] = None,
     *args,
     **kwargs,
 ):
-    one_way_df = get_one_way_analysis(df, x_col, y_col, *args, **kwargs)
+
+    """Base function to plot one way analysis"""
+    one_way_df = get_one_way_analysis(df=df, x_col=x_col, y_col=y_col, *args, **kwargs)
     return plot_one_way(
         df=one_way_df,
         x_col=x_col,
@@ -726,22 +730,25 @@ def _plot_one_way_analysis(
 
 
 def _get_two_one_way_analysis(
-    df,
-    x_col,
-    y_col,
-    numeric=None,
-    max_card=20,
-    grid_size=20,
-    bins=None,
-    dp=2,
-    func=None,
-    size_cutoff=0,
-    percentage=False,
-    condense_last=True,
-    filter=None,
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: List[str],
+    numeric: Optional[bool] = None,
+    max_card: int = 20,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    func: Optional[Callable] = None,
+    size_cutoff: int = 0,
+    dp: int = 2,
+    percentage: bool = False,
+    condense_last: bool = True,
+    filter: Optional[str] = None,
 ):
+
+    """Base function to get one way analysis for two features"""
+
     if len(y_col) != 2:
-        raise ValueError("Can only plot up to two columns on y-axis")
+        raise ValueError("Can only get up to two columns on y-axis")
 
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
@@ -765,17 +772,21 @@ def _get_two_one_way_analysis(
 
 
 def _plot_two_one_way_analysis(
-    df,
-    x_col,
-    y_col,
-    x_axis_name=None,
-    y_axis_name=None,
-    plot_title=None,
-    plotsize=None,
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: List[str],
+    x_axis_name: Optional[str] = None,
+    y_axis_name: Optional[List[str]] = None,
+    plot_title: Optional[str] = None,
+    plotsize: Optional[List[int]] = None,
     *args,
     **kwargs,
 ):
-    one_way_df = _get_two_one_way_analysis(df, x_col, y_col, *args, **kwargs)
+
+    """Base function to plot one way analysis for two features"""
+    one_way_df = _get_two_one_way_analysis(
+        df=df, x_col=x_col, y_col=y_col, *args, **kwargs
+    )
     return plot_two_one_way(
         df=one_way_df,
         x_col=x_col,
