@@ -41,6 +41,7 @@ def m_cross_entropy(m, xs, y, mean=True, eps=1e-15):
 
 
 def auc(m, xs, y, plot=True, skip_thresholds=None):
+    """Area under ROC curve with option to plot. Skip thresholds to save memory when plotting"""
     pred_y_proba = get_classification_prediction(m, xs)
     fpr, tpr, thresholds = roc_curve(y, pred_y_proba)
     auc_score = _auc(fpr, tpr)
@@ -69,10 +70,12 @@ def auc(m, xs, y, plot=True, skip_thresholds=None):
 
 
 def negative_auc(m, xs, y):
+    """Negative AUC as loss function"""
     return auc(m, xs, y, False, None) * -1
 
 
 def confusion_matrix(m, xs, y, labels=None, normalize=None, colorscale="Blues"):
+    """Display confusion matrix"""
     pred_y = m.predict(xs)
 
     cm_labels = sorted(list(y.unique()))

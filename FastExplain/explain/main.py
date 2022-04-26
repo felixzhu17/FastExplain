@@ -8,6 +8,7 @@ from FastExplain.explain.shap import Shap
 
 
 class Explain(OneWay, Ale, PDP, EbmExplain, Shap, Importance, Sensitivity):
+    """Connected interface for model explanatory methods"""
     def __init__(self, m, xs, df=None, dep_var=None):
         OneWay.__init__(self, m, xs, df, dep_var)
         Ale.__init__(self, m, xs, dep_var)

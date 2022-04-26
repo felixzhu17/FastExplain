@@ -616,6 +616,7 @@ def plot_two_way_frequency(
 
 
 class OneWay:
+    """Connected interface for one-way and two-way analysis methods. Intended for usage with full model pipeline class. (FastExplain.models.base)"""
     def __init__(self, m, xs, df=None, dep_var=None):
         self.m = m
         self.xs = xs
@@ -651,16 +652,10 @@ class OneWay:
         )
 
     def get_two_way_frequency(self, *args, **kwargs):
-        if self.df is None:
-            return get_two_way_frequency(self.xs, *args, **kwargs)
-        else:
-            return get_two_way_frequency(self.df, *args, **kwargs)
+        return get_two_way_frequency(self.df, *args, **kwargs)
 
     def plot_two_way_frequency(self, *args, **kwargs):
-        if self.df is None:
-            return plot_two_way_frequency(self.xs, *args, **kwargs)
-        else:
-            return plot_two_way_frequency(self.df, *args, **kwargs)
+        return plot_two_way_frequency(self.df, *args, **kwargs)
 
 
 def _get_one_way_analysis(
