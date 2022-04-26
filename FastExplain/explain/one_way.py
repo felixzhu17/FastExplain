@@ -249,7 +249,7 @@ def get_two_way_analysis(
             Dataframe containing features to compare
         x_cols (List[str]):
             Name of features on x-axis to bin
-        y_col (Union[List[str], str]):
+        y_col (str):
             Name of feature on y-axis to measure against x-axis.
         numeric (Optional[bool], optional):
             Two booleans describing whether the x_cols are numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
@@ -617,6 +617,7 @@ def plot_two_way_frequency(
 
 class OneWay:
     """Connected interface for one-way and two-way analysis methods. Intended for usage with full model pipeline class. (FastExplain.models.base)"""
+
     def __init__(self, m, xs, df=None, dep_var=None):
         self.m = m
         self.xs = xs
@@ -628,34 +629,507 @@ class OneWay:
                 "One way analysis and Two way analysis does not work without dependent variable"
             )
 
-    def feature_correlation(self, *args, **kwargs):
-        return feature_correlation(self.xs, *args, **kwargs)
+    def feature_correlation(self, plotsize: List[int] = (1000, 1000)):
+        """
+        Plot dendogram of hierarchical clustering of spearman correlation between variables
 
-    def get_one_way_analysis(self, x_col, y_col=None, *args, **kwargs):
+        Args:
+            plotsize (List[int], optional):
+                Custom plotsize supplied as (width, height). Defaults to (1000, 1000).
+        """
+        return feature_correlation(xs=self.xs, plotsize=plotsize)
+
+    def get_one_way_analysis(
+        self,
+        x_col: str,
+        y_col: Optional[Union[List[str], str]] = None,
+        numeric: Optional[bool] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[float]] = None,
+        func: Optional[Callable] = None,
+        size_cutoff: int = 0,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+    ):
+
+        """
+        Perform one-way analysis between two features in a DataFrame. The x_col is binned and a function is applied to the y_col grouped by values of the x_col
+
+        Args:
+            x_col (str):
+                Name of feature on x-axis to bin
+            y_col (Optional[Union[List[str], str]], optional):
+                Name of features on y-axis to measure against x-axis. Can provide up to 2 y-axis to measure against. Compare against dependent variable if None. Defaults to None.
+            numeric (Optional[bool], optional):
+                Whether the x_col is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[float]], optional):
+                Optionally, provide a list of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            func (Optional[Callable], optional):
+                Optionally, provide a custom function to measure y_col with
+            size_cutoff (int, optional):
+                Return value of NaN if x_col bin contains less than size_cutoff
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+        """
         y_col = ifnone(y_col, self.dep_var)
-        return get_one_way_analysis(self.df, x_col=x_col, y_col=y_col, *args, **kwargs)
+        return get_one_way_analysis(
+            df=self.df,
+            x_col=x_col,
+            y_col=y_col,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            dp=dp,
+            func=func,
+            size_cutoff=size_cutoff,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
+        )
 
-    def plot_one_way_analysis(self, x_col, y_col=None, *args, **kwargs):
+    def plot_one_way_analysis(
+        self,
+        x_col: str,
+        y_col: Optional[Union[List[str], str]] = None,
+        numeric: Optional[bool] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[float]] = None,
+        func: Optional[Callable] = None,
+        size_cutoff: int = 0,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+        x_axis_name: Optional[str] = None,
+        y_axis_name: Optional[Union[List[str], str]] = None,
+        plot_title: Optional[str] = None,
+        plotsize: Optional[List[int]] = None,
+    ):
+        """
+        Plot one-way analysis between two features in a DataFrame. The x_col is binned and a function is applied to the y_col grouped by values of the x_col
+
+        Args:
+            df (pd.DataFrame):
+                Dataframe containing features to compare
+            x_col (str):
+                Name of feature on x-axis to bin
+            y_col (Optional[Union[List[str], str]], optional):
+                Name of features on y-axis to measure against x-axis. Can provide up to 2 y-axis to measure against. Plot against dependent variable if None. Defaults to None.
+            numeric (Optional[bool], optional):
+                Whether the x_col is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[float]], optional):
+                Optionally, provide a list of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            func (Optional[Callable], optional):
+                Optionally, provide a custom function to measure y_col with
+            size_cutoff (int, optional):
+                Return value of NaN if x_col bin contains less than size_cutoff
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+            x_axis_name (Optional[str], optional):
+                Custom names to use for x_axis on plot. Defaults to None.
+            y_axis_name (Optional[Union[List[str], str]], optional):
+                Custom name to use for y_axis on plot. Can provide up to 2 y-axis to measure against. Defaults to None.
+            plot_title (Optional[str], optional):
+                Custom name to use for title of plot. Defaults to None.
+            plotsize (Optional[List[int]], optional):
+                Custom plotsize supplied as (width, height). Defaults to None.
+        """
+
         y_col = ifnone(y_col, self.dep_var)
-        return plot_one_way_analysis(self.df, x_col=x_col, y_col=y_col, *args, **kwargs)
+        return plot_one_way_analysis(
+            df=self.df,
+            x_col=x_col,
+            y_col=y_col,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            dp=dp,
+            func=func,
+            size_cutoff=size_cutoff,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
+            x_axis_name=x_axis_name,
+            y_axis_name=y_axis_name,
+            plot_title=plot_title,
+            plotsize=plotsize,
+        )
 
-    def get_two_way_analysis(self, x_cols, y_col=None, *args, **kwargs):
+    def get_two_way_analysis(
+        self,
+        x_cols: List[str],
+        y_col: Optional[str] = None,
+        numeric: Optional[List[bool]] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[List[float]]] = None,
+        func: Optional[Callable] = None,
+        size_cutoff: int = 0,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+    ):
+        """
+        Perform two-way analysis between three features in a DataFrame. The x_cols are binned and a function is applied to the y_col grouped by values of the x_cols
+
+        Args:
+            df (pd.DataFrame):
+                Dataframe containing features to compare
+            x_cols (List[str]):
+                Name of features on x-axis to bin
+            y_col (Optional[str]):
+                Name of feature on y-axis to measure against x-axis. Compare against dependent variable if None. Defaults to None.
+            numeric (Optional[bool], optional):
+                Two booleans describing whether the x_cols are numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[List[float]]], optional):
+                Optionally, provide two lists of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            func (Optional[Callable], optional):
+                Optionally, provide a custom function to measure y_col with
+            size_cutoff (int, optional):
+                Return value of NaN if x_col bin contains less than size_cutoff
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+        """
         y_col = ifnone(y_col, self.dep_var)
         return get_two_way_analysis(
-            self.df, x_cols=x_cols, y_col=y_col, *args, **kwargs
+            df=self.df,
+            x_cols=x_cols,
+            y_col=y_col,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            func=func,
+            size_cutoff=size_cutoff,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
         )
 
-    def plot_two_way_analysis(self, x_cols, y_col=None, *args, **kwargs):
+    def plot_two_way_analysis(
+        self,
+        x_cols: List[str],
+        y_col: Optional[str] = None,
+        numeric: Optional[List[bool]] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[List[float]]] = None,
+        func: Optional[Callable] = None,
+        size_cutoff: int = 0,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+        feature_names: Optional[List[str]] = None,
+        dep_name: Optional[str] = None,
+        plot_title: Optional[str] = None,
+        plotsize: Optional[List[int]] = None,
+        colorscale: Union[List[str], str] = "Blues",
+    ):
+        """
+        Plot two-way analysis between three features in a DataFrame. The x_cols are binned and a function is applied to the y_col grouped by values of the x_cols
+
+        Args:
+            df (pd.DataFrame):
+                Dataframe containing features to compare
+            x_cols (List[str]):
+                Name of features on x-axis to bin
+            y_col (Optional[str]):
+                Name of feature on y-axis to measure against x-axis. Plot against dependent variable if None. Defaults to None.
+            numeric (Optional[List[bool]], optional):
+                Two booleans describing whether the x_cols are numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[List[float]]], optional):
+                Optionally, provide two lists of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            func (Optional[Callable], optional):
+                Optionally, provide a custom function to measure y_col with
+            size_cutoff (int, optional):
+                Return value of NaN if x_col bin contains less than size_cutoff
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+            feature_names (Optional[List[str]], optional):
+                Custom names to use for independent variables on plot. Defaults to None.
+            dep_name (Optional[str], optional):
+                Custom name to use for dependent variable on plot. Defaults to None.
+            plot_title (Optional[str], optional):
+                Custom name to use for title of plot. Defaults to None.
+            plotsize (Optional[List[int]], optional):
+                Custom plotsize supplied as (width, height). Defaults to None.
+            colorscale (Union[List[str], str], optional):
+                Colormap used to map scalar data to colors (for a 2D image).
+                If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
+                For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
+                Defaults to "Blues".
+        """
         y_col = ifnone(y_col, self.dep_var)
         return plot_two_way_analysis(
-            self.df, x_cols=x_cols, y_col=y_col, *args, **kwargs
+            df=self.df,
+            x_cols=x_cols,
+            y_col=y_col,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            func=func,
+            size_cutoff=size_cutoff,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
+            feature_names=feature_names,
+            dep_name=dep_name,
+            plot_title=plot_title,
+            plotsize=plotsize,
+            colorscale=colorscale,
         )
 
-    def get_two_way_frequency(self, *args, **kwargs):
-        return get_two_way_frequency(self.df, *args, **kwargs)
+    def get_two_way_frequency(
+        self,
+        x_cols: List[str],
+        percentage_frequency: bool = True,
+        numeric: Optional[List[bool]] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[List[float]]] = None,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+    ):
+        """
+        Get frequency of two features in a DataFrame. The x_cols are binned and frequency is counted
 
-    def plot_two_way_frequency(self, *args, **kwargs):
-        return plot_two_way_frequency(self.df, *args, **kwargs)
+        Args:
+            x_cols (List[str]):
+                Name of features on x-axis to bin
+            percentage_frequency (bool, optional):
+                Whether to return frequency as a percentage of total
+            numeric (Optional[bool], optional):
+                Two booleans describing whether the x_cols are numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[List[float]]], optional):
+                Optionally, provide two lists of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+        """
+        return get_two_way_frequency(
+            df=self.df,
+            x_cols=x_cols,
+            percentage_frequency=percentage_frequency,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
+        )
+
+    def plot_two_way_frequency(
+        self,
+        x_cols: List[str],
+        percentage_frequency: bool = True,
+        numeric: Optional[List[bool]] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[List[float]]] = None,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+        feature_names: Optional[List[str]] = None,
+        plot_title: Optional[str] = None,
+        plotsize: Optional[List[int]] = None,
+        colorscale: Union[List[str], str] = "Blues",
+    ):
+        """
+        Plot frequency of two features in a DataFrame. The x_cols are binned and frequency is counted
+
+        Args:
+            x_cols (List[str]):
+                Name of features on x-axis to bin
+            percentage_frequency (bool, optional):
+                Whether to return frequency as a percentage of total
+            numeric (Optional[bool], optional):
+                Two booleans describing whether the x_cols are numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[List[float]]], optional):
+                Optionally, provide two lists of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+            feature_names (Optional[List[str]], optional):
+                Custom names to use for independent variables on plot. Defaults to None.
+            plot_title (Optional[str], optional):
+                Custom name to use for title of plot. Defaults to None.
+            plotsize (Optional[List[int]], optional):
+                Custom plotsize supplied as (width, height). Defaults to None.
+            colorscale (Union[List[str], str], optional):
+                Colormap used to map scalar data to colors (for a 2D image).
+                If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
+                For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
+                Defaults to "Blues".
+        """
+        return plot_two_way_frequency(
+            df=self.df,
+            x_cols=x_cols,
+            percentage_frequency=percentage_frequency,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
+            feature_names=feature_names,
+            plot_title=plot_title,
+            plotsize=plotsize,
+            colorscale=colorscale,
+        )
 
 
 def _get_one_way_analysis(
