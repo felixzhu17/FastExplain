@@ -211,7 +211,7 @@ class Sensitivity:
             trials=trials,
             replacement_conditions=replacement_conditions,
             relative_diff=relative_diff,
-            percent_replcae=percent_replace,
+            percent_replace=percent_replace,
             metric_agg_func=metric_agg_func,
             replace_func=replace_func,
         )
