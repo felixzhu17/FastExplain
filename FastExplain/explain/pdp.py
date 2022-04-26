@@ -32,6 +32,8 @@ def plot_ice(
             Dataframe used by model to predict.
         col (str):
             Name of predictor feature to use for ICE
+        sample (int):
+            Maximum number of samples to use for ICE
         filter (Optional[str], optional):
             The query string to evaluate.
             You can refer to variables
@@ -59,7 +61,7 @@ def plot_ice(
             Additional arguments for SKlearn partial dependence function. See https://scikit-learn.org/stable/modules/generated/sklearn.inspection.partial_dependence.html
     """
 
-    xs = xs.query(filter) if filter else xs.sample(sample)
+    xs = xs.query(filter).iloc[:sample] if filter else xs.sample(sample)
     ice = partial_dependence(m, xs, col, kind="individual", *pdp_args, **pdp_kwargs)
     ice_df = pd.DataFrame(ice["individual"][0]).T
     ice_df.index = ice["values"][0]
@@ -134,6 +136,8 @@ class PDP:
         Args:
             col (str):
                 Name of predictor feature to use for ICE
+            sample (int):
+                Maximum number of samples to use for ICE
             filter (Optional[str], optional):
                 The query string to evaluate.
                 You can refer to variables
