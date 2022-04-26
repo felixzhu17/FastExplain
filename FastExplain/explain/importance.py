@@ -85,9 +85,34 @@ def _get_feature_importance_df(m, xs):
 
 
 class Importance:
+    """Connected interface for Feature Importance methods. Intended for usage with full model pipeline class. (FastExplain.models.base)"""
+
     def __init__(self, m, xs):
         self.m = m
         self.xs = xs
 
-    def plot_feature_importance(self, *args, **kwargs):
-        return plot_feature_importance(self.m, self.xs, *args, **kwargs)
+    def plot_feature_importance(
+        self,
+        feature_highlights: list = [],
+        limit: int = 10,
+        plotsize: Optional[List[int]] = None,
+    ):
+        """
+        Plot feature importance for for Random Forest, XGBoost or Explainable Boosting Machine
+
+        Args:
+            feature_highlights (list, optional):
+                List of features to highlight on plot. Defaults to [].
+            limit (int, optional):
+                Limit to the most important features. Defaults to 10.
+            plotsize (Optional[List[int]], optional):
+                Custom plotsize supplied as (width, height). Defaults to None.
+
+        """
+        return plot_feature_importance(
+            m=self.m,
+            xs=self.xs,
+            feature_highlights=feature_highlights,
+            limit=limit,
+            plotsize=plotsize,
+        )
