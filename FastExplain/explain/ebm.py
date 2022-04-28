@@ -43,6 +43,8 @@ def ebm_explain(
             Whether to format bins as percentages. Defaults to False.
         condense_last (bool, optional):
             Whether to bin last value with a greater than. Defaults to True.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis. Defaults to None.
         model_names (Optional[List[str]], optional):
             Name of models to use as columns if supplying multiple models. Defaults to None.
     """
@@ -129,6 +131,8 @@ def plot_ebm_explain(
             Whether to format bins as percentages. Defaults to False.
         condense_last (bool, optional):
             Whether to bin last value with a greater than. Defaults to True.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis. Defaults to None.
         model_names (Optional[List[str]], optional):
             Name of models to use as columns if supplying multiple models. Defaults to None.
         dep_name (Optional[str], optional):

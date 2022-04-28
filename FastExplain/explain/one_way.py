@@ -105,6 +105,8 @@ def get_one_way_analysis(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis
     """
     one_way_func = (
         _get_two_one_way_analysis
@@ -193,6 +195,8 @@ def plot_one_way_analysis(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis. Defaults to None.
         x_axis_name (Optional[str], optional):
             Custom names to use for x_axis on plot. Defaults to None.
         y_axis_name (Optional[Union[List[str], str]], optional):
@@ -698,6 +702,8 @@ class OneWay:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
+            index_mapping (Optional[dict], optional):
+                Dictionary mapping the values to display on the x-axis. Defaults to None.
         """
         y_col = ifnone(y_col, self.dep_var)
         index_mapping = ifnone(
@@ -787,6 +793,8 @@ class OneWay:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
+            index_mapping (Optional[dict], optional):
+                Dictionary mapping the values to display on the x-axis. Defaults to None.
             x_axis_name (Optional[str], optional):
                 Custom names to use for x_axis on plot. Defaults to None.
             y_axis_name (Optional[Union[List[str], str]], optional):

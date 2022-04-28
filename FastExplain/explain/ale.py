@@ -82,6 +82,8 @@ def ale(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis. Defaults to None.
         model_names (Optional[List[str]], optional):
             Name of models to use as columns if supplying multiple models. Defaults to None.
     """
@@ -222,6 +224,8 @@ def plot_ale(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis. Defaults to None.
         dep_name (Optional[str], optional):
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_names (Optional[str], optional):
