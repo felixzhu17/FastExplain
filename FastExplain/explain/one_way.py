@@ -12,6 +12,7 @@ from FastExplain.clean import check_cont_col
 from FastExplain.explain.bin import get_bins
 from FastExplain.utils import (
     bin_intervals,
+    clean_dict_text,
     clean_text,
     conditional_mean,
     ifnone,
@@ -58,6 +59,7 @@ def get_one_way_analysis(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
 ):
 
     """
@@ -123,6 +125,7 @@ def get_one_way_analysis(
         percentage=percentage,
         condense_last=condense_last,
         filter=filter,
+        index_mapping=index_mapping,
     )
 
 
@@ -140,6 +143,7 @@ def plot_one_way_analysis(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
     x_axis_name: Optional[str] = None,
     y_axis_name: Optional[Union[List[str], str]] = None,
     plot_title: Optional[str] = None,
@@ -219,6 +223,7 @@ def plot_one_way_analysis(
         percentage=percentage,
         condense_last=condense_last,
         filter=filter,
+        index_mapping=index_mapping,
         x_axis_name=x_axis_name,
         y_axis_name=y_axis_name,
         plot_title=plot_title,
@@ -618,16 +623,12 @@ def plot_two_way_frequency(
 class OneWay:
     """Connected interface for one-way and two-way analysis methods. Intended for usage with full model pipeline class. (FastExplain.models.base)"""
 
-    def __init__(self, m, xs, df=None, dep_var=None):
+    def __init__(self, m, xs, df=None, dep_var=None, cat_mapping=None):
         self.m = m
         self.xs = xs
         self.df = df
         self.dep_var = dep_var
-
-        if self.df is None or self.dep_var is None:
-            warnings.warn(
-                "One way analysis and Two way analysis does not work without dependent variable"
-            )
+        self.cat_mapping = cat_mapping
 
     def feature_correlation(self, plotsize: List[int] = (1000, 1000)):
         """
@@ -653,6 +654,7 @@ class OneWay:
         percentage: bool = False,
         condense_last: bool = True,
         filter: Optional[str] = None,
+        index_mapping: Optional[dict] = None,
     ):
 
         """
@@ -698,6 +700,13 @@ class OneWay:
                 Defaults to None.
         """
         y_col = ifnone(y_col, self.dep_var)
+        index_mapping = ifnone(
+            index_mapping,
+            clean_dict_text(self.cat_mapping[x_col])
+            if x_col in self.cat_mapping
+            else None,
+        )
+
         return get_one_way_analysis(
             df=self.df,
             x_col=x_col,
@@ -712,6 +721,7 @@ class OneWay:
             percentage=percentage,
             condense_last=condense_last,
             filter=filter,
+            index_mapping=index_mapping,
         )
 
     def plot_one_way_analysis(
@@ -728,6 +738,7 @@ class OneWay:
         percentage: bool = False,
         condense_last: bool = True,
         filter: Optional[str] = None,
+        index_mapping: Optional[dict] = None,
         x_axis_name: Optional[str] = None,
         y_axis_name: Optional[Union[List[str], str]] = None,
         plot_title: Optional[str] = None,
@@ -787,6 +798,12 @@ class OneWay:
         """
 
         y_col = ifnone(y_col, self.dep_var)
+        index_mapping = ifnone(
+            index_mapping,
+            clean_dict_text(self.cat_mapping[x_col])
+            if x_col in self.cat_mapping
+            else None,
+        )
         return plot_one_way_analysis(
             df=self.df,
             x_col=x_col,
@@ -801,6 +818,7 @@ class OneWay:
             percentage=percentage,
             condense_last=condense_last,
             filter=filter,
+            index_mapping=index_mapping,
             x_axis_name=x_axis_name,
             y_axis_name=y_axis_name,
             plot_title=plot_title,
@@ -1146,6 +1164,7 @@ def _get_one_way_analysis(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
 ):
 
     """Base function to get one way analysis"""
@@ -1169,6 +1188,8 @@ def _get_one_way_analysis(
         one_way_df.index = bin_intervals(
             one_way_df.index, dp, percentage, condense_last
         )
+    if index_mapping is not None:
+        one_way_df.index = one_way_df.index.map(index_mapping)
     return one_way_df
 
 
@@ -1212,6 +1233,7 @@ def _get_two_one_way_analysis(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
 ):
 
     """Base function to get one way analysis for two features"""
@@ -1237,6 +1259,8 @@ def _get_two_one_way_analysis(
         one_way_df.index = bin_intervals(
             one_way_df.index, dp, percentage, condense_last
         )
+    if index_mapping is not None:
+        one_way_df.index = one_way_df.index.map(index_mapping)
     return one_way_df
 
 

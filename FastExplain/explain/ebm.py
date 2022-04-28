@@ -22,6 +22,7 @@ def ebm_explain(
     dp: int = 2,
     percentage: bool = False,
     condense_last: bool = True,
+    index_mapping: Optional[dict] = None,
     model_names: Optional[List[str]] = None,
 ):
     """
@@ -61,6 +62,7 @@ def ebm_explain(
                         dp=dp,
                         percentage=percentage,
                         condense_last=condense_last,
+                        index_mapping=index_mapping,
                     )[["eff", "size"]]
                 )
             else:
@@ -73,6 +75,7 @@ def ebm_explain(
                         dp=dp,
                         percentage=percentage,
                         condense_last=condense_last,
+                        index_mapping=index_mapping,
                     )[["eff"]]
                 )
 
@@ -88,6 +91,7 @@ def ebm_explain(
             dp=dp,
             percentage=percentage,
             condense_last=condense_last,
+            index_mapping=index_mapping,
         )
 
 
@@ -99,6 +103,7 @@ def plot_ebm_explain(
     dp: int = 2,
     percentage: bool = False,
     condense_last: bool = True,
+    index_mapping: Optional[dict] = None,
     model_names: Optional[List[str]] = None,
     dep_name=None,
     feature_name=None,
@@ -156,6 +161,7 @@ def plot_ebm_explain(
                     dp=dp,
                     percentage=percentage,
                     condense_last=condense_last,
+                    index_mapping=index_mapping,
                 )
             else:
                 traces.extend(
@@ -170,6 +176,7 @@ def plot_ebm_explain(
                         dp=dp,
                         percentage=percentage,
                         condense_last=condense_last,
+                        index_mapping=index_mapping,
                     )
                 )
     else:
@@ -184,6 +191,7 @@ def plot_ebm_explain(
             dp=dp,
             percentage=percentage,
             condense_last=condense_last,
+            index_mapping=index_mapping,
         )
 
     title = (
@@ -206,10 +214,11 @@ def plot_ebm_explain(
 
 
 class EbmExplain:
-    def __init__(self, m, xs, dep_var=None):
+    def __init__(self, m, xs, dep_var=None, cat_mapping=None):
         self.m = m
         self.xs = xs
         self.dep_var = dep_var
+        self.cat_mapping = cat_mapping
 
     def ebm_explain(self, *args, **kwargs):
         return ebm_explain(self.m, self.xs, *args, **kwargs)
@@ -229,7 +238,14 @@ def _get_ebm_index(m, col):
 
 
 def _clean_ebm_explain(
-    m, xs, col, standardize_values=True, dp=2, percentage=False, condense_last=True
+    m,
+    xs,
+    col,
+    standardize_values=True,
+    dp=2,
+    percentage=False,
+    condense_last=True,
+    index_mapping: Optional[dict] = None,
 ):
     """Base function for cleaning EBM"""
     ebm_global = m.explain_global()
@@ -256,6 +272,8 @@ def _clean_ebm_explain(
         df["eff"] += adjust
         df["lower"] += adjust
         df["upper"] += adjust
+    if index_mapping is not None:
+        df.index = df.index.map(index_mapping)
     return df
 
 
@@ -270,6 +288,7 @@ def _get_ebm_explain_traces(
     dp=2,
     percentage=False,
     condense_last=True,
+    index_mapping: Optional[dict] = None,
 ):
     """Base function for plotting EBM"""
     df = ebm_explain(
@@ -280,6 +299,7 @@ def _get_ebm_explain_traces(
         dp=dp,
         percentage=percentage,
         condense_last=condense_last,
+        index_mapping=index_mapping,
     )
     x = df.index
     y = df["eff"]

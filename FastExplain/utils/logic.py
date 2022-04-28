@@ -16,6 +16,10 @@ def clean_text(text):
     return text.replace("_", " ").title()
 
 
+def clean_dict_text(d):
+    return {k: clean_text(v) for k, v in d.items()}
+
+
 def bin_columns(bins, dp=2, percentage=False, condense_last=True):
     formatting = "%" if percentage else "f"
 

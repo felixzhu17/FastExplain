@@ -1,4 +1,4 @@
-from typing import Optional, List, Callable
+from typing import Callable, List, Optional
 
 import pandas as pd
 

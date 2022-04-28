@@ -110,6 +110,7 @@ class Model(Explain, ABC):
             self.data.xs,
             self.data.df,
             self.data.dep_var,
+            self.data.cat_mapping,
         )
 
     @abstractmethod

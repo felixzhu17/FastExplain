@@ -34,6 +34,7 @@ def ale(
     remove_last_bins: Optional[int] = None,
     dp: int = 2,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
     model_names: Optional[List[str]] = None,
 ):
     """
@@ -106,6 +107,7 @@ def ale(
                         remove_last_bins=remove_last_bins,
                         dp=dp,
                         filter=filter,
+                        index_mapping=index_mapping,
                     )[["eff", "size"]]
                 )
             else:
@@ -125,6 +127,7 @@ def ale(
                         remove_last_bins=remove_last_bins,
                         dp=dp,
                         filter=filter,
+                        index_mapping=index_mapping,
                     )[["eff"]]
                 )
 
@@ -147,6 +150,7 @@ def ale(
             remove_last_bins=remove_last_bins,
             dp=dp,
             filter=filter,
+            index_mapping=index_mapping,
         )
 
 
@@ -165,6 +169,7 @@ def plot_ale(
     remove_last_bins: Optional[int] = None,
     dp: int = 2,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
     dep_name: Optional[str] = None,
     feature_name: Optional[str] = None,
     model_names: Optional[List[str]] = None,
@@ -255,6 +260,7 @@ def plot_ale(
                     remove_last_bins=remove_last_bins,
                     dp=dp,
                     filter=filter,
+                    index_mapping=index_mapping,
                 )
             else:
                 traces.extend(
@@ -276,6 +282,7 @@ def plot_ale(
                         remove_last_bins=remove_last_bins,
                         dp=dp,
                         filter=filter,
+                        index_mapping=index_mapping,
                     )
                 )
     else:
@@ -297,6 +304,7 @@ def plot_ale(
             remove_last_bins=remove_last_bins,
             dp=dp,
             filter=filter,
+            index_mapping=index_mapping,
         )
 
     title = (
@@ -500,13 +508,14 @@ def plot_ale_2d(
 
 
 class Ale:
-    def __init__(self, m, xs, dep_var=None):
+    def __init__(self, m, xs, dep_var=None, cat_mapping=None):
         self.m = m
         self.xs = xs
         self.dep_var = dep_var
+        self.cat_mapping = cat_mapping
 
-    def ale(self, *args, **kwargs):
-        return ale(self.m, self.xs, *args, **kwargs)
+    def ale(self, col, *args, **kwargs):
+        return ale(self.m, self.xs, col, *args, **kwargs)
 
     def plot_ale(self, col, dep_name=None, *args, **kwargs):
         dep_name = ifnone(dep_name, self.dep_var)
@@ -811,6 +820,7 @@ def _clean_ale(
     remove_last_bins: Optional[int] = None,
     dp: int = 2,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
 ):
     """Base function for cleaning ALE"""
     xs = xs.query(filter) if filter else xs
@@ -839,6 +849,9 @@ def _clean_ale(
         )
     if remove_last_bins:
         df = df.iloc[:-remove_last_bins]
+
+    if index_mapping is not None:
+        df.index = df.index.map(index_mapping)
     return df
 
 
@@ -860,6 +873,7 @@ def _get_ale_traces(
     remove_last_bins: Optional[int] = None,
     dp: int = 2,
     filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
 ):
     """Base function for plotting ALE"""
     df = ale(
@@ -877,6 +891,7 @@ def _get_ale_traces(
         remove_last_bins=remove_last_bins,
         dp=dp,
         filter=filter,
+        index_mapping=index_mapping,
     )
     x = df.index
     y = df["eff"]
