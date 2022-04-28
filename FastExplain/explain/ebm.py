@@ -6,6 +6,7 @@ from FastExplain.utils import (
     COLOURS,
     bin_columns,
     clean_text,
+    clean_dict_text,
     cycle_colours,
     get_upper_lower_bound_traces,
     ifnone,
@@ -34,7 +35,7 @@ def ebm_explain(
         xs (Union[List[pd.DataFrame], pd.DataFrame]):
             Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
         col (str):
-            Name of predictor feature to use for ALE
+            Name of predictor feature to use for EBM Explain
         standardize_values (bool, optional):
             Whether to standardize the first bin as 0. Defaults to True.
         dp (int, optional):
@@ -122,7 +123,7 @@ def plot_ebm_explain(
         xs (Union[List[pd.DataFrame], pd.DataFrame]):
             Dataframe used by model to predict. Can supply a list of dataframes with the same features to create a cross-comparison
         col (str):
-            Name of predictor feature to use for ALE
+            Name of predictor feature to use for EBM Explain
         standardize_values (bool, optional):
             Whether to standardize the first bin as 0. Defaults to True.
         dp (int, optional):
@@ -224,13 +225,104 @@ class EbmExplain:
         self.dep_var = dep_var
         self.cat_mapping = cat_mapping
 
-    def ebm_explain(self, *args, **kwargs):
-        return ebm_explain(self.m, self.xs, *args, **kwargs)
+    def ebm_explain(
+        self,
+        col: str,
+        standardize_values: bool = True,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        index_mapping: Optional[dict] = None,
+    ):
+        """
+        Calculate EBM values for a predictor feature in a model
 
-    def plot_ebm_explain(self, col, dep_name=None, *args, **kwargs):
+        Args:
+            col (str):
+                Name of predictor feature to use for EBM Explain
+            standardize_values (bool, optional):
+                Whether to standardize the first bin as 0. Defaults to True.
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            index_mapping (Optional[dict], optional):
+                Dictionary mapping the values to display on the x-axis. Defaults to None.
+        """
+        index_mapping = ifnone(
+            index_mapping,
+            clean_dict_text(self.cat_mapping[col]) if col in self.cat_mapping else None,
+        )
+        return ebm_explain(
+            m=self.m,
+            xs=self.xs,
+            col=col,
+            standardize_values=standardize_values,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            index_mapping=index_mapping,
+        )
+
+    def plot_ebm_explain(
+        self,
+        col: str,
+        standardize_values: bool = True,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        index_mapping: Optional[dict] = None,
+        dep_name=None,
+        feature_name=None,
+        plot_title=None,
+        plotsize=None,
+    ):
+
+        """
+        Plot EBM values for a predictor feature in a model
+
+        Args:
+            col (str):
+                Name of predictor feature to use for EBM Explain
+            standardize_values (bool, optional):
+                Whether to standardize the first bin as 0. Defaults to True.
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            index_mapping (Optional[dict], optional):
+                Dictionary mapping the values to display on the x-axis. Defaults to None.
+            dep_name (Optional[str], optional):
+                Custom name to use for dependent variable on plot. Defaults to None.
+            feature_names (Optional[str], optional):
+                Custom names to use for predictor variable on plot. Defaults to None.
+            plot_title (Optional[str], optional):
+                Custom name to use for title of plot. Defaults to None.
+            plotsize (Optional[List[int]], optional):
+                Custom plotsize supplied as (width, height). Defaults to None.
+        """
         dep_name = ifnone(dep_name, self.dep_var)
+        index_mapping = ifnone(
+            index_mapping,
+            clean_dict_text(self.cat_mapping[col]) if col in self.cat_mapping else None,
+        )
         return plot_ebm_explain(
-            self.m, self.xs, col, dep_name=dep_name, *args, **kwargs
+            m=self.m,
+            xs=self.xs,
+            col=col,
+            standardize_values=standardize_values,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            index_mapping=index_mapping,
+            dep_name=dep_name,
+            feature_name=feature_name,
+            plot_title=plot_title,
+            plotsize=plotsize,
         )
 
 
