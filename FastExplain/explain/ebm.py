@@ -5,8 +5,8 @@ import pandas as pd
 from FastExplain.utils import (
     COLOURS,
     bin_columns,
-    clean_text,
     clean_dict_text,
+    clean_text,
     cycle_colours,
     get_upper_lower_bound_traces,
     ifnone,
