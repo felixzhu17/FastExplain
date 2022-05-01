@@ -18,6 +18,7 @@ from FastExplain.utils import (
     merge_multi_df,
     plot_two_way,
     plot_upper_lower_bound_traces,
+    sort_plot_df
 )
 
 

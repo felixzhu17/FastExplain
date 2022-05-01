@@ -58,17 +58,11 @@ def plot_one_way(
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
     y_axis_name = ifnone(y_axis_name, clean_text(y_col))
 
-    def sort_df(df):
-        if sort in ["frequency", "Frequency"]:
-            return df.sort_values("size", ascending=ascending)
-        elif sort:
-            return df.sort_values(y_col, ascending=ascending)
-        else:
-            return df
+
 
     if size is not None:
         df["size"] = size
-        df = sort_df(df)
+        df = sort_plot_df(df, y_col, sort, ascending)
         fig = create_secondary_axis_plotly(
             px.line(df, x=df.index, y=y_col, color_discrete_sequence=[COLOURS["blue"]])
         )
@@ -85,7 +79,7 @@ def plot_one_way(
         fig.update_yaxes(title_text="Frequency", secondary_y=False)
         fig.update_yaxes(title_text=y_axis_name, secondary_y=True)
     else:
-        df = sort_df(df)
+        df = sort_plot_df(df, y_col, sort, ascending)
         fig = px.line(df, x=df.index, y=y_col)
         fig.update_yaxes(title_text=y_axis_name)
 
@@ -269,3 +263,11 @@ def custom_legend_name(fig, new_names):
     for i, new_name in enumerate(new_names):
         fig.data[i].name = new_name
     return
+
+def sort_plot_df(df, y_col, sort, ascending):
+    if sort in ["frequency", "Frequency"]:
+        return df.sort_values("size", ascending=ascending)
+    elif sort:
+        return df.sort_values(y_col, ascending=ascending)
+    else:
+        return df
