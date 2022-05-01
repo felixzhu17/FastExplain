@@ -149,6 +149,8 @@ def plot_one_way_analysis(
     y_axis_name: Optional[Union[List[str], str]] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
+    sort: bool = False,
+    ascending: bool = True,
 ):
 
     """
@@ -204,6 +206,10 @@ def plot_one_way_analysis(
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
+        sort (bool, optional):
+            Whether to sort values before plotting. Specify "frequency" to sort by frequency. Defaults to False
+        ascending (bool, optional):
+            Whether to sort ascending. Defaults to True.
     """
 
     y_col = y_col[0] if len(y_col) == 1 else y_col
@@ -231,6 +237,8 @@ def plot_one_way_analysis(
         y_axis_name=y_axis_name,
         plot_title=plot_title,
         plotsize=plotsize,
+        sort=sort,
+        ascending=ascending,
     )
 
 
@@ -748,6 +756,8 @@ class OneWay:
         y_axis_name: Optional[Union[List[str], str]] = None,
         plot_title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
+        sort: bool = False,
+        ascending: bool = True,
     ):
         """
         Plot one-way analysis between two features in a DataFrame. The x_col is binned and a function is applied to the y_col grouped by values of the x_col
@@ -802,6 +812,10 @@ class OneWay:
                 Custom name to use for title of plot. Defaults to None.
             plotsize (Optional[List[int]], optional):
                 Custom plotsize supplied as (width, height). Defaults to None.
+            sort (bool, optional):
+                Whether to sort values before plotting. Specify "frequency" to sort by frequency. Defaults to False
+            ascending (bool, optional):
+                Whether to sort ascending. Defaults to True.
         """
 
         y_col = ifnone(y_col, self.dep_var)
@@ -830,6 +844,8 @@ class OneWay:
             y_axis_name=y_axis_name,
             plot_title=plot_title,
             plotsize=plotsize,
+            sort=sort,
+            ascending=ascending,
         )
 
     def get_two_way_analysis(
@@ -1208,6 +1224,8 @@ def _plot_one_way_analysis(
     y_axis_name: Optional[str] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
+    sort: bool = False,
+    ascending: bool = True,
     *args,
     **kwargs,
 ):
@@ -1223,6 +1241,8 @@ def _plot_one_way_analysis(
         y_axis_name=y_axis_name,
         plot_title=plot_title,
         plotsize=plotsize,
+        sort=sort,
+        ascending=ascending,
     )
 
 
@@ -1279,6 +1299,8 @@ def _plot_two_one_way_analysis(
     y_axis_name: Optional[List[str]] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
+    sort=False,
+    ascending=True,
     *args,
     **kwargs,
 ):

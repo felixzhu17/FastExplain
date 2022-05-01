@@ -13,7 +13,7 @@ def drop_duplicate(ls):
 
 
 def clean_text(text):
-    return text.replace("_", " ").title()
+    return str(text).replace("_", " ").title()
 
 
 def clean_dict_text(d):

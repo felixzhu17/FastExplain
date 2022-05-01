@@ -15,6 +15,7 @@ def plot_two_way(
     plotsize=None,
     colorscale="Blues",
 ):
+    """Base function for plotting two-way analysis"""
     fig = px.imshow(df, color_continuous_scale=colorscale)
 
     feature_1, feature_2 = ifnone(
@@ -49,18 +50,34 @@ def plot_one_way(
     y_axis_name=None,
     plot_title=None,
     plotsize=None,
+    sort=None,
+    ascending=True,
 ):
+    """Base function for plotting one-way analysis with frequency"""
 
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
     y_axis_name = ifnone(y_axis_name, clean_text(y_col))
 
+    def sort_df(df):
+        if sort in ["frequency", "Frequency"]:
+            return df.sort_values("size", ascending=ascending)
+        elif sort:
+            return df.sort_values(y_col, ascending=ascending)
+        else:
+            return df
+
     if size is not None:
+        df["size"] = size
+        df = sort_df(df)
         fig = create_secondary_axis_plotly(
             px.line(df, x=df.index, y=y_col, color_discrete_sequence=[COLOURS["blue"]])
         )
         fig.add_trace(
             go.Bar(
-                name="Frequency", x=df.index, y=size, marker={"color": COLOURS["grey"]}
+                name="Frequency",
+                x=df.index,
+                y=df["size"],
+                marker={"color": COLOURS["grey"]},
             ),
             secondary_y=False,
         )
@@ -68,6 +85,7 @@ def plot_one_way(
         fig.update_yaxes(title_text="Frequency", secondary_y=False)
         fig.update_yaxes(title_text=y_axis_name, secondary_y=True)
     else:
+        df = sort_df(df)
         fig = px.line(df, x=df.index, y=y_col)
         fig.update_yaxes(title_text=y_axis_name)
 

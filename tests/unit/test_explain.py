@@ -68,7 +68,7 @@ def test_feature_importance(rf_class_object, xgb_class_object, ebm_class_object)
 
 
 def test_one_way(rf_class_object, xgb_class_object, ebm_class_object):
-    rf_class_object.plot_one_way_analysis("Age", filter="Age < 30")
+    rf_class_object.plot_one_way_analysis("Age", filter="Age < 30", sort=True)
     xgb_class_object.plot_one_way_analysis("Age")
     ebm_class_object.plot_one_way_analysis("Age", ["Survived", "SibSp"])
     assert True
