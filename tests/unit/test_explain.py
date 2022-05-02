@@ -1,6 +1,6 @@
 import pytest
 
-from FastExplain.explain import plot_ale
+from FastExplain.explain import plot_ale, plot_one_way_analysis
 
 
 def test_multi_ale(rf_class_object, xgb_class_object):
@@ -67,7 +67,8 @@ def test_feature_importance(rf_class_object, xgb_class_object, ebm_class_object)
     assert True
 
 
-def test_one_way(rf_class_object, xgb_class_object, ebm_class_object):
+def test_one_way(test_csv, rf_class_object, xgb_class_object, ebm_class_object):
+    plot_one_way_analysis(test_csv, "Sex", "Survived")
     rf_class_object.plot_one_way_analysis("Age", filter="Age < 30", sort=True)
     xgb_class_object.plot_one_way_analysis("Age")
     ebm_class_object.plot_one_way_analysis("Age", ["Survived", "SibSp"])

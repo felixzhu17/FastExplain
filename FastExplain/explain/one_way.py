@@ -1196,7 +1196,8 @@ def _get_one_way_analysis(
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
     df = df[~df[x_col].isna()] if numeric else df
-    bins = bins if bins else get_bins(df[x_col], grid_size)
+    if numeric:
+        bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col, y_col]].copy()
 
     filtered_df[x_col] = (
@@ -1272,7 +1273,8 @@ def _get_two_one_way_analysis(
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
     df = df[~df[x_col].isna()] if numeric else df
-    bins = bins if bins else get_bins(df[x_col], grid_size)
+    if numeric:
+        bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col] + y_col].copy()
     filtered_df[x_col] = (
         pd.cut(filtered_df[x_col], bins, include_lowest=True)
