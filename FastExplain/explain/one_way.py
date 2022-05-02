@@ -1,3 +1,4 @@
+from operator import index
 from typing import Callable, List, Optional, Union
 
 import numpy as np
@@ -257,6 +258,7 @@ def get_two_way_analysis(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[List[dict]] = None,
 ):
     """
     Perform two-way analysis between three features in a DataFrame. The x_cols are binned and a function is applied to the y_col grouped by values of the x_cols
@@ -301,6 +303,8 @@ def get_two_way_analysis(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[List[dict]], optional):
+            List of two dictionaries mapping the values to display on axis
     """
 
     df = df.query(filter) if filter else df
@@ -349,6 +353,13 @@ def get_two_way_analysis(
         two_way_df.columns = bin_intervals(
             two_way_df.columns, dp, percentage, condense_last
         )
+
+    if index_mapping is not None:
+        if index_mapping[0] is not None:
+            two_way_df.index = two_way_df.index.map(index_mapping[0])
+        if index_mapping[1] is not None:
+            two_way_df.columns = two_way_df.columns.map(index_mapping[1])
+
     return two_way_df
 
 
@@ -366,6 +377,7 @@ def plot_two_way_analysis(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[List[dict]] = None,
     feature_names: Optional[List[str]] = None,
     dep_name: Optional[str] = None,
     plot_title: Optional[str] = None,
@@ -416,6 +428,8 @@ def plot_two_way_analysis(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[List[dict]], optional):
+            List of two dictionaries mapping the values to display on axis
         feature_names (Optional[List[str]], optional):
             Custom names to use for independent variables on plot. Defaults to None.
         dep_name (Optional[str], optional):
@@ -445,6 +459,7 @@ def plot_two_way_analysis(
         percentage=percentage,
         condense_last=condense_last,
         filter=filter,
+        index_mapping=index_mapping,
     )
     return plot_two_way(
         df=two_way_df,
@@ -469,6 +484,7 @@ def get_two_way_frequency(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[List[dict]] = None,
 ):
 
     """
@@ -510,6 +526,8 @@ def get_two_way_frequency(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[List[dict]], optional):
+            List of two dictionaries mapping the values to display on axis
     """
 
     mod_df = df.copy()
@@ -528,6 +546,7 @@ def get_two_way_frequency(
         percentage=percentage,
         condense_last=condense_last,
         filter=filter,
+        index_mapping=index_mapping,
     )
     if percentage_frequency:
         return output / output.sum()
@@ -547,6 +566,7 @@ def plot_two_way_frequency(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
+    index_mapping: Optional[List[dict]] = None,
     feature_names: Optional[List[str]] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
@@ -592,6 +612,8 @@ def plot_two_way_frequency(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
+        index_mapping (Optional[List[dict]], optional):
+            List of two dictionaries mapping the values to display on axis
         feature_names (Optional[List[str]], optional):
             Custom names to use for independent variables on plot. Defaults to None.
         plot_title (Optional[str], optional):
@@ -616,6 +638,7 @@ def plot_two_way_frequency(
         percentage=percentage,
         condense_last=condense_last,
         filter=filter,
+        index_mapping=index_mapping,
     )
     feature_1, feature_2 = ifnone(
         feature_names, (clean_text(x_cols[0]), clean_text(x_cols[1]))
@@ -863,6 +886,7 @@ class OneWay:
         percentage: bool = False,
         condense_last: bool = True,
         filter: Optional[str] = None,
+        index_mapping: Optional[List[dict]] = None,
     ):
         """
         Perform two-way analysis between three features in a DataFrame. The x_cols are binned and a function is applied to the y_col grouped by values of the x_cols
@@ -907,8 +931,21 @@ class OneWay:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
+            index_mapping (Optional[List[dict]], optional):
+                List of two dictionaries mapping the values to display on axis
         """
         y_col = ifnone(y_col, self.dep_var)
+        index_mapping = ifnone(
+            index_mapping,
+            [
+                clean_dict_text(self.cat_mapping[x_cols[0]])
+                if x_cols[0] in self.cat_mapping
+                else None,
+                clean_dict_text(self.cat_mapping[x_cols[1]])
+                if x_cols[1] in self.cat_mapping
+                else None,
+            ],
+        )
         return get_two_way_analysis(
             df=self.df,
             x_cols=x_cols,
@@ -923,6 +960,7 @@ class OneWay:
             percentage=percentage,
             condense_last=condense_last,
             filter=filter,
+            index_mapping=index_mapping,
         )
 
     def plot_two_way_analysis(
@@ -939,6 +977,7 @@ class OneWay:
         percentage: bool = False,
         condense_last: bool = True,
         filter: Optional[str] = None,
+        index_mapping: Optional[List[dict]] = None,
         feature_names: Optional[List[str]] = None,
         dep_name: Optional[str] = None,
         plot_title: Optional[str] = None,
@@ -988,6 +1027,8 @@ class OneWay:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
+            index_mapping (Optional[List[dict]], optional):
+                List of two dictionaries mapping the values to display on axis
             feature_names (Optional[List[str]], optional):
                 Custom names to use for independent variables on plot. Defaults to None.
             dep_name (Optional[str], optional):
@@ -1003,6 +1044,17 @@ class OneWay:
                 Defaults to "Blues".
         """
         y_col = ifnone(y_col, self.dep_var)
+        index_mapping = ifnone(
+            index_mapping,
+            [
+                clean_dict_text(self.cat_mapping[x_cols[0]])
+                if x_cols[0] in self.cat_mapping
+                else None,
+                clean_dict_text(self.cat_mapping[x_cols[1]])
+                if x_cols[1] in self.cat_mapping
+                else None,
+            ],
+        )
         return plot_two_way_analysis(
             df=self.df,
             x_cols=x_cols,
@@ -1017,6 +1069,7 @@ class OneWay:
             percentage=percentage,
             condense_last=condense_last,
             filter=filter,
+            index_mapping=index_mapping,
             feature_names=feature_names,
             dep_name=dep_name,
             plot_title=plot_title,
@@ -1036,6 +1089,7 @@ class OneWay:
         percentage: bool = False,
         condense_last: bool = True,
         filter: Optional[str] = None,
+        index_mapping: Optional[List[dict]] = None,
     ):
         """
         Get frequency of two features in a DataFrame. The x_cols are binned and frequency is counted
@@ -1074,7 +1128,20 @@ class OneWay:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
+            index_mapping (Optional[List[dict]], optional):
+                List of two dictionaries mapping the values to display on axis
         """
+        index_mapping = ifnone(
+            index_mapping,
+            [
+                clean_dict_text(self.cat_mapping[x_cols[0]])
+                if x_cols[0] in self.cat_mapping
+                else None,
+                clean_dict_text(self.cat_mapping[x_cols[1]])
+                if x_cols[1] in self.cat_mapping
+                else None,
+            ],
+        )
         return get_two_way_frequency(
             df=self.df,
             x_cols=x_cols,
@@ -1087,6 +1154,7 @@ class OneWay:
             percentage=percentage,
             condense_last=condense_last,
             filter=filter,
+            index_mapping=index_mapping,
         )
 
     def plot_two_way_frequency(
@@ -1101,6 +1169,7 @@ class OneWay:
         percentage: bool = False,
         condense_last: bool = True,
         filter: Optional[str] = None,
+        index_mapping: Optional[List[dict]] = None,
         feature_names: Optional[List[str]] = None,
         plot_title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
@@ -1143,6 +1212,8 @@ class OneWay:
                 to sum it with ``b``, your query should be ```a a` + b``.
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
+            index_mapping (Optional[List[dict]], optional):
+                List of two dictionaries mapping the values to display on axis
             feature_names (Optional[List[str]], optional):
                 Custom names to use for independent variables on plot. Defaults to None.
             plot_title (Optional[str], optional):
@@ -1155,6 +1226,17 @@ class OneWay:
                 For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
                 Defaults to "Blues".
         """
+        index_mapping = ifnone(
+            index_mapping,
+            [
+                clean_dict_text(self.cat_mapping[x_cols[0]])
+                if x_cols[0] in self.cat_mapping
+                else None,
+                clean_dict_text(self.cat_mapping[x_cols[1]])
+                if x_cols[1] in self.cat_mapping
+                else None,
+            ],
+        )
         return plot_two_way_frequency(
             df=self.df,
             x_cols=x_cols,
@@ -1167,6 +1249,7 @@ class OneWay:
             percentage=percentage,
             condense_last=condense_last,
             filter=filter,
+            index_mapping=index_mapping,
             feature_names=feature_names,
             plot_title=plot_title,
             plotsize=plotsize,
