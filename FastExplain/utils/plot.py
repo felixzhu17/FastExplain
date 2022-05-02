@@ -58,8 +58,6 @@ def plot_one_way(
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
     y_axis_name = ifnone(y_axis_name, clean_text(y_col))
 
-
-
     if size is not None:
         df["size"] = size
         df = sort_plot_df(df, y_col, sort, ascending)
@@ -263,6 +261,7 @@ def custom_legend_name(fig, new_names):
     for i, new_name in enumerate(new_names):
         fig.data[i].name = new_name
     return
+
 
 def sort_plot_df(df, y_col, sort, ascending):
     if sort in ["frequency", "Frequency"]:
