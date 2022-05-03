@@ -41,6 +41,16 @@ def plot_two_way(
     return fig
 
 
+# def plot_frequency(df, x_col, size, x_axis_name=None,
+#     y_axis_name=None,
+#     plot_title=None,
+#     plotsize=None,
+#     sort=None,
+#     ascending=True,):
+#     df["size"] = size
+#     df = sort_plot_df(df, y_col, sort, ascending)
+
+
 def plot_one_way(
     df,
     x_col,
