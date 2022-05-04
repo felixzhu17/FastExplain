@@ -57,6 +57,7 @@ def test_ale_class(rf_class_object, xgb_class_object):
 
 def test_ebm(ebm_class_object):
     ebm_class_object.plot_ebm_explain("Age", plot_title="Test")
+    ebm_class_object.plot_ebm_explain("Sex", plot_title="Test")
     assert True
 
 

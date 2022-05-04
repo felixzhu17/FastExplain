@@ -50,3 +50,14 @@ def check_unequal_list(lists):
 
 def check_numeric(x):
     return isinstance(x, (int, float, complex)) and not isinstance(x, bool)
+
+
+def check_all_numeric(x):
+    return all(check_numeric(i) for i in x)
+
+
+def try_convert_numeric(x):
+    try:
+        return [float(i) for i in x]
+    except:
+        return x

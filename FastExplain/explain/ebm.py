@@ -5,6 +5,7 @@ import pandas as pd
 from FastExplain.utils import (
     COLOURS,
     bin_columns,
+    check_all_numeric,
     clean_dict_text,
     clean_text,
     cycle_colours,
@@ -12,6 +13,7 @@ from FastExplain.utils import (
     ifnone,
     merge_multi_df,
     plot_upper_lower_bound_traces,
+    try_convert_numeric,
 )
 
 
@@ -346,7 +348,12 @@ def _clean_ebm_explain(
     """Base function for cleaning EBM"""
     ebm_global = m.explain_global()
     index = _get_ebm_index(m, col)
-    binned = pd.cut(xs[col], ebm_global.data(index)["names"], include_lowest=True)
+    numeric = check_all_numeric(ebm_global.data(index)["names"])
+    binned = (
+        pd.cut(xs[col], ebm_global.data(index)["names"], include_lowest=True)
+        if numeric
+        else xs[col]
+    )
     binned_count = list(binned.groupby(binned).count())
     df = pd.DataFrame(
         {
@@ -360,7 +367,9 @@ def _clean_ebm_explain(
             dp=dp,
             percentage=percentage,
             condense_last=condense_last,
-        ),
+        )
+        if numeric
+        else ebm_global.data(index)["names"],
     )
     df = df[~df.index.duplicated(keep="last")]
     if standardize_values:
@@ -369,6 +378,7 @@ def _clean_ebm_explain(
         df["lower"] += adjust
         df["upper"] += adjust
     if index_mapping is not None:
+        df.index = try_convert_numeric(df.index)
         df.index = df.index.map(index_mapping)
     return df
 
