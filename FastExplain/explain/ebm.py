@@ -377,7 +377,7 @@ def _clean_ebm_explain(
         df["eff"] += adjust
         df["lower"] += adjust
         df["upper"] += adjust
-    if index_mapping is not None:
+    if index_mapping is not None and numeric is False:
         df.index = try_convert_numeric(df.index)
         df.index = df.index.map(index_mapping)
     return df
