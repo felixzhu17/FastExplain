@@ -128,7 +128,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-*.ipynb
+
+# Other
+test.ipynb
 *.bat
 *.sh
 .vscodep
