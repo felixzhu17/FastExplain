@@ -1,4 +1,4 @@
-from operator import index
+from collections import Counter
 from typing import Callable, List, Optional, Union
 
 import numpy as np
@@ -16,6 +16,7 @@ from FastExplain.utils import (
     clean_text,
     conditional_mean,
     ifnone,
+    plot_bar,
     plot_one_way,
     plot_two_one_way,
     plot_two_way,
@@ -44,6 +45,172 @@ def feature_correlation(xs: pd.DataFrame, plotsize: List[int] = (1000, 1000)):
     )
     fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
     return fig
+
+
+def get_frequency(
+    df: pd.DataFrame,
+    x_col: str,
+    numeric: Optional[bool] = None,
+    max_card: int = 20,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    dp: int = 2,
+    percentage: bool = False,
+    condense_last: bool = True,
+    filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
+):
+
+    """
+    Get frequency of feature in DataFrame. The x_col is binned and frequency is counted.
+
+    Args:
+        df (pd.DataFrame):
+            Dataframe containing features to compare
+        x_col (str):
+            Name of feature on x-axis to bin
+        numeric (Optional[bool], optional):
+            Whether the x_col is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+        max_card (int, optional):
+            Maximum number of unique values for categorical variable. Defaults to 20.
+        grid_size (int, optional):
+            Number of quantiles to bin x_col into. Defaults to 20.
+        bins (Optional[List[float]], optional):
+            Optionally, provide a list of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+        dp (int, optional):
+            Decimal points to format. Defaults to 2.
+        percentage (bool, optional):
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional):
+            Whether to bin last value with a greater than. Defaults to True.
+        filter (Optional[str], optional):
+            The query string to evaluate.
+            You can refer to variables
+            in the environment by prefixing them with an '@' character like
+            ``@a + b``.
+            You can refer to column names that are not valid Python variable names
+            by surrounding them in backticks. Thus, column names containing spaces
+            or punctuations (besides underscores) or starting with digits must be
+            surrounded by backticks. (For example, a column named "Area (cm^2)" would
+            be referenced as ```Area (cm^2)```). Column names which are Python keywords
+            (like "list", "for", "import", etc) cannot be used.
+            For example, if one of your columns is called ``a a`` and you want
+            to sum it with ``b``, your query should be ```a a` + b``.
+            For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+            Defaults to None.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis
+    """
+
+    df = df.query(filter) if filter else df
+    numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
+    df = df[~df[x_col].isna()] if numeric else df
+    if numeric:
+        bins = bins if bins else get_bins(df[x_col], grid_size)
+    filtered_df = df[[x_col]].copy()
+
+    filtered_df[x_col] = (
+        pd.cut(filtered_df[x_col], bins, include_lowest=True)
+        if numeric
+        else filtered_df[x_col].astype("category")
+    )
+    filtered_df["count"] = 1
+
+    frequency_df = filtered_df.groupby(x_col).agg(**{"frequency": ("count", "count")})
+    if numeric:
+        frequency_df.index = bin_intervals(
+            frequency_df.index, dp, percentage, condense_last
+        )
+    if index_mapping is not None:
+        frequency_df.index = frequency_df.index.map(index_mapping)
+    return frequency_df
+
+
+def plot_frequency(
+    df: pd.DataFrame,
+    x_col: str,
+    numeric: Optional[bool] = None,
+    max_card: int = 20,
+    grid_size: int = 20,
+    bins: Optional[List[float]] = None,
+    dp: int = 2,
+    percentage: bool = False,
+    condense_last: bool = True,
+    filter: Optional[str] = None,
+    index_mapping: Optional[dict] = None,
+    x_axis_name: Optional[str] = None,
+    y_axis_name: Optional[str] = None,
+    plot_title: Optional[str] = None,
+    plotsize: Optional[List[int]] = None,
+    sort: bool = False,
+    ascending: bool = True,
+):
+    """
+    Plot frequency of feature in DataFrame. The x_col is binned and frequency is counted.
+
+    Args:
+        df (pd.DataFrame):
+            Dataframe containing features to compare
+        x_col (str):
+            Name of feature on x-axis to bin
+        numeric (Optional[bool], optional):
+            Whether the x_col is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+        max_card (int, optional):
+            Maximum number of unique values for categorical variable. Defaults to 20.
+        grid_size (int, optional):
+            Number of quantiles to bin x_col into. Defaults to 20.
+        bins (Optional[List[float]], optional):
+            Optionally, provide a list of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+        dp (int, optional):
+            Decimal points to format. Defaults to 2.
+        percentage (bool, optional):
+            Whether to format bins as percentages. Defaults to False.
+        condense_last (bool, optional):
+            Whether to bin last value with a greater than. Defaults to True.
+        filter (Optional[str], optional):
+            The query string to evaluate.
+            You can refer to variables
+            in the environment by prefixing them with an '@' character like
+            ``@a + b``.
+            You can refer to column names that are not valid Python variable names
+            by surrounding them in backticks. Thus, column names containing spaces
+            or punctuations (besides underscores) or starting with digits must be
+            surrounded by backticks. (For example, a column named "Area (cm^2)" would
+            be referenced as ```Area (cm^2)```). Column names which are Python keywords
+            (like "list", "for", "import", etc) cannot be used.
+            For example, if one of your columns is called ``a a`` and you want
+            to sum it with ``b``, your query should be ```a a` + b``.
+            For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+            Defaults to None.
+        index_mapping (Optional[dict], optional):
+            Dictionary mapping the values to display on the x-axis
+    """
+    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
+    plot_title = ifnone(plot_title, f"{x_axis_name} Frequency")
+    frequency_df = get_frequency(
+        df=df,
+        x_col=x_col,
+        numeric=numeric,
+        max_card=max_card,
+        grid_size=grid_size,
+        bins=bins,
+        dp=dp,
+        percentage=percentage,
+        condense_last=condense_last,
+        filter=filter,
+        index_mapping=index_mapping,
+    )
+    return plot_bar(
+        df=frequency_df,
+        x_col=x_col,
+        y_col="frequency",
+        x_axis_name=x_axis_name,
+        y_axis_name=y_axis_name,
+        plot_title=plot_title,
+        plotsize=plotsize,
+        sort=sort,
+        ascending=ascending,
+    )
 
 
 def get_one_way_analysis(
@@ -108,6 +275,18 @@ def get_one_way_analysis(
             Defaults to None.
         index_mapping (Optional[dict], optional):
             Dictionary mapping the values to display on the x-axis
+        x_axis_name (Optional[str], optional):
+            Custom names to use for x_axis on plot. Defaults to None.
+        y_axis_name (Optional[Union[List[str], str]], optional):
+            Custom name to use for y_axis on plot. Can provide up to 2 y-axis to measure against. Defaults to None.
+        plot_title (Optional[str], optional):
+            Custom name to use for title of plot. Defaults to None.
+        plotsize (Optional[List[int]], optional):
+            Custom plotsize supplied as (width, height). Defaults to None.
+        sort (bool, optional):
+            Whether to sort values before plotting. Defaults to False
+        ascending (bool, optional):
+            Whether to sort ascending. Defaults to True.
     """
     one_way_func = (
         _get_two_one_way_analysis
@@ -680,6 +859,151 @@ class OneWay:
         """
         return feature_correlation(xs=self.xs, plotsize=plotsize)
 
+    def get_frequency(
+        self,
+        x_col: str,
+        numeric: Optional[bool] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[float]] = None,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+        index_mapping: Optional[dict] = None,
+    ):
+
+        """
+        Get frequency of feature in DataFrame. The x_col is binned and frequency is counted.
+
+        Args:
+            x_col (str):
+                Name of feature on x-axis to bin
+            numeric (Optional[bool], optional):
+                Whether the x_col is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[float]], optional):
+                Optionally, provide a list of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+            index_mapping (Optional[dict], optional):
+                Dictionary mapping the values to display on the x-axis
+        """
+        index_mapping = self._get_index_mapping(index_mapping, x_col)
+        return get_frequency(
+            df=self.df,
+            x_col=x_col,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
+            index_mapping=index_mapping,
+        )
+
+    def plot_frequency(
+        self,
+        x_col: str,
+        numeric: Optional[bool] = None,
+        max_card: int = 20,
+        grid_size: int = 20,
+        bins: Optional[List[float]] = None,
+        dp: int = 2,
+        percentage: bool = False,
+        condense_last: bool = True,
+        filter: Optional[str] = None,
+        index_mapping: Optional[dict] = None,
+        x_axis_name: Optional[str] = None,
+        y_axis_name: Optional[str] = None,
+        plot_title: Optional[str] = None,
+        plotsize: Optional[List[int]] = None,
+        sort: bool = False,
+        ascending: bool = True,
+    ):
+        """
+        Plot frequency of feature in DataFrame. The x_col is binned and frequency is counted.
+
+        Args:
+            x_col (str):
+                Name of feature on x-axis to bin
+            numeric (Optional[bool], optional):
+                Whether the x_col is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
+            max_card (int, optional):
+                Maximum number of unique values for categorical variable. Defaults to 20.
+            grid_size (int, optional):
+                Number of quantiles to bin x_col into. Defaults to 20.
+            bins (Optional[List[float]], optional):
+                Optionally, provide a list of values to bin x_col into, in place of quantile segmentation. Defaults to None.
+            dp (int, optional):
+                Decimal points to format. Defaults to 2.
+            percentage (bool, optional):
+                Whether to format bins as percentages. Defaults to False.
+            condense_last (bool, optional):
+                Whether to bin last value with a greater than. Defaults to True.
+            filter (Optional[str], optional):
+                The query string to evaluate.
+                You can refer to variables
+                in the environment by prefixing them with an '@' character like
+                ``@a + b``.
+                You can refer to column names that are not valid Python variable names
+                by surrounding them in backticks. Thus, column names containing spaces
+                or punctuations (besides underscores) or starting with digits must be
+                surrounded by backticks. (For example, a column named "Area (cm^2)" would
+                be referenced as ```Area (cm^2)```). Column names which are Python keywords
+                (like "list", "for", "import", etc) cannot be used.
+                For example, if one of your columns is called ``a a`` and you want
+                to sum it with ``b``, your query should be ```a a` + b``.
+                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
+                Defaults to None.
+            index_mapping (Optional[dict], optional):
+                Dictionary mapping the values to display on the x-axis
+        """
+        index_mapping = self._get_index_mapping(index_mapping, x_col)
+        return plot_frequency(
+            df=self.df,
+            x_col=x_col,
+            numeric=numeric,
+            max_card=max_card,
+            grid_size=grid_size,
+            bins=bins,
+            dp=dp,
+            percentage=percentage,
+            condense_last=condense_last,
+            filter=filter,
+            index_mapping=index_mapping,
+            x_axis_name=x_axis_name,
+            y_axis_name=y_axis_name,
+            plot_title=plot_title,
+            plotsize=plotsize,
+            sort=sort,
+            ascending=ascending,
+        )
+
     def get_one_way_analysis(
         self,
         x_col: str,
@@ -742,12 +1066,7 @@ class OneWay:
                 Dictionary mapping the values to display on the x-axis. Defaults to None.
         """
         y_col = ifnone(y_col, self.dep_var)
-        index_mapping = ifnone(
-            index_mapping,
-            clean_dict_text(self.cat_mapping[x_col])
-            if x_col in self.cat_mapping
-            else None,
-        )
+        index_mapping = self._get_index_mapping(index_mapping, x_col)
 
         return get_one_way_analysis(
             df=self.df,
@@ -848,12 +1167,7 @@ class OneWay:
         """
 
         y_col = ifnone(y_col, self.dep_var)
-        index_mapping = ifnone(
-            index_mapping,
-            clean_dict_text(self.cat_mapping[x_col])
-            if x_col in self.cat_mapping
-            else None,
-        )
+        index_mapping = self._get_index_mapping(index_mapping, x_col)
         return plot_one_way_analysis(
             df=self.df,
             x_col=x_col,
@@ -940,17 +1254,7 @@ class OneWay:
                 List of two dictionaries mapping the values to display on axis
         """
         y_col = ifnone(y_col, self.dep_var)
-        index_mapping = ifnone(
-            index_mapping,
-            [
-                clean_dict_text(self.cat_mapping[x_cols[0]])
-                if x_cols[0] in self.cat_mapping
-                else None,
-                clean_dict_text(self.cat_mapping[x_cols[1]])
-                if x_cols[1] in self.cat_mapping
-                else None,
-            ],
-        )
+        index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return get_two_way_analysis(
             df=self.df,
             x_cols=x_cols,
@@ -1049,17 +1353,7 @@ class OneWay:
                 Defaults to "Blues".
         """
         y_col = ifnone(y_col, self.dep_var)
-        index_mapping = ifnone(
-            index_mapping,
-            [
-                clean_dict_text(self.cat_mapping[x_cols[0]])
-                if x_cols[0] in self.cat_mapping
-                else None,
-                clean_dict_text(self.cat_mapping[x_cols[1]])
-                if x_cols[1] in self.cat_mapping
-                else None,
-            ],
-        )
+        index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return plot_two_way_analysis(
             df=self.df,
             x_cols=x_cols,
@@ -1136,17 +1430,7 @@ class OneWay:
             index_mapping (Optional[List[dict]], optional):
                 List of two dictionaries mapping the values to display on axis
         """
-        index_mapping = ifnone(
-            index_mapping,
-            [
-                clean_dict_text(self.cat_mapping[x_cols[0]])
-                if x_cols[0] in self.cat_mapping
-                else None,
-                clean_dict_text(self.cat_mapping[x_cols[1]])
-                if x_cols[1] in self.cat_mapping
-                else None,
-            ],
-        )
+        index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return get_two_way_frequency(
             df=self.df,
             x_cols=x_cols,
@@ -1231,17 +1515,7 @@ class OneWay:
                 For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
                 Defaults to "Blues".
         """
-        index_mapping = ifnone(
-            index_mapping,
-            [
-                clean_dict_text(self.cat_mapping[x_cols[0]])
-                if x_cols[0] in self.cat_mapping
-                else None,
-                clean_dict_text(self.cat_mapping[x_cols[1]])
-                if x_cols[1] in self.cat_mapping
-                else None,
-            ],
-        )
+        index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return plot_two_way_frequency(
             df=self.df,
             x_cols=x_cols,
@@ -1259,6 +1533,27 @@ class OneWay:
             plot_title=plot_title,
             plotsize=plotsize,
             colorscale=colorscale,
+        )
+
+    def _get_index_mapping(self, index_mapping, x_col):
+        return ifnone(
+            index_mapping,
+            clean_dict_text(self.cat_mapping[x_col])
+            if x_col in self.cat_mapping
+            else None,
+        )
+
+    def _get_two_index_mapping(self, index_mapping, x_cols):
+        return ifnone(
+            index_mapping,
+            [
+                clean_dict_text(self.cat_mapping[x_cols[0]])
+                if x_cols[0] in self.cat_mapping
+                else None,
+                clean_dict_text(self.cat_mapping[x_cols[1]])
+                if x_cols[1] in self.cat_mapping
+                else None,
+            ],
         )
 
 

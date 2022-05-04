@@ -129,3 +129,8 @@ def test_ice(rf_reg_object, xgb_class_object, ebm_reg_object):
     xgb_class_object.plot_ice("Age", filter="Sex == 1")
     ebm_reg_object.plot_ice("Age", sample=100)
     assert True
+
+
+def test_frequency(rf_reg_object):
+    rf_reg_object.plot_frequency("Age", filter="Sex == 1")
+    assert True

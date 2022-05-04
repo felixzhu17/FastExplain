@@ -41,14 +41,46 @@ def plot_two_way(
     return fig
 
 
-# def plot_frequency(df, x_col, size, x_axis_name=None,
-#     y_axis_name=None,
-#     plot_title=None,
-#     plotsize=None,
-#     sort=None,
-#     ascending=True,):
-#     df["size"] = size
-#     df = sort_plot_df(df, y_col, sort, ascending)
+def plot_bar(
+    df,
+    x_col,
+    y_col,
+    x_axis_name=None,
+    y_axis_name=None,
+    plot_title=None,
+    plotsize=None,
+    sort=False,
+    ascending=True,
+    color=COLOURS["grey"],
+):
+    """Base function for plotting frequency"""
+    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
+    y_axis_name = ifnone(y_axis_name, clean_text(x_col))
+    df = sort_plot_df(df, y_col, sort, ascending)
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                name=y_axis_name,
+                x=df.index,
+                y=df[y_col],
+                marker={"color": color},
+            )
+        ]
+    )
+    plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
+
+    fig.update_layout(
+        title=plot_title,
+        xaxis_title=x_axis_name,
+        yaxis_title=y_axis_name,
+        plot_bgcolor="white",
+    )
+    if plotsize:
+        fig.update_layout(
+            width=plotsize[0],
+            height=plotsize[1],
+        )
+    return fig
 
 
 def plot_one_way(
@@ -60,7 +92,7 @@ def plot_one_way(
     y_axis_name=None,
     plot_title=None,
     plotsize=None,
-    sort=None,
+    sort=False,
     ascending=True,
 ):
     """Base function for plotting one-way analysis with frequency"""
