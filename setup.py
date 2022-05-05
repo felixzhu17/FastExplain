@@ -12,6 +12,7 @@ setup(
     description="Fit Fast, Explain Fast",
     long_description=long_description,
     packages=find_packages(),
+    include_package_data=True,
     url="https://github.com/felixzhu17/FastExplain",
     install_requires=[
         "interpret",
@@ -26,5 +27,6 @@ setup(
         "numpy==1.21",
         "pytest",
         "hyperopt",
+        "setuptools-git",
     ],
 )
