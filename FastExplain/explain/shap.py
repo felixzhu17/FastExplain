@@ -32,9 +32,9 @@ class Shap:
         sample_seed:
             Seed used to sample index
         shap_values:
-            Calculated SHAP values. Available after set_shap_values or any plotting function is called to save memory.
+            Calculated SHAP values. Available after get_shap_values or any plotting function is called to save memory.
         shap_value_df:
-            SHAP values merged with xs. Available after set_shap_values or any plotting function is called to save memory.
+            SHAP values merged with xs. Available after get_shap_values or any plotting function is called to save memory.
     """
 
     def __init__(
@@ -90,7 +90,7 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Force Plots. See https://shap.readthedocs.io/en/latest/generated/shap.plots.force.html?highlight=force
         """
-        self.set_shap_values()
+        _ = self.get_shap_values()
         self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.force(self.shap_values[index], *args, **kwargs)
@@ -129,7 +129,7 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Beeswarm Plots. See https://shap.readthedocs.io/en/latest/example_notebooks/api_examples/plots/beeswarm.html?highlight=BEESWARM
         """
-        self.set_shap_values()
+        _ = self.get_shap_values()
         self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.beeswarm(self.shap_values[index], *args, **kwargs)
@@ -171,7 +171,7 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Scatter Plots. See https://shap.readthedocs.io/en/latest/example_notebooks/api_examples/plots/scatter.html#Simple-dependence-scatter-plot
         """
-        self.set_shap_values()
+        _ = self.get_shap_values()
         self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.scatter(
@@ -190,10 +190,10 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Bar Plots. See https://shap.readthedocs.io/en/latest/example_notebooks/api_examples/plots/bar.html#
         """
-        self.set_shap_values()
+        _ = self.get_shap_values()
         return shap.plots.bar(self.shap_values, *args, **kwargs)
 
-    def set_shap_values(self):
+    def get_shap_values(self):
         """If SHAP values already calculated, pass, else calculate SHAP values"""
         if self._explainer_exists() and self._shap_values_exists():
             pass
@@ -210,6 +210,7 @@ class Shap:
             self.shap_values = self.shap_values[:, :, 1]
         self.shap_values_df = self._get_shap_values_df()
         self.xs = self.xs.reset_index(drop=True)
+        return self.shap_values_df
 
     def _explainer_exists(self):
         """Check if explainer created"""
