@@ -23,7 +23,7 @@ def rf_reg(
             val_xs=val_xs,
             val_y=val_y,
             model_fit_func=_rf_reg,
-            loss_metric=m_rmse,
+            hypertune_loss_metric=m_rmse,
             hypertune_max_evals=hypertune_max_evals,
             hypertune_params=hypertune_params,
         )
@@ -55,7 +55,7 @@ def rf_class(
             val_xs=val_xs,
             val_y=val_y,
             model_fit_func=_rf_class,
-            loss_metric=m_cross_entropy,
+            hypertune_loss_metric=m_cross_entropy,
             hypertune_max_evals=hypertune_max_evals,
             hypertune_params=hypertune_params,
         )
