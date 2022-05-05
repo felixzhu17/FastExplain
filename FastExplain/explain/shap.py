@@ -194,11 +194,12 @@ class Shap:
         return shap.plots.bar(self.shap_values, *args, **kwargs)
 
     def get_shap_values(self):
-        """If SHAP values already calculated, pass, else calculate SHAP values"""
+        """If SHAP values already calculated, pass, else calculate SHAP values. Return SHAP values"""
         if self._explainer_exists() and self._shap_values_exists():
             pass
         else:
             self._set_shap_values()
+        return self.shap_values_df
 
     def _set_shap_values(self):
         """Calculate SHAP values"""
@@ -210,7 +211,6 @@ class Shap:
             self.shap_values = self.shap_values[:, :, 1]
         self.shap_values_df = self._get_shap_values_df()
         self.xs = self.xs.reset_index(drop=True)
-        return self.shap_values_df
 
     def _explainer_exists(self):
         """Check if explainer created"""
