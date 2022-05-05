@@ -5,7 +5,7 @@ import shap
 
 from FastExplain.utils import ifnone, query_df_index, sample_index
 
-SHAP_MAX_SAMPLES = 10_000
+SHAP_MAX_SAMPLES = 1_000
 
 
 class Shap:
