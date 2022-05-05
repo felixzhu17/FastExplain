@@ -17,7 +17,7 @@ def rf_reg(
     **kwargs,
 ):
     if hypertune:
-        best_hyperparams = hypertune_model(
+        best_hyperparams, trials = hypertune_model(
             xs=xs,
             y=y,
             val_xs=val_xs,
@@ -49,7 +49,7 @@ def rf_class(
     **kwargs,
 ):
     if hypertune:
-        best_hyperparams = hypertune_model(
+        best_hyperparams, trials = hypertune_model(
             xs=xs,
             y=y,
             val_xs=val_xs,

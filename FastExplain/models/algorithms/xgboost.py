@@ -22,7 +22,7 @@ def xgb_reg(
     if hypertune:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            best_hyperparams = hypertune_model(
+            best_hyperparams, trials = hypertune_model(
                 xs=xs,
                 y=y,
                 val_xs=val_xs,
@@ -51,7 +51,7 @@ def xgb_class(
     if hypertune:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            best_hyperparams = hypertune_model(
+            best_hyperparams, trials = hypertune_model(
                 xs=xs,
                 y=y,
                 val_xs=val_xs,
