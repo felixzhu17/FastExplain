@@ -34,7 +34,7 @@ def model_data(
 
     1. Checks for Classification
     2. Identifies continuous and categorical columns
-    3. Encode categorical columns with ordinal or one-hot encoding
+    3. Encode categorical columns with ordinal or one_hot encoding
     4. Split data with stratification
     5. Fill missing values with median, constant or mode
     6. Apply additional numeric transformations specified by user
@@ -61,7 +61,7 @@ def model_data(
         splits (Optional[List[List]], optional):
             Index of df to split data on. If not specified, data will be split based on perc_train. Defaults to None.
         cat_strategy (str, optional):
-            Categorical encoding strategy. Can pick from 'ordinal' or 'one-hot'. Defaults to "ordinal".
+            Categorical encoding strategy. Can pick from 'ordinal' or 'one_hot'. Defaults to "ordinal".
         fill_strategy (str, optional):
             NA filling strategy. Can pick from 'median', 'constant' or 'mode' . Defaults to "median".
         fill_const (int, optional):

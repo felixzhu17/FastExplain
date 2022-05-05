@@ -24,7 +24,7 @@ class Regression(
     Performs the full Regression modelling pipeling returning a class that is a connected interface for all data, models and related explanatory methods. Out of the box, it will:
 
     1. Identifies continuous and categorical columns
-    2. Encode categorical columns with ordinal or one-hot encoding
+    2. Encode categorical columns with ordinal or one_hot encoding
     3. Split data
     4. Fill missing values with median, constant or mode
     5. Apply additional numeric transformations specified by user
@@ -51,7 +51,7 @@ class Regression(
         splits (Optional[List[List]], optional):
             Index of df to split data on. If not specified, data will be split based on perc_train. Defaults to None.
         cat_strategy (str, optional):
-            Categorical encoding strategy. Can pick from 'ordinal' or 'one-hot'. Defaults to "ordinal".
+            Categorical encoding strategy. Can pick from 'ordinal' or 'one_hot'. Defaults to "ordinal".
         fill_strategy (str, optional):
             NA filling strategy. Can pick from 'median', 'constant' or 'mode' . Defaults to "median".
         fill_const (int, optional):
