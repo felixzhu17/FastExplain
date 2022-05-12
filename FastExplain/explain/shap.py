@@ -84,7 +84,7 @@ class Shap:
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
             index (Optional[List[Any]], optional):
-                Provide index for shap_values, based on Shap.xs with reset index. Defaults to None.
+                Provide index for shap_values. Defaults to None.
             shap_max_samples (Optional[int], optional):
                 Maximum number of samples for plotting. If provided, sets the new default for other plots. If None, uses default from class. Defaults to None.
             *args, **kwargs:
@@ -123,7 +123,7 @@ class Shap:
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
             index (Optional[List[Any]], optional):
-                Provide index for shap_values, based on Shap.xs with reset index. Defaults to None.
+                Provide index for shap_values. Defaults to None.
             shap_max_samples (Optional[int], optional):
                 Maximum number of samples for plotting. If provided, sets the new default for other plots. If None, uses default from class. Defaults to None.
             *args, **kwargs:
@@ -165,7 +165,7 @@ class Shap:
                 For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
                 Defaults to None.
             index (Optional[List[Any]], optional):
-                Provide index for shap_values, based on Shap.xs with reset index. Defaults to None.
+                Provide index for shap_values. Defaults to None.
             shap_max_samples (Optional[int], optional):
                 Maximum number of samples for plotting. If provided, sets the new default for other plots. If None, uses default from class. Defaults to None.
             *args, **kwargs:
@@ -206,11 +206,11 @@ class Shap:
         self.explainer = shap.Explainer(self.m)
         if len(self.explainer.expected_value) == 1:
             self.explainer.expected_value = self.explainer.expected_value.mean()
-        self.shap_values = self.explainer(self.xs)
+        sorted_xs = self.xs.sort_index()
+        self.shap_values = self.explainer(sorted_xs)
         if len(self.shap_values.shape) == 3:
             self.shap_values = self.shap_values[:, :, 1]
         self.shap_values_df = self._get_shap_values_df()
-        self.xs = self.xs.reset_index(drop=True)
 
     def _explainer_exists(self):
         """Check if explainer created"""

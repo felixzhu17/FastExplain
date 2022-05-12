@@ -33,7 +33,7 @@ def sample_index(df, *args, **kwargs):
 
 
 def query_df_index(df, query):
-    return list(df.reset_index().query(query).index)
+    return list(df.query(query).index)
 
 
 def root_mean(x):
