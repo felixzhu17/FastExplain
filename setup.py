@@ -12,7 +12,7 @@ setup(
     description="Fit Fast, Explain Fast",
     long_description=long_description,
     packages=find_packages(),
-    setup_requires=['setuptools_scm'],
+    setup_requires=["setuptools_scm"],
     url="https://github.com/felixzhu17/FastExplain",
     install_requires=[
         "interpret",

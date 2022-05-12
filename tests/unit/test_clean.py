@@ -86,7 +86,11 @@ def test_custom_model(test_csv):
         dep_var=CLASS_DEP_VAR,
         model=RandomForestClassifier,
     )
+    custom_model_2 = model_data(
+        test_csv, dep_var=CLASS_DEP_VAR, model=custom_model.m, use_fitted_model=True
+    )
     assert hasattr(custom_model, "m")
+    assert hasattr(custom_model_2, "m")
 
 
 def test_hypertune_defaults(test_csv):

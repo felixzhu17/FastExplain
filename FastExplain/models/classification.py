@@ -74,6 +74,8 @@ class Classification(Model):
             Dictionary containing parameters of model to hypertune. Key for each parameter must be an array of [lower (numeric), upper (numeric), is_integer (bool)]. Defaults to None.
         hypertune_loss_metric (Optional[Callable], optional):
             Function to minimise when hypertuning. Arguments of function must contain m (the model), xs (predictors) and y (target). If not specified, cross entropy is used. Defaults to None.
+        use_fitted_model (bool, optional):
+            Whether to supply a model that is already fitted. Defaults to False.
         *model_args, **model_kwargs:
             Additional arguments for the model
 
@@ -114,9 +116,10 @@ class Classification(Model):
         cont_transformations: List[type] = [],
         reduce_memory: bool = True,
         hypertune: bool = False,
-        hypertune_max_evals=100,
+        hypertune_max_evals: int = 100,
         hypertune_params: Optional[dict] = None,
         hypertune_loss_metric: Optional[Callable] = None,
+        use_fitted_model: bool = False,
         *model_args,
         **model_kwargs,
     ):
@@ -143,6 +146,7 @@ class Classification(Model):
             hypertune_max_evals=hypertune_max_evals,
             hypertune_params=hypertune_params,
             hypertune_loss_metric=hypertune_loss_metric,
+            use_fitted_model=use_fitted_model,
             *model_args,
             **model_kwargs,
         )
