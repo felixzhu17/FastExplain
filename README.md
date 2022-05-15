@@ -12,17 +12,16 @@ FastExplain provides an **out-of-the-box** tool for analysts to **quickly model 
 - **Connected interface** for all data, models and related explanatory methods
 
 ## Quickstart
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/felixzhu17/FastExplain/blob/main/demos/FastExplain%20Titanic%20Quickstart.ipynb)
+
 ### Automated Cleaning and Fitting
 ``` python
-from FastExplain import model_data
-from FastExplain.datasets import load_titanic_data
+from FastExplain import *
 df = load_titanic_data()
-classification = model_data(df, 'Survived', hypertune=True)
+classification = model_data(df, dep_var="Survived", model="rf", hypertune=True)
 ``` 
 ### Aesthetic Display
-``` python
-from FastExplain.explain import plot_one_way_analysis, plot_ale
-```
 ``` python
 plot_one_way_analysis(classification.data.df, "Age", "Survived", filter = "Sex == 1")
 ```
@@ -34,7 +33,7 @@ plot_ale(classification.m, classification.data.xs, "Age", filter = "Sex == 1", d
 <img alt="ALE" src="images/ALE.png">
 
 ``` python
-classification_1 = model_data(df, 'Survived', cont_names=['Age'], cat_names = [])
+classification_1 = model_data(df, dep_var="Survived", model="rf", hypertune=True, cont_names=['Age'], cat_names = [])
 models = [classification.m, classification_1.m]
 data = [classification.data.xs, classification_1.data.xs]
 plot_ale(models, data, 'Age', dep_name = "Survived")
