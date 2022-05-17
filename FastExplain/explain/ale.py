@@ -865,12 +865,12 @@ def _aleplot_1D_continuous(
     """
 
     if bins is None:
-        quantiles = np.append(
+        quants = np.append(
             0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size)
         )
         # use customized quantile function to get the same result as
         # type 1 R quantile (Inverse of empirical distribution function)
-        bins = [X[feature].min()] + quantiles(X[feature], quantiles).to_list()
+        bins = [X[feature].min()] + quantiles(X[feature], quants).to_list()
 
     bins = np.unique(bins)
     feat_cut = pd.cut(X[feature], bins, include_lowest=True)
@@ -926,16 +926,16 @@ def _aleplot_2D_continuous(X, model, features, grid_size=40, bins_0=None, bins_1
 
     # reset index to avoid index missmatches when replacing the values with the codes (lines 50 - 73)
     X = X.reset_index(drop=True)
-    quantiles = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
+    quants = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
 
     if bins_0 is None:
         bins_0 = [X[features[0]].min()] + quantiles(
-            X[features[0]], quantiles
+            X[features[0]], quants
         ).to_list()
     bins_0 = np.unique(bins_0)
     if bins_1 is None:
         bins_1 = [X[features[1]].min()] + quantiles(
-            X[features[1]], quantiles
+            X[features[1]], quants
         ).to_list()
     bins_1 = np.unique(bins_1)
 
