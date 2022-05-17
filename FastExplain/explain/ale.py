@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 
 from FastExplain.clean import check_cont_col
-from FastExplain.explain.bin import CI_estimate, quantiles
+from FastExplain.explain.bin import CI_estimate, get_bins
 from FastExplain.utils import (
     COLOURS,
     bin_columns,
@@ -865,12 +865,7 @@ def _aleplot_1D_continuous(
     """
 
     if bins is None:
-        quants = np.append(
-            0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size)
-        )
-        # use customized quantile function to get the same result as
-        # type 1 R quantile (Inverse of empirical distribution function)
-        bins = [X[feature].min()] + quantiles(X[feature], quants).to_list()
+        bins = get_bins(X[feature], grid_size)
 
     bins = np.unique(bins)
     feat_cut = pd.cut(X[feature], bins, include_lowest=True)
@@ -926,17 +921,12 @@ def _aleplot_2D_continuous(X, model, features, grid_size=40, bins_0=None, bins_1
 
     # reset index to avoid index missmatches when replacing the values with the codes (lines 50 - 73)
     X = X.reset_index(drop=True)
-    quants = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
 
     if bins_0 is None:
-        bins_0 = [X[features[0]].min()] + quantiles(
-            X[features[0]], quants
-        ).to_list()
+        bins_0 = get_bins(X[features[0]], grid_size)
     bins_0 = np.unique(bins_0)
     if bins_1 is None:
-        bins_1 = [X[features[1]].min()] + quantiles(
-            X[features[1]], quants
-        ).to_list()
+        bins_1 = get_bins(X[features[1]], grid_size)
     bins_1 = np.unique(bins_1)
 
     feat_cut_0 = pd.cut(X[features[0]], bins_0, include_lowest=True)

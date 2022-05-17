@@ -2,39 +2,9 @@ import numpy as np
 from scipy.stats import t
 
 
-def quantiles(x_vec, q):
-    """
-    Inverse of empirical distribution function (quantile R type 1).
-
-    Args:
-        x_vec: A pandas series containing the values to compute the quantile for
-        q: An array of probabilities (values between 0 and 1)
-    """
-
-    x_vec = x_vec.sort_values()
-    n = len(x_vec) - 1
-    m = 0
-    j = (n * q + m).astype(int)  # location of the value
-    g = n * q + m - j
-
-    gamma = (g != 0).astype(int)
-    quant_res = (1 - gamma) * x_vec.shift(1, fill_value=0).iloc[j] + gamma * x_vec.iloc[
-        j
-    ]
-    quant_res.index = q
-    # add min at quantile zero and max at quantile one (if needed)
-    if 0 in q:
-        quant_res.loc[0] = x_vec.min()
-    if 1 in q:
-        quant_res.loc[1] = x_vec.max()
-    return quant_res
-
-
 def get_bins(x, grid_size):
     """Return quantiled bin values with number of quantiles equal to 'grid_size'"""
-    quant = np.append(0, np.arange(1 / grid_size, 1 + 1 / grid_size, 1 / grid_size))
-    bins = [x.min()] + quantiles(x, quant).to_list()
-    return np.unique(bins)
+    return np.unique([x.quantile(i / grid_size) for i in range(grid_size + 1)])
 
 
 def CI_estimate(x_vec, C=0.95):
