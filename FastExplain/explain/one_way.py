@@ -34,7 +34,7 @@ def feature_correlation(xs: pd.DataFrame, plotsize: List[int] = (1000, 1000)):
             Custom plotsize supplied as (width, height). Defaults to (1000, 1000).
     """
     keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
-    xs = xs[keep_cols]
+    xs = xs[keep_cols].dropna()
     corr = np.round(spearmanr(xs).correlation, 4)
     fig = ff.create_dendrogram(
         1 - corr,
