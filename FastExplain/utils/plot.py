@@ -299,6 +299,14 @@ def create_secondary_axis_plotly(fig, fig_on_secondary_axis=True):
     return output
 
 
+def create_two_axis_plot(fig_1, fig_2):
+    fig = create_secondary_axis_plotly(fig_1)
+    traces = get_plotly_express_traces(fig_2)
+    for i in traces:
+        fig.add_trace(i, secondary_y=False)
+    return fig
+
+
 def custom_legend_name(fig, new_names):
     for i, new_name in enumerate(new_names):
         fig.data[i].name = new_name
