@@ -19,13 +19,23 @@ FastExplain provides an **out-of-the-box** tool for analysts to **quickly model 
 ``` python
 from FastExplain import *
 df = load_titanic_data()
-classification = model_data(df, dep_var="Survived", model="rf", hypertune=True)
+classification = model_data(df, dep_var="Survived", model="ebm", hypertune=True)
 ``` 
 ### Aesthetic Display
+``` python
+feature_correlation(classification.data.df)
+```
+<img alt="Feature Correlation" src="images/feature_correlation.png">
+
 ``` python
 plot_one_way_analysis(classification.data.df, "Age", "Survived", filter = "Sex == 1")
 ```
 <img alt="One Way" src="images/one_way.png">
+
+``` python
+plot_ebm_explain(classification.m, classification.data.df, "Age")
+```
+<img alt="EBM" src="images/ebm.png">
 
 ``` python
 plot_ale(classification.m, classification.data.xs, "Age", filter = "Sex == 1", dep_name = "Survived")
@@ -42,17 +52,17 @@ plot_ale(models, data, 'Age', dep_name = "Survived")
 
 ### Connected Interface
 ``` python
-classification.plot_one_way_analysis("Age", filter = "Sex == 1")
-classification.plot_ale("Age", filter = "Sex == 1")
+classification_1.plot_one_way_analysis("Age", filter = "Sex == 1")
+classification_1.plot_ale("Age", filter = "Sex == 1")
 ```
 
 ``` python
-classification.shap_dependence_plot("Age", filter = "Sex == 1")
+classification_1.shap_dependence_plot("Age", filter = "Sex == 1")
 ```
 <img alt="SHAP" src="images/shap.png">
 
 ``` python
-classification.error
+classification_1.error
 # {'auc': {'model': {'train': 0.9934332941166654,
 # 'val': 0.8421607378129118,
 # 'overall': 0.9665739941840028}},

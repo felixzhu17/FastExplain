@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Callable, List, Optional, Union
+import warnings
 
 import pandas as pd
 
@@ -81,7 +82,7 @@ class Model(Explain, ABC):
                     f"Model can only be one of {', '. join(default_models)}"
                 )
 
-            if hypertune:
+            if hypertune and model != "ebm":
                 hypertune_params = ifnone(
                     hypertune_params, get_default_hypertune_params(model)
                 )
@@ -100,6 +101,8 @@ class Model(Explain, ABC):
                     **model_kwargs,
                 )
             else:
+                if model == "ebm":
+                    warnings.warn("Hypertuning not implemented for EBM")
                 self.m = self.model_fit_func(
                     self.data.train_xs,
                     self.data.train_y,
