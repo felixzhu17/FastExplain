@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="fast-explain",
-    version="0.0.48",
+    version="0.0.49",
     license="MIT",
     author="Felix Zhu",
     author_email="zhu.felix@outlook.com",
@@ -28,6 +28,6 @@ setup(
         "pytest",
         "hyperopt",
         "setuptools-git",
-        "tornado==5.1"
+        "tornado==5.1",
     ],
 )
