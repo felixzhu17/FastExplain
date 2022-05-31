@@ -54,7 +54,7 @@ def prepare_data(
         max_sparsity (float, optional):
             Maximum number of unique values for categorical variable as proportion of number of rows. Defaults to 0.25.
         model (Union[str, type, Callable], optional):
-            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
+            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "ebm".
         perc_train (int, optional):
             Percentage of data to split as training. Defaults to 0.8.
         seed (int, optional):
@@ -138,7 +138,7 @@ class PandasClean:
         max_sparsity (float, optional):
             Maximum number of unique values for categorical variable as proportion of number of rows. Defaults to 0.25.
         model (Union[str, type, Callable], optional):
-            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
+            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "ebm".
         perc_train (int, optional):
             Percentage of data to split as training. Defaults to 0.8.
         seed (int, optional):

@@ -49,7 +49,7 @@ class Classification(Model):
         max_sparsity (float, optional):
             Maximum number of unique values for categorical variable as proportion of number of rows. Defaults to 0.25.
         model (Union[str, type, Callable], optional):
-            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
+            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "ebm".
         perc_train (int, optional):
             Percentage of data to split as training. Defaults to 0.8.
         seed (int, optional):
@@ -108,7 +108,7 @@ class Classification(Model):
         cont_names: Optional[List[str]] = None,
         max_card: int = 20,
         max_sparsity: float = 0.25,
-        model: Union[str, type, Callable] = "rf",
+        model: Union[str, type, Callable] = "ebm",
         perc_train: int = 0.8,
         seed: int = 0,
         splits: Optional[List[List]] = None,

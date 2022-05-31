@@ -12,7 +12,7 @@ def model_data(
     cat_names: Optional[List[str]] = None,
     cont_names: Optional[List[str]] = None,
     max_card: int = 20,
-    model: Union[str, type, Callable] = "rf",
+    model: Union[str, type, Callable] = "ebm",
     perc_train: int = 0.8,
     seed: int = 0,
     splits: Optional[List[List]] = None,
@@ -54,7 +54,7 @@ def model_data(
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
         model (Union[str, type, Callable], optional):
-            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
+            Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "ebm".
         perc_train (int, optional):
             Percentage of data to split as training. Defaults to 0.8.
         seed (int, optional):

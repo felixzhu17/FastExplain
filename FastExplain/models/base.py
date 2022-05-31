@@ -27,7 +27,7 @@ class Model(Explain, ABC):
         cont_names: Optional[List[str]] = None,
         max_card: int = 20,
         max_sparsity: float = 0.25,
-        model: Union[str, type, Callable] = "rf",
+        model: Union[str, type, Callable] = "ebm",
         default_models: dict = {},
         perc_train: int = 0.8,
         seed: int = 0,
