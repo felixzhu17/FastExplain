@@ -43,7 +43,7 @@ plot_ale(classification.m, classification.data.xs, "Age", filter = "Sex == 1", d
 <img alt="ALE" src="images/ALE.png">
 
 ``` python
-classification_1 = model_data(df, dep_var="Survived", model="rf", hypertune=True, cont_names=['Age'], cat_names = [])
+classification_1 = model_data(df, dep_var="Survived", model="rf", hypertune=True, cont_names=['Age'], cat_names = [], hypertune=True)
 models = [classification.m, classification_1.m]
 data = [classification.data.xs, classification_1.data.xs]
 plot_ale(models, data, 'Age', dep_name = "Survived")
