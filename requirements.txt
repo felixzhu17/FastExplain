@@ -10,3 +10,4 @@ shap==0.40.0
 numpy==1.21
 pytest
 hyperopt
+tornado>=6.0.3 

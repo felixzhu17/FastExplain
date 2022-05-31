@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import pytest
 
 from FastExplain import model_data
@@ -8,7 +9,9 @@ from tests.params import *
 
 @pytest.fixture(scope="session")
 def test_csv():
-    return load_titanic_data()
+    df = load_titanic_data()
+    df["test"] = [np.nan for i in range(len(df))]
+    return df
 
 
 @pytest.fixture(scope="session")

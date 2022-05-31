@@ -31,7 +31,10 @@ def cont_cat_split(dfs, max_card=20, max_sparsity=0.25, dep_var=None):
     df = dfs.copy()
     cont_names, cat_names = [], []
     for label in df.columns:
-        if label in list(dep_var):
+        if check_unique(df[label]):
+            warnings.warn(
+                f"There is only {df[label].unique().shape[0]} unique value of {label}. This is too few to be included as a model feature."
+            )
             continue
         if check_cont_col(df[label], max_card=max_card):
             cont_names.append(label)
@@ -58,3 +61,7 @@ def check_cont_col(x, max_card=20):
 
 def check_sparsity(x, max_sparsity=0.25):
     return x.unique().shape[0] > max_sparsity * x.shape[0]
+
+
+def check_unique(x):
+    return len(x.unique()) == 1
