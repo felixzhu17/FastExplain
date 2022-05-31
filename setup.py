@@ -28,6 +28,6 @@ setup(
         "pytest",
         "hyperopt",
         "setuptools-git",
-        "tornado==5.1"
+        "tornado==5.1",
     ],
 )
