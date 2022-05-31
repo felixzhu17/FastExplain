@@ -19,7 +19,7 @@ FastExplain provides an **out-of-the-box** tool for analysts to **quickly model 
 ``` python
 from FastExplain import *
 df = load_titanic_data()
-classification = model_data(df, dep_var="Survived", model="ebm", hypertune=True)
+classification = model_data(df, dep_var="Survived", model="ebm")
 ``` 
 ### Aesthetic Display
 ``` python
