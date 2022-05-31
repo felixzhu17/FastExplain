@@ -18,6 +18,7 @@ def prepare_data(
     cat_names: Optional[List[str]] = None,
     cont_names: Optional[List[str]] = None,
     max_card: int = 20,
+    max_sparsity: float = 0.25,
     perc_train: int = 0.8,
     seed: int = 0,
     splits: Optional[List[List]] = None,
@@ -50,6 +51,8 @@ def prepare_data(
             Column names of continuous predictor variables. If both cat_names and cont_names is None, they are automatically extracted based on max_card. Defaults to None.
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
+        max_sparsity (float, optional):
+            Maximum number of unique values for categorical variable as proportion of number of rows. Defaults to 0.25.
         model (Union[str, type, Callable], optional):
             Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
         perc_train (int, optional):
@@ -80,6 +83,7 @@ def prepare_data(
         cat_names=cat_names,
         cont_names=cont_names,
         max_card=max_card,
+        max_sparsity=max_sparsity,
         perc_train=perc_train,
         seed=seed,
         splits=splits,
@@ -131,6 +135,8 @@ class PandasClean:
             Column names of continuous predictor variables. If both cat_names and cont_names is None, they are automatically extracted based on max_card. Defaults to None.
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
+        max_sparsity (float, optional):
+            Maximum number of unique values for categorical variable as proportion of number of rows. Defaults to 0.25.
         model (Union[str, type, Callable], optional):
             Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
         perc_train (int, optional):
@@ -195,7 +201,8 @@ class PandasClean:
         dep_var: str,
         cat_names: Optional[List[str]] = None,
         cont_names: Optional[List[str]] = None,
-        max_card=20,
+        max_card: int = 20,
+        max_sparsity: float = 0.25,
         perc_train: int = 0.8,
         seed: int = 0,
         splits: Optional[List[List]] = None,
@@ -219,7 +226,9 @@ class PandasClean:
         if reduce_memory:
             self.df = df_shrink(self.df, int2uint=True)
 
-        cont, cat = cont_cat_split(df, max_card=max_card, dep_var=self.dep_var)
+        cont, cat = cont_cat_split(
+            df, max_card=max_card, max_sparsity=max_sparsity, dep_var=self.dep_var
+        )
         self.cat_names = cat.copy() if cat_names is None else cat_names
         self.cont_names = cont.copy() if cont_names is None else cont_names
 

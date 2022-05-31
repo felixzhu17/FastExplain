@@ -46,6 +46,8 @@ class Classification(Model):
             Column names of continuous predictor variables. If both cat_names and cont_names is None, they are automatically extracted based on max_card. Defaults to None.
         max_card (int, optional):
             Maximum number of unique values for categorical variable. Defaults to 20.
+        max_sparsity (float, optional):
+            Maximum number of unique values for categorical variable as proportion of number of rows. Defaults to 0.25.
         model (Union[str, type, Callable], optional):
             Model to fit. Can choose from 'rf', 'xgb' and 'ebm' as defaults, or can provide own model class with fit and predict attributes. Defaults to "rf".
         perc_train (int, optional):
@@ -105,6 +107,7 @@ class Classification(Model):
         cat_names: Optional[List[str]] = None,
         cont_names: Optional[List[str]] = None,
         max_card: int = 20,
+        max_sparsity: float = 0.25,
         model: Union[str, type, Callable] = "rf",
         perc_train: int = 0.8,
         seed: int = 0,
@@ -131,6 +134,7 @@ class Classification(Model):
             cat_names=cat_names,
             cont_names=cont_names,
             max_card=max_card,
+            max_sparsity=max_sparsity,
             model=model,
             default_models=CLASS_MODELS,
             perc_train=perc_train,

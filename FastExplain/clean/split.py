@@ -1,3 +1,5 @@
+import warnings
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -23,7 +25,7 @@ def split_train_val(xs, y, splits):
         return xs.loc[splits[0]], y.loc[splits[0]], xs.loc[splits[1]], y.loc[splits[1]]
 
 
-def cont_cat_split(dfs, max_card=20, dep_var=None):
+def cont_cat_split(dfs, max_card=20, max_sparsity=0.25, dep_var=None):
     "Helper function that returns column names of cont and cat variables from given `df`."
     dep_var = ifnone(dep_var, "")
     df = dfs.copy()
@@ -34,7 +36,13 @@ def cont_cat_split(dfs, max_card=20, dep_var=None):
         if check_cont_col(df[label], max_card=max_card):
             cont_names.append(label)
         else:
-            cat_names.append(label)
+            if check_sparsity(df[label], max_sparsity=max_sparsity):
+                warnings.warn(
+                    f"There are {df[label].unique().shape[0]} unique values of {label}. This is too many to be included as a model feature."
+                )
+                continue
+            else:
+                cat_names.append(label)
     if dep_var in cont_names:
         cont_names.remove(dep_var)
     if dep_var in cat_names:
@@ -46,3 +54,7 @@ def check_cont_col(x, max_card=20):
     return (
         pd.api.types.is_integer_dtype(x.dtype) and x.unique().shape[0] > max_card
     ) or pd.api.types.is_float_dtype(x.dtype)
+
+
+def check_sparsity(x, max_sparsity=0.25):
+    return x.unique().shape[0] > max_sparsity * x.shape[0]
