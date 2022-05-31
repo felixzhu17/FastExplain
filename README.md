@@ -77,6 +77,17 @@ classification_1.error
 - Explainable Boosting Machine
 - ANY Model Class with *fit* and *predict* attributes
 
+``` python
+pip install lightgbm
+```
+
+``` python
+from lightgbm import LGBMClassifier
+custom_model = model_data(df, 'Survived', model=LGBMClassifier)
+custom_model.plot_ale("Age")
+custom_model.shap_dependence_plot("Age")
+```
+
 ## Exploratory Methods Supported:
 - One-way Analysis
 - Two-way Analysis
