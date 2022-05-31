@@ -42,7 +42,7 @@ def test_regression(rf_reg_object):
 
 
 def test_ordinal_encoding(rf_class_object):
-    assert len(rf_class_object.data.cat_mapping) == 10
+    assert len(rf_class_object.data.cat_mapping) == 8
     assert "Cabin" in rf_class_object.data.cat_mapping
 
 
