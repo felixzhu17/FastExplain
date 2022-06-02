@@ -132,7 +132,6 @@ class Regression(
             max_card=max_card,
             max_sparsity=max_sparsity,
             model=model,
-            default_models=REG_MODELS,
             perc_train=perc_train,
             seed=seed,
             splits=splits,
@@ -147,6 +146,7 @@ class Regression(
             hypertune_params=hypertune_params,
             hypertune_loss_metric=hypertune_loss_metric,
             use_fitted_model=use_fitted_model,
+            default_models=REG_MODELS,
             *model_args,
             **model_kwargs,
         )

@@ -29,7 +29,6 @@ class Model(Explain, ABC):
         max_card: int = 20,
         max_sparsity: float = 0.25,
         model: Union[str, type, Callable] = "ebm",
-        default_models: dict = {},
         perc_train: int = 0.8,
         seed: int = 0,
         splits: Optional[List[List]] = None,
@@ -44,6 +43,7 @@ class Model(Explain, ABC):
         hypertune_params: Optional[dict] = None,
         hypertune_loss_metric: Optional[Callable] = None,
         use_fitted_model: bool = False,
+        default_models: dict = {},
         *model_args,
         **model_kwargs,
     ):
