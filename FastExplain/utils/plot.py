@@ -320,3 +320,36 @@ def sort_plot_df(df, y_col, sort, ascending):
         return df.sort_values(y_col, ascending=ascending)
     else:
         return df
+
+def append_traces(fig, new_fig):
+    traces = get_plotly_express_traces(new_fig)
+    for i in traces:
+        fig.add_trace(i)
+    return fig
+
+def plotly_layout(fig, line_colours=None, legend_names=None, *args, **kwargs):
+    fig.update_layout(
+        legend=dict(
+            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+        ),
+        legend_title_text="",
+        plot_bgcolor="white",
+        *args,
+        **kwargs
+    )
+    if line_colours is not None:
+        adjust_line_colour(fig, line_colours)
+    if legend_names is not None:
+        custom_legend_name(fig, legend_names)
+    return fig
+
+def adjust_line_colour(fig, colours):
+    for count, i in enumerate(colours):
+        fig.data[count].line.color = i
+    return
+
+def custom_legend_name(fig, new_names):
+    for i, new_name in enumerate(new_names):
+        fig.data[i].name = new_name
+        fig["data"][i]["showlegend"] = True
+    return
