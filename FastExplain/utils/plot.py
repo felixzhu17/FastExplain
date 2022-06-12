@@ -344,8 +344,8 @@ def plotly_layout(fig, line_colours=None, legend_names=None, *args, **kwargs):
     return fig
 
 def adjust_line_colour(fig, colours):
-    for count, i in enumerate(colours):
-        fig.data[count].line.color = i
+    for i, colour in enumerate(colours):
+        fig.data[i].line.color = colour
     return
 
 def custom_legend_name(fig, new_names):
