@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="fast-explain",
-    version="0.0.49",
+    version="0.0.50",
     license="MIT",
     author="Felix Zhu",
     author_email="zhu.felix@outlook.com",
