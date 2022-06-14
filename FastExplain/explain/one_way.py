@@ -8,9 +8,9 @@ import scipy.cluster.hierarchy as sch
 from scipy.spatial.distance import squareform
 from scipy.stats import spearmanr
 
-from FastExplain.clean.fill_missing import FillMissing
 from FastExplain.clean.encode_categorical import EncodeCategorical
-from FastExplain.clean.split import cont_cat_split, check_cont_col
+from FastExplain.clean.fill_missing import FillMissing
+from FastExplain.clean.split import check_cont_col, cont_cat_split
 from FastExplain.explain.bin import get_bins
 from FastExplain.utils import (
     bin_intervals,
