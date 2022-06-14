@@ -25,24 +25,26 @@ def split_train_val(xs, y, splits):
         return xs.loc[splits[0]], y.loc[splits[0]], xs.loc[splits[1]], y.loc[splits[1]]
 
 
-def cont_cat_split(dfs, max_card=20, max_sparsity=0.25, dep_var=None):
+def cont_cat_split(dfs, max_card=20, max_sparsity=0.25, dep_var=None, verbose=True):
     "Helper function that returns column names of cont and cat variables from given `df`."
     dep_var = ifnone(dep_var, "")
     df = dfs.copy()
     cont_names, cat_names = [], []
     for label in df.columns:
         if check_unique(df[label]):
-            warnings.warn(
-                f"There is only {df[label].unique().shape[0]} unique value of {label}. This is too few to be included as a model feature."
-            )
+            if verbose:
+                warnings.warn(
+                    f"There is only {df[label].unique().shape[0]} unique value of {label}. This is too few to be included as a model feature."
+                )
             continue
         if check_cont_col(df[label], max_card=max_card):
             cont_names.append(label)
         else:
             if check_sparsity(df[label], max_sparsity=max_sparsity):
-                warnings.warn(
-                    f"There are {df[label].unique().shape[0]} unique values of {label}. This is too many to be included as a model feature."
-                )
+                if verbose:
+                    warnings.warn(
+                        f"There are {df[label].unique().shape[0]} unique values of {label}. This is too many to be included as a model feature."
+                    )
                 continue
             else:
                 cat_names.append(label)

@@ -87,6 +87,9 @@ def test_feature_correlation(rf_class_object, xgb_class_object, ebm_class_object
     rf_class_object.feature_correlation()
     xgb_class_object.feature_correlation()
     ebm_class_object.feature_correlation()
+    rf_class_object.cluster_features()
+    xgb_class_object.cluster_features()
+    ebm_class_object.cluster_features()
     assert True
 
 

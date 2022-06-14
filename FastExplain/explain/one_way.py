@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import defaultdict
 from typing import Callable, List, Optional, Union
 
 import numpy as np
@@ -8,7 +8,9 @@ import scipy.cluster.hierarchy as sch
 from scipy.spatial.distance import squareform
 from scipy.stats import spearmanr
 
-from FastExplain.clean import check_cont_col
+from FastExplain.clean.fill_missing import FillMissing
+from FastExplain.clean.encode_categorical import EncodeCategorical
+from FastExplain.clean.split import cont_cat_split, check_cont_col
 from FastExplain.explain.bin import get_bins
 from FastExplain.utils import (
     bin_intervals,
@@ -23,6 +25,27 @@ from FastExplain.utils import (
 )
 
 
+def cluster_features(xs: pd.DataFrame, threshold: float = 0.75):
+    """
+    Cluster features based on spearman correlation
+
+    Args:
+        xs (pd.DataFrame):
+            Dataframe containing variables
+        threshold (float, optional):
+            Threshold to apply when forming flat clusters. Defaults to 0.75.
+
+    """
+    df = _preapre_corr_df(xs)
+    corr = np.round(spearmanr(df).correlation, 4)
+    corr_condensed = sch.distance.squareform(1 - corr)
+    z = sch.linkage(corr_condensed, method="average")
+    output = defaultdict(list)
+    for i, j in zip(df.columns, sch.fcluster(z, threshold)):
+        output[j].append(i)
+    return list(output.values())
+
+
 def feature_correlation(xs: pd.DataFrame, plotsize: List[int] = (1000, 1000)):
     """
     Plot dendogram of hierarchical clustering of spearman correlation between variables
@@ -33,8 +56,7 @@ def feature_correlation(xs: pd.DataFrame, plotsize: List[int] = (1000, 1000)):
         plotsize (List[int], optional):
             Custom plotsize supplied as (width, height). Defaults to (1000, 1000).
     """
-    keep_cols = [i for i in xs.columns if len(xs[i].unique()) > 1]
-    xs = xs[keep_cols].dropna()
+    xs = _preapre_corr_df(xs)
     corr = np.round(spearmanr(xs).correlation, 4)
     fig = ff.create_dendrogram(
         1 - corr,
@@ -45,6 +67,16 @@ def feature_correlation(xs: pd.DataFrame, plotsize: List[int] = (1000, 1000)):
     )
     fig.update_layout(width=plotsize[0], height=plotsize[1], plot_bgcolor="white")
     return fig
+
+
+def _preapre_corr_df(xs: pd.DataFrame):
+    """Prepare data for correlation analysis"""
+    cont, cat = cont_cat_split(xs, max_card=1, verbose=False)
+    df = FillMissing().fit_transform(xs, cont)
+    df = EncodeCategorical().fit_transform(df, cat)
+    keep_cols = [i for i in df.columns if len(df[i].unique()) > 1]
+    df = df[keep_cols]
+    return df
 
 
 def get_frequency(
@@ -848,6 +880,17 @@ class OneWay:
         self.df = df
         self.dep_var = dep_var
         self.cat_mapping = cat_mapping
+
+    def cluster_features(self, threshold: float = 0.75):
+        """
+        Cluster features based on spearman correlation
+
+        Args:
+            threshold (float, optional):
+                Threshold to apply when forming flat clusters. Defaults to 0.75.
+
+        """
+        return cluster_features(xs=self.xs, threshold=threshold)
 
     def feature_correlation(self, plotsize: List[int] = (1000, 1000)):
         """
