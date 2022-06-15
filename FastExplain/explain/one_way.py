@@ -75,6 +75,7 @@ def _preapre_corr_df(xs: pd.DataFrame):
     df = FillMissing().fit_transform(xs, cont)
     df = EncodeCategorical().fit_transform(df, cat)
     keep_cols = [i for i in df.columns if len(df[i].unique()) > 1]
+    keep_cols = [i for i in keep_cols if i in cont + cat]
     df = df[keep_cols]
     return df
 
