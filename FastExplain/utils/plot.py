@@ -28,16 +28,14 @@ def plot_two_way(
         if dep_name
         else f"{feature_1} and {feature_2}",
     )
-    fig.update_layout(
+
+    fig = plotly_layout(
+        fig,
+        plotsize=plotsize,
         title=plot_title,
         xaxis_title=feature_2,
         yaxis_title=feature_1,
     )
-    if plotsize:
-        fig.update_layout(
-            width=plotsize[0],
-            height=plotsize[1],
-        )
     return fig
 
 
@@ -68,18 +66,13 @@ def plot_bar(
         ]
     )
     plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
-
-    fig.update_layout(
+    fig = plotly_layout(
+        fig,
+        plotsize=plotsize,
         title=plot_title,
         xaxis_title=x_axis_name,
         yaxis_title=y_axis_name,
-        plot_bgcolor="white",
     )
-    if plotsize:
-        fig.update_layout(
-            width=plotsize[0],
-            height=plotsize[1],
-        )
     return fig
 
 
@@ -99,6 +92,7 @@ def plot_one_way(
 
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
     y_axis_name = ifnone(y_axis_name, clean_text(y_col))
+    plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
 
     if size is not None:
         df["size"] = size
@@ -115,26 +109,27 @@ def plot_one_way(
             ),
             secondary_y=False,
         )
-        _two_axis_layout(fig)
-        fig.update_yaxes(title_text="Frequency", secondary_y=False)
-        fig.update_yaxes(title_text=y_axis_name, secondary_y=True)
+
+        fig = plotly_two_axis_layout(
+            fig,
+            x_axis_title=x_axis_name,
+            primary_y_axis_title="Frequency",
+            secondary_y_axis_title=y_axis_name,
+            title=plot_title,
+            plotsize=plotsize,
+        )
+
     else:
         df = sort_plot_df(df, y_col, sort, ascending)
         fig = px.line(df, x=df.index, y=y_col)
-        fig.update_yaxes(title_text=y_axis_name)
-
-    plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
-
-    fig.update_layout(
-        title=plot_title,
-        xaxis_title=x_axis_name,
-        plot_bgcolor="white",
-    )
-    if plotsize:
-        fig.update_layout(
-            width=plotsize[0],
-            height=plotsize[1],
+        fig = plotly_layout(
+            fig,
+            plotsize=plotsize,
+            title=plot_title,
+            xaxis_title=x_axis_name,
+            yaxis_title=y_axis_name,
         )
+
     return fig
 
 
@@ -145,6 +140,9 @@ def plot_two_one_way(
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
     y_axis_name_1, y_axis_name_2 = ifnone(
         y_axis_name, (clean_text(y_col[0]), clean_text(y_col[1]))
+    )
+    plot_title = ifnone(
+        plot_title, f"{x_axis_name} vs {y_axis_name_1} and {y_axis_name_2}"
     )
 
     fig = create_secondary_axis_plotly(
@@ -158,27 +156,19 @@ def plot_two_one_way(
             )
         )
     ]
-    _two_axis_layout(fig)
+
+    fig = plotly_two_axis_layout(
+        fig,
+        x_axis_title=x_axis_name,
+        primary_y_axis_title=y_axis_name_2,
+        secondary_y_axis_title=y_axis_name_1,
+        title=plot_title,
+        plotsize=plotsize,
+    )
     fig["data"][0]["name"] = y_axis_name_1
     fig["data"][0]["showlegend"] = True
     fig["data"][1]["name"] = y_axis_name_2
     fig["data"][1]["showlegend"] = True
-    fig.update_yaxes(title_text=y_axis_name_2, secondary_y=False)
-    fig.update_yaxes(title_text=y_axis_name_1, secondary_y=True)
-
-    plot_title = ifnone(
-        plot_title, f"{x_axis_name} vs {y_axis_name_1} and {y_axis_name_2}"
-    )
-    fig.update_layout(
-        title=plot_title,
-        xaxis_title=x_axis_name,
-        plot_bgcolor="white",
-    )
-    if plotsize:
-        fig.update_layout(
-            width=plotsize[0],
-            height=plotsize[1],
-        )
     return fig
 
 
@@ -246,23 +236,47 @@ def plot_upper_lower_bound_traces(
         go.Bar(name="Frequency", x=x, y=size, marker={"color": COLOURS["grey"]}),
         secondary_y=False,
     )
+    fig = plotly_two_axis_layout(
+        fig,
+        x_axis_title=x_axis_title,
+        primary_y_axis_title=clean_text(y_axis_title),
+        secondary_y_axis_title="Frequency",
+        title=plot_title,
+        plotsize=plotsize,
+    )
+
+    return fig
+
+
+def plotly_layout(fig, plotsize, line_colours=None, legend_names=None, *args, **kwargs):
+    fig.update_layout(
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend_title_text="",
+        plot_bgcolor="white",
+        *args,
+        **kwargs,
+    )
+    if line_colours is not None:
+        adjust_line_colour(fig, line_colours)
+    if legend_names is not None:
+        custom_legend_name(fig, legend_names)
     if plotsize:
         fig.update_layout(
             width=plotsize[0],
             height=plotsize[1],
         )
-    _two_axis_layout(fig)
-    fig.update_xaxes(title_text=x_axis_title)
-    fig.update_yaxes(title_text="Frequency", secondary_y=False)
-    fig.update_layout(
-        title=plot_title,
-    )
-    if y_axis_title:
-        fig.update_yaxes(title_text=clean_text(y_axis_title), secondary_y=True)
     return fig
 
 
-def _two_axis_layout(fig):
+def plotly_two_axis_layout(
+    fig,
+    x_axis_title,
+    primary_y_axis_title,
+    secondary_y_axis_title,
+    plotsize,
+    *args,
+    **kwargs,
+):
     fig.update_layout(
         dict(
             yaxis2={
@@ -278,10 +292,15 @@ def _two_axis_layout(fig):
                 "showgrid": False,
             },
             xaxis={"showgrid": False},
-            plot_bgcolor="white",
         )
     )
-    return
+
+    fig.update_xaxes(title_text=x_axis_title)
+    fig.update_yaxes(title_text=primary_y_axis_title, secondary_y=False)
+    fig.update_yaxes(title_text=secondary_y_axis_title, secondary_y=True)
+    fig = plotly_layout(fig, plotsize, *args, **kwargs)
+
+    return fig
 
 
 def get_plotly_express_traces(fig):
@@ -326,21 +345,6 @@ def append_traces(fig, new_fig):
     traces = get_plotly_express_traces(new_fig)
     for i in traces:
         fig.add_trace(i)
-    return fig
-
-
-def plotly_layout(fig, line_colours=None, legend_names=None, *args, **kwargs):
-    fig.update_layout(
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        legend_title_text="",
-        plot_bgcolor="white",
-        *args,
-        **kwargs,
-    )
-    if line_colours is not None:
-        adjust_line_colour(fig, line_colours)
-    if legend_names is not None:
-        custom_legend_name(fig, legend_names)
     return fig
 
 
