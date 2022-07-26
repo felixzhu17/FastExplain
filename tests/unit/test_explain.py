@@ -135,5 +135,5 @@ def test_ice(rf_reg_object, xgb_class_object, ebm_reg_object):
 
 
 def test_frequency(rf_reg_object):
-    rf_reg_object.plot_frequency("Age", filter="Sex == 1")
+    rf_reg_object.plot_histogram("Age", filter="Sex == 1")
     assert True

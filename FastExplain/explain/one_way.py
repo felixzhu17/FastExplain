@@ -159,7 +159,7 @@ def get_frequency(
     return frequency_df
 
 
-def plot_frequency(
+def plot_histogram(
     df: pd.DataFrame,
     x_col: str,
     numeric: Optional[bool] = None,
@@ -970,7 +970,7 @@ class OneWay:
             index_mapping=index_mapping,
         )
 
-    def plot_frequency(
+    def plot_histogram(
         self,
         x_col: str,
         numeric: Optional[bool] = None,
@@ -1028,7 +1028,7 @@ class OneWay:
                 Dictionary mapping the values to display on the x-axis
         """
         index_mapping = self._get_index_mapping(index_mapping, x_col)
-        return plot_frequency(
+        return plot_histogram(
             df=self.df,
             x_col=x_col,
             numeric=numeric,
