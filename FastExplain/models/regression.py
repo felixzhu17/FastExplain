@@ -63,7 +63,7 @@ class Regression(
         cont_transformations (List[type], optional):
             Additional transformations for continuous predictor variables. Transformations must be supplied as a class with fit_transform and transform attributes. Defaults to [].
         reduce_memory (bool, optional):
-            Whether to reduce the memory of df in storage. Defaults to True.
+            Whether to reduce the memory of df in storage. Defaults to False.
         hypertune (bool, optional):
             Whether to hypertune model with Bayesian Optimization. Defaults to False.
         hypertune_max_evals (int, optional):
@@ -113,7 +113,7 @@ class Regression(
         fill_const: int = 0,
         na_dummy: bool = True,
         cont_transformations: List[type] = [],
-        reduce_memory: bool = True,
+        reduce_memory: bool = False,
         hypertune: bool = False,
         hypertune_max_evals: int = 100,
         hypertune_params: Optional[dict] = None,

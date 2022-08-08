@@ -27,7 +27,7 @@ def prepare_data(
     fill_const: int = 0,
     na_dummy: bool = True,
     cont_transformations: List[type] = [],
-    reduce_memory: bool = True,
+    reduce_memory: bool = False,
     return_class: bool = True,
 ):
     """
@@ -72,7 +72,7 @@ def prepare_data(
         cont_transformations (List[type], optional):
             Additional transformations for continuous predictor variables. Transformations must be supplied as a class with fit_transform and transform attributes. Defaults to [].
         reduce_memory (bool, optional):
-            Whether to reduce the memory of df in storage. Defaults to True.
+            Whether to reduce the memory of df in storage. Defaults to False.
         return_class (bool, optional):
             Whether to return a class storing cleaning information. Defaults to True.
     """
@@ -156,7 +156,7 @@ class PandasClean:
         cont_transformations (List[type], optional):
             Additional transformations for continuous predictor variables. Transformations must be supplied as a class with fit_transform and transform attributes. Defaults to [].
         reduce_memory (bool, optional):
-            Whether to reduce the memory of df in storage. Defaults to True.
+            Whether to reduce the memory of df in storage. Defaults to False.
 
     Attributes:
         df:
@@ -232,14 +232,14 @@ class PandasClean:
             )
 
         if cat_names is None:
-            self.cat_names = cat_names
-        else:
             self.cat_names = cat.copy()
+        else:
+            self.cat_names = cat_names
 
         if cont_names is None:
-            self.cont_names = cont_names
-        else:
             self.cont_names = cont.copy()
+        else:
+            self.cont_names = cont_names
 
         # Check classification
         if self.dep_var:

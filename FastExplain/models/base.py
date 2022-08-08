@@ -37,7 +37,7 @@ class Model(Explain, ABC):
         fill_const: int = 0,
         na_dummy: bool = True,
         cont_transformations: List[type] = [],
-        reduce_memory: bool = True,
+        reduce_memory: bool = False,
         hypertune: bool = False,
         hypertune_max_evals: int = 100,
         hypertune_params: Optional[dict] = None,
