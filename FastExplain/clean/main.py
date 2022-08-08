@@ -226,11 +226,20 @@ class PandasClean:
         if reduce_memory:
             self.df = df_shrink(self.df, int2uint=True)
 
-        cont, cat = cont_cat_split(
-            df, max_card=max_card, max_sparsity=max_sparsity, dep_var=self.dep_var
-        )
-        self.cat_names = cat.copy() if cat_names is None else cat_names
-        self.cont_names = cont.copy() if cont_names is None else cont_names
+        if cat_names is None or cont_names is None:
+            cont, cat = cont_cat_split(
+                df, max_card=max_card, max_sparsity=max_sparsity, dep_var=self.dep_var
+            )
+
+        if cat_names is None:
+            self.cat_names = cat_names
+        else:
+            self.cat_names = cat.copy()
+
+        if cont_names is None:
+            self.cont_names = cont_names
+        else:
+            self.cont_names = cont.copy()
 
         # Check classification
         if self.dep_var:

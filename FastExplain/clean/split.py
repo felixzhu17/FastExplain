@@ -66,4 +66,7 @@ def check_sparsity(x, max_sparsity=0.25):
 
 
 def check_unique(x):
-    return len(x.unique()) == 1
+    try:
+        return len(x.unique()) == 1
+    except TypeError as e:
+        return False
