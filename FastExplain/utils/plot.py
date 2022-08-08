@@ -296,8 +296,8 @@ def plotly_two_axis_layout(
     )
 
     fig.update_xaxes(title_text=x_axis_title)
-    fig.update_yaxes(title_text=primary_y_axis_title, secondary_y=False)
-    fig.update_yaxes(title_text=secondary_y_axis_title, secondary_y=True)
+    fig.update_yaxes(title_text=primary_y_axis_title, secondary_y=True)
+    fig.update_yaxes(title_text=secondary_y_axis_title, secondary_y=False)
     fig = plotly_layout(fig, plotsize, *args, **kwargs)
 
     return fig
