@@ -239,8 +239,8 @@ def plot_upper_lower_bound_traces(
     fig = plotly_two_axis_layout(
         fig,
         x_axis_title=x_axis_title,
-        primary_y_axis_title=clean_text(y_axis_title),
-        secondary_y_axis_title="Frequency",
+        primary_y_axis_title="Frequency",
+        secondary_y_axis_title=clean_text(y_axis_title),
         title=plot_title,
         plotsize=plotsize,
     )
