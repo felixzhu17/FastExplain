@@ -87,7 +87,7 @@ def model_data(
             Additional arguments for the model
     """
 
-    check_dep_var(dep_var)
+    check_dep_var(df, dep_var)
     classification = check_classification(df[dep_var])
     if classification:
         return Classification(

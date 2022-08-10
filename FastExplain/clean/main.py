@@ -243,7 +243,7 @@ class PandasClean:
 
         # Check classification
         if self.dep_var:
-            check_dep_var(self.dep_var)
+            check_dep_var(self.df, self.dep_var)
             self.classification = check_classification(self.df[self.dep_var])
             if self.classification:
                 self._prepare_classification()
@@ -336,8 +336,15 @@ def check_classification(y):
     return unique_y == 2
 
 
-def check_dep_var(dep_var):
+def check_dep_var(df, dep_var):
     if isinstance(dep_var, str):
-        return
+        pass
     else:
         raise ValueError("Dependent Variable must be a string")
+
+    if df[dep_var].isna().sum() == 0:
+        pass
+    else:
+        raise ValueError("Dependent Variable has missing values")
+
+    return
