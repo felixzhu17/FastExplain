@@ -427,6 +427,7 @@ def plot_ale_2d(
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     colorscale: Union[List[str], str] = "Blues",
+    surface_plot: bool = True,
 ):
 
     """
@@ -510,6 +511,7 @@ def plot_ale_2d(
         plot_title=plot_title,
         plotsize=plotsize,
         colorscale=colorscale,
+        surface_plot=surface_plot,
     )
     return fig
 

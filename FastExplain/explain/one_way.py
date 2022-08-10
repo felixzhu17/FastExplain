@@ -600,6 +600,7 @@ def plot_two_way_analysis(
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     colorscale: Union[List[str], str] = "Blues",
+    surface_plot: bool = True,
 ):
 
     """
@@ -686,6 +687,7 @@ def plot_two_way_analysis(
         plot_title=plot_title,
         plotsize=plotsize,
         colorscale=colorscale,
+        surface_plot=surface_plot,
     )
 
 
@@ -788,6 +790,7 @@ def plot_two_way_frequency(
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     colorscale: Union[List[str], str] = "Blues",
+    surface_plot: bool = True,
 ):
 
     """
@@ -869,6 +872,7 @@ def plot_two_way_frequency(
         plot_title=plot_title,
         plotsize=plotsize,
         colorscale=colorscale,
+        surface_plot=surface_plot,
     )
 
 
@@ -1336,6 +1340,7 @@ class OneWay:
         plot_title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         colorscale: Union[List[str], str] = "Blues",
+        surface_plot: bool = True,
     ):
         """
         Plot two-way analysis between three features in a DataFrame. The x_cols are binned and a function is applied to the y_col grouped by values of the x_cols
@@ -1418,6 +1423,7 @@ class OneWay:
             plot_title=plot_title,
             plotsize=plotsize,
             colorscale=colorscale,
+            surface_plot=surface_plot,
         )
 
     def get_two_way_frequency(
@@ -1507,6 +1513,7 @@ class OneWay:
         plot_title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         colorscale: Union[List[str], str] = "Blues",
+        surface_plot: bool = True,
     ):
         """
         Plot frequency of two features in a DataFrame. The x_cols are binned and frequency is counted
@@ -1577,6 +1584,7 @@ class OneWay:
             plot_title=plot_title,
             plotsize=plotsize,
             colorscale=colorscale,
+            surface_plot=surface_plot,
         )
 
     def _get_index_mapping(self, index_mapping, x_col):

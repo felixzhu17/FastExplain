@@ -14,8 +14,112 @@ def plot_two_way(
     plot_title=None,
     plotsize=None,
     colorscale="Blues",
+    surface_plot=True,
 ):
     """Base function for plotting two-way analysis"""
+    if surface_plot:
+        return _plot_two_way_surface(
+            df=df,
+            x_cols=x_cols,
+            feature_names=feature_names,
+            dep_name=dep_name,
+            plot_title=plot_title,
+            plotsize=plotsize,
+            colorscale=colorscale,
+        )
+
+    else:
+        return _plot_two_way_heatmap(
+            df=df,
+            x_cols=x_cols,
+            feature_names=feature_names,
+            dep_name=dep_name,
+            plot_title=plot_title,
+            plotsize=plotsize,
+            colorscale=colorscale,
+        )
+
+
+def _plot_two_way_surface(
+    df,
+    x_cols,
+    feature_names=None,
+    dep_name=None,
+    plot_title=None,
+    plotsize=None,
+    colorscale="Blues",
+):
+    """Base function for plotting two-way surface plot"""
+
+    X_AXIS_LABELS = list(df.columns)
+    X_AXIS_VALS = list(range(len(X_AXIS_LABELS)))
+
+    Y_AXIS_LABELS = list(df.index)
+    Y_AXIS_VALS = list(range(len(Y_AXIS_LABELS)))
+
+    feature_1, feature_2 = ifnone(
+        feature_names, (clean_text(x_cols[0]), clean_text(x_cols[1]))
+    )
+
+    plot_title = ifnone(
+        plot_title,
+        f"{feature_1} and {feature_2} vs {dep_name}"
+        if dep_name
+        else f"{feature_1} and {feature_2}",
+    )
+
+    fig = go.Figure(data=[go.Surface(z=df, colorscale=colorscale)])
+
+    fig.update_layout(
+        title=plot_title,
+        scene=dict(
+            xaxis=dict(
+                backgroundcolor="rgba(0, 0, 0,0)",
+                gridcolor="white",
+                showbackground=True,
+                zerolinecolor="white",
+                title_text=feature_2,
+                ticktext=X_AXIS_LABELS,
+                tickvals=X_AXIS_VALS,
+            ),
+            yaxis=dict(
+                backgroundcolor="rgba(0, 0, 0,0)",
+                gridcolor="white",
+                showbackground=True,
+                zerolinecolor="white",
+                title_text=feature_1,
+                ticktext=Y_AXIS_LABELS,
+                tickvals=Y_AXIS_VALS,
+            ),
+            zaxis=dict(
+                backgroundcolor="rgba(0, 0, 0,0)",
+                gridcolor="white",
+                showbackground=True,
+                zerolinecolor="white",
+                title_text=ifnone(dep_name, "Target"),
+            ),
+        ),
+    )
+
+    if plotsize:
+        fig.update_layout(
+            width=plotsize[0],
+            height=plotsize[1],
+        )
+
+    return fig
+
+
+def _plot_two_way_heatmap(
+    df,
+    x_cols,
+    feature_names=None,
+    dep_name=None,
+    plot_title=None,
+    plotsize=None,
+    colorscale="Blues",
+):
+    """Base function for plotting two-way heatmap"""
     fig = px.imshow(df, color_continuous_scale=colorscale)
 
     feature_1, feature_2 = ifnone(

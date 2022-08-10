@@ -299,6 +299,7 @@ def plot_two_way_error(
     plot_title=None,
     plotsize=None,
     colorscale="Blues",
+    surface_plot: bool = True,
 ):
 
     """
@@ -381,4 +382,5 @@ def plot_two_way_error(
         plot_title=plot_title,
         plotsize=plotsize,
         colorscale=colorscale,
+        surface_plot=surface_plot,
     )
