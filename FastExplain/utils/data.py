@@ -38,3 +38,12 @@ def query_df_index(df, query):
 
 def root_mean(x):
     return math.sqrt(np.mean(x))
+
+
+def trim_df(df, bins):
+    if bins < 0:
+        df = df.iloc[-bins:]
+    else:
+        df = df.iloc[:-bins]
+
+    return df

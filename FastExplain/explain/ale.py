@@ -18,6 +18,7 @@ from FastExplain.utils import (
     merge_multi_df,
     plot_two_way,
     plot_upper_lower_bound_traces,
+    trim_df,
 )
 
 
@@ -1160,10 +1161,7 @@ def _clean_ale(
             pd.to_numeric(df.index), dp, percentage, condense_last
         )
     if remove_last_bins:
-        if remove_last_bins < 0:
-            df = df.iloc[-remove_last_bins:]
-        else:
-            df = df.iloc[:-remove_last_bins]
+        df = trim_df(remove_last_bins)
 
     if index_mapping is not None:
         df.index = df.index.map(index_mapping)

@@ -13,6 +13,7 @@ from FastExplain.utils import (
     ifnone,
     merge_multi_df,
     plot_upper_lower_bound_traces,
+    trim_df,
     try_convert_numeric,
 )
 
@@ -27,6 +28,7 @@ def ebm_explain(
     condense_last: bool = True,
     index_mapping: Optional[dict] = None,
     model_names: Optional[List[str]] = None,
+    remove_last_bins: Optional[int] = None,
 ):
     """
     Calculate EBM values for a predictor feature in a model
@@ -68,6 +70,7 @@ def ebm_explain(
                         percentage=percentage,
                         condense_last=condense_last,
                         index_mapping=index_mapping,
+                        remove_last_bins=remove_last_bins,
                     )[["eff", "size"]]
                 )
             else:
@@ -81,6 +84,7 @@ def ebm_explain(
                         percentage=percentage,
                         condense_last=condense_last,
                         index_mapping=index_mapping,
+                        remove_last_bins=remove_last_bins,
                     )[["eff"]]
                 )
 
@@ -97,6 +101,7 @@ def ebm_explain(
             percentage=percentage,
             condense_last=condense_last,
             index_mapping=index_mapping,
+            remove_last_bins=remove_last_bins,
         )
 
 
@@ -108,6 +113,7 @@ def plot_ebm_explain(
     dp: int = 2,
     percentage: bool = False,
     condense_last: bool = True,
+    remove_last_bins: Optional[int] = None,
     index_mapping: Optional[dict] = None,
     model_names: Optional[List[str]] = None,
     dep_name=None,
@@ -169,6 +175,7 @@ def plot_ebm_explain(
                     percentage=percentage,
                     condense_last=condense_last,
                     index_mapping=index_mapping,
+                    remove_last_bins=remove_last_bins,
                 )
             else:
                 traces.extend(
@@ -184,6 +191,7 @@ def plot_ebm_explain(
                         percentage=percentage,
                         condense_last=condense_last,
                         index_mapping=index_mapping,
+                        remove_last_bins=remove_last_bins,
                     )
                 )
     else:
@@ -199,6 +207,7 @@ def plot_ebm_explain(
             percentage=percentage,
             condense_last=condense_last,
             index_mapping=index_mapping,
+            remove_last_bins=remove_last_bins,
         )
 
     title = (
@@ -235,6 +244,7 @@ class EbmExplain:
         percentage: bool = False,
         condense_last: bool = True,
         index_mapping: Optional[dict] = None,
+        remove_last_bins: Optional[int] = None,
     ):
         """
         Calculate EBM values for a predictor feature in a model
@@ -266,6 +276,7 @@ class EbmExplain:
             percentage=percentage,
             condense_last=condense_last,
             index_mapping=index_mapping,
+            remove_last_bins=remove_last_bins,
         )
 
     def plot_ebm_explain(
@@ -276,6 +287,7 @@ class EbmExplain:
         percentage: bool = False,
         condense_last: bool = True,
         index_mapping: Optional[dict] = None,
+        remove_last_bins: Optional[int] = None,
         dep_name=None,
         feature_name=None,
         plot_title=None,
@@ -325,6 +337,7 @@ class EbmExplain:
             feature_name=feature_name,
             plot_title=plot_title,
             plotsize=plotsize,
+            remove_last_bins=remove_last_bins,
         )
 
 
@@ -344,6 +357,7 @@ def _clean_ebm_explain(
     percentage=False,
     condense_last=True,
     index_mapping: Optional[dict] = None,
+    remove_last_bins: Optional[int] = None,
 ):
     """Base function for cleaning EBM"""
     ebm_global = m.explain_global()
@@ -380,6 +394,10 @@ def _clean_ebm_explain(
     if index_mapping is not None and numeric is False:
         df.index = try_convert_numeric(df.index)
         df.index = df.index.map(index_mapping)
+
+    if remove_last_bins:
+        df = trim_df(remove_last_bins)
+
     return df
 
 
@@ -395,6 +413,7 @@ def _get_ebm_explain_traces(
     percentage=False,
     condense_last=True,
     index_mapping: Optional[dict] = None,
+    remove_last_bins: Optional[int] = None,
 ):
     """Base function for plotting EBM"""
     df = ebm_explain(
@@ -406,6 +425,7 @@ def _get_ebm_explain_traces(
         percentage=percentage,
         condense_last=condense_last,
         index_mapping=index_mapping,
+        remove_last_bins=remove_last_bins,
     )
     x = df.index
     y = df["eff"]
