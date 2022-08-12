@@ -351,4 +351,9 @@ def check_dep_var(df, dep_var):
     else:
         raise ValueError("Dependent Variable has missing values")
 
+    if np.isinf(df[dep_var]).sum() == 0:
+        pass
+    else:
+        raise ValueError("Dependent Variable has inf values")
+
     return
