@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+import numpy as np
 import pandas as pd
 
 from FastExplain.clean.encode_categorical import EncodeCategorical
@@ -252,6 +253,9 @@ class PandasClean:
                     self.df[self.dep_var] = self.df[self.dep_var].astype("float")
                 except ValueError:
                     raise NotImplementedError("Multi-classification not supported yet")
+
+        # Replace INF with NAN
+        self.df = self.df.replace(np.inf, np.nan)
 
         # Convert column types
         encode_cat = EncodeCategorical(cat_strategy=cat_strategy)
