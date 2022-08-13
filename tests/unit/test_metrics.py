@@ -46,7 +46,7 @@ def test_one_way_class_error(rf_class_object, xgb_class_object, ebm_class_object
                 "Sex",
             )
         )
-        == 2
+        == 3
     )
     assert (
         len(
@@ -56,7 +56,7 @@ def test_one_way_class_error(rf_class_object, xgb_class_object, ebm_class_object
                 "Sex",
             )
         )
-        == 2
+        == 3
     )
     assert (
         len(
@@ -66,7 +66,7 @@ def test_one_way_class_error(rf_class_object, xgb_class_object, ebm_class_object
                 "Sex",
             )
         )
-        == 2
+        == 3
     )
 
     rf_class_object.plot_one_way_error("Age")

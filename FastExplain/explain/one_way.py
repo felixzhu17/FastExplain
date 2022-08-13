@@ -17,12 +17,12 @@ from FastExplain.utils import (
     clean_dict_text,
     clean_text,
     conditional_mean,
+    fill_categorical_nan,
     ifnone,
     plot_bar,
     plot_one_way,
     plot_two_one_way,
     plot_two_way,
-    fill_categorical_nan,
 )
 
 

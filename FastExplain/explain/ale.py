@@ -9,6 +9,7 @@ from FastExplain.clean import check_cont_col
 from FastExplain.explain.bin import CI_estimate, get_bins
 from FastExplain.utils import (
     COLOURS,
+    adjust_df,
     bin_columns,
     clean_dict_text,
     clean_text,
@@ -19,7 +20,6 @@ from FastExplain.utils import (
     plot_two_way,
     plot_upper_lower_bound_traces,
     trim_df,
-    adjust_df
 )
 
 
@@ -40,7 +40,7 @@ def ale(
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
     model_names: Optional[List[str]] = None,
-    _original_feature=None
+    _original_feature=None,
 ):
     """
     Calculate ALE values for a predictor feature in a model
@@ -115,7 +115,7 @@ def ale(
                         dp=dp,
                         filter=filter,
                         index_mapping=index_mapping,
-                        _original_feature=_original_feature
+                        _original_feature=_original_feature,
                     )[["eff", "size"]]
                 )
             else:
@@ -136,7 +136,7 @@ def ale(
                         dp=dp,
                         filter=filter,
                         index_mapping=index_mapping,
-                        _original_feature=_original_feature
+                        _original_feature=_original_feature,
                     )[["eff"]]
                 )
 
@@ -160,7 +160,7 @@ def ale(
             dp=dp,
             filter=filter,
             index_mapping=index_mapping,
-            _original_feature=_original_feature
+            _original_feature=_original_feature,
         )
 
 
@@ -185,7 +185,7 @@ def plot_ale(
     model_names: Optional[List[str]] = None,
     plot_title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
-    _original_feature=None
+    _original_feature=None,
 ):
 
     """
@@ -274,7 +274,7 @@ def plot_ale(
                     dp=dp,
                     filter=filter,
                     index_mapping=index_mapping,
-                    _original_feature=_original_feature
+                    _original_feature=_original_feature,
                 )
             else:
                 traces.extend(
@@ -297,7 +297,7 @@ def plot_ale(
                         dp=dp,
                         filter=filter,
                         index_mapping=index_mapping,
-                        _original_feature=_original_feature
+                        _original_feature=_original_feature,
                     )
                 )
     else:
@@ -320,7 +320,7 @@ def plot_ale(
             dp=dp,
             filter=filter,
             index_mapping=index_mapping,
-            _original_feature=_original_feature
+            _original_feature=_original_feature,
         )
 
     title = (
@@ -526,7 +526,7 @@ def plot_ale_2d(
 
 
 class Ale:
-    def __init__(self, m, xs, df = None, dep_var=None, cat_mapping=None):
+    def __init__(self, m, xs, df=None, dep_var=None, cat_mapping=None):
         self.m = m
         self.xs = xs
         self.df = df
@@ -615,7 +615,7 @@ class Ale:
             dp=dp,
             filter=filter,
             index_mapping=index_mapping,
-            _original_feature=_original_feature
+            _original_feature=_original_feature,
         )
 
     def plot_ale(
@@ -721,7 +721,7 @@ class Ale:
             model_names=model_names,
             plot_title=plot_title,
             plotsize=plotsize,
-            _original_feature=_original_feature
+            _original_feature=_original_feature,
         )
 
     def ale_2d(
@@ -866,7 +866,14 @@ class Ale:
 
 
 def _aleplot_1D_continuous(
-    X, model, feature, grid_size=20, bins=None, include_CI=True, C=0.95, _original_feature=None
+    X,
+    model,
+    feature,
+    grid_size=20,
+    bins=None,
+    include_CI=True,
+    C=0.95,
+    _original_feature=None,
 ):
     """
     https://github.com/DanaJomar/PyALE
@@ -916,11 +923,11 @@ def _aleplot_1D_continuous(
         lowerCI_name = "lower"
         upperCI_name = "upper"
         res_df[lowerCI_name] = res_df[["eff"]].subtract(ci_est["CI_estimate"], axis=0)
-        res_df[upperCI_name] = res_df[["eff"]].add(
-            ci_est["CI_estimate"], axis=0
-        )
+        res_df[upperCI_name] = res_df[["eff"]].add(ci_est["CI_estimate"], axis=0)
     if _original_feature is not None:
-        res_df["size"] = [0] + list(_original_feature.value_counts(bins=bins, sort=False))
+        res_df["size"] = [0] + list(
+            _original_feature.value_counts(bins=bins, sort=False)
+        )
     return res_df
 
 
@@ -1150,7 +1157,7 @@ def _clean_ale(
     dp: int = 2,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
-    _original_feature = None
+    _original_feature=None,
 ):
     """Base function for cleaning ALE"""
     xs = xs.query(filter) if filter else xs
@@ -1162,7 +1169,7 @@ def _clean_ale(
         feature=col,
         bins=bins,
         grid_size=grid_size,
-        _original_feature=_original_feature
+        _original_feature=_original_feature,
     )
     df = df[~df.index.duplicated(keep="last")]
     if standardize_values:
@@ -1202,7 +1209,7 @@ def _get_ale_traces(
     dp: int = 2,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
-    _original_feature=None
+    _original_feature=None,
 ):
     """Base function for plotting ALE"""
     df = ale(
@@ -1221,7 +1228,7 @@ def _get_ale_traces(
         dp=dp,
         filter=filter,
         index_mapping=index_mapping,
-        _original_feature=_original_feature
+        _original_feature=_original_feature,
     )
     x = df.index
     y = df["eff"]
