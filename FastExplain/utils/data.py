@@ -53,3 +53,11 @@ def fill_categorical_nan(x, value="NaN"):
     x = x.cat.add_categories([value])
     x = x.fillna(value)
     return x
+
+
+def adjust_df(df):
+    adjust = -1 * df.iloc[0]["eff"]
+    df["eff"] += adjust
+    df["lower"] += adjust
+    df["upper"] += adjust
+    return df

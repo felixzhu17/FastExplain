@@ -15,6 +15,7 @@ from FastExplain.utils import (
     plot_upper_lower_bound_traces,
     trim_df,
     try_convert_numeric,
+    adjust_df
 )
 
 
@@ -29,6 +30,7 @@ def ebm_explain(
     index_mapping: Optional[dict] = None,
     model_names: Optional[List[str]] = None,
     remove_last_bins: Optional[int] = None,
+    _original_feature=None
 ):
     """
     Calculate EBM values for a predictor feature in a model
@@ -71,6 +73,7 @@ def ebm_explain(
                         condense_last=condense_last,
                         index_mapping=index_mapping,
                         remove_last_bins=remove_last_bins,
+                        _original_feature=_original_feature
                     )[["eff", "size"]]
                 )
             else:
@@ -85,7 +88,9 @@ def ebm_explain(
                         condense_last=condense_last,
                         index_mapping=index_mapping,
                         remove_last_bins=remove_last_bins,
+                        _original_feature=_original_feature
                     )[["eff"]]
+                
                 )
 
         output = merge_multi_df(ebms, left_index=True, right_index=True)
@@ -102,6 +107,7 @@ def ebm_explain(
             condense_last=condense_last,
             index_mapping=index_mapping,
             remove_last_bins=remove_last_bins,
+            _original_feature=_original_feature
         )
 
 
@@ -120,6 +126,7 @@ def plot_ebm_explain(
     feature_name=None,
     plot_title=None,
     plotsize=None,
+    _original_feature=None
 ):
 
     """
@@ -176,6 +183,7 @@ def plot_ebm_explain(
                     condense_last=condense_last,
                     index_mapping=index_mapping,
                     remove_last_bins=remove_last_bins,
+                    _original_feature=_original_feature
                 )
             else:
                 traces.extend(
@@ -192,6 +200,7 @@ def plot_ebm_explain(
                         condense_last=condense_last,
                         index_mapping=index_mapping,
                         remove_last_bins=remove_last_bins,
+                        _original_feature=_original_feature
                     )
                 )
     else:
@@ -208,7 +217,9 @@ def plot_ebm_explain(
             condense_last=condense_last,
             index_mapping=index_mapping,
             remove_last_bins=remove_last_bins,
+            _original_feature=_original_feature
         )
+
 
     title = (
         f"EBM {feature_name} vs {clean_text(dep_name)}"
@@ -230,9 +241,10 @@ def plot_ebm_explain(
 
 
 class EbmExplain:
-    def __init__(self, m, xs, dep_var=None, cat_mapping=None):
+    def __init__(self, m, xs, df = None, dep_var=None, cat_mapping=None):
         self.m = m
         self.xs = xs
+        self.df = df
         self.dep_var = dep_var
         self.cat_mapping = cat_mapping
 
@@ -267,6 +279,7 @@ class EbmExplain:
             index_mapping,
             clean_dict_text(self.cat_mapping[col]) if col in self.cat_mapping else None,
         )
+        _original_feature = self.df[col] if self.df is not None else None
         return ebm_explain(
             m=self.m,
             xs=self.xs,
@@ -277,6 +290,7 @@ class EbmExplain:
             condense_last=condense_last,
             index_mapping=index_mapping,
             remove_last_bins=remove_last_bins,
+            _original_feature=_original_feature
         )
 
     def plot_ebm_explain(
@@ -324,6 +338,7 @@ class EbmExplain:
             index_mapping,
             clean_dict_text(self.cat_mapping[col]) if col in self.cat_mapping else None,
         )
+        _original_feature = self.df[col] if self.df is not None else None
         return plot_ebm_explain(
             m=self.m,
             xs=self.xs,
@@ -338,6 +353,7 @@ class EbmExplain:
             plot_title=plot_title,
             plotsize=plotsize,
             remove_last_bins=remove_last_bins,
+            _original_feature=_original_feature
         )
 
 
@@ -358,17 +374,19 @@ def _clean_ebm_explain(
     condense_last=True,
     index_mapping: Optional[dict] = None,
     remove_last_bins: Optional[int] = None,
+    _original_feature=None
 ):
     """Base function for cleaning EBM"""
     ebm_global = m.explain_global()
     index = _get_ebm_index(m, col)
     numeric = check_all_numeric(ebm_global.data(index)["names"])
-    binned = (
-        pd.cut(xs[col], ebm_global.data(index)["names"], include_lowest=True)
+
+    series = _original_feature if _original_feature is not None else xs[col]
+    binned_count = (
+        list(series.value_counts(bins=ebm_global.data(index)["names"], sort=False))
         if numeric
-        else xs[col]
+        else list(series.value_counts())
     )
-    binned_count = list(binned.groupby(binned).count())
     df = pd.DataFrame(
         {
             "eff": ebm_global.data(index)["scores"],
@@ -387,10 +405,7 @@ def _clean_ebm_explain(
     )
     df = df[~df.index.duplicated(keep="last")]
     if standardize_values:
-        adjust = -1 * df.iloc[0]["eff"]
-        df["eff"] += adjust
-        df["lower"] += adjust
-        df["upper"] += adjust
+        df = adjust_df(df)
     if index_mapping is not None and numeric is False:
         df.index = try_convert_numeric(df.index)
         df.index = df.index.map(index_mapping)
@@ -414,6 +429,7 @@ def _get_ebm_explain_traces(
     condense_last=True,
     index_mapping: Optional[dict] = None,
     remove_last_bins: Optional[int] = None,
+    _original_feature=None
 ):
     """Base function for plotting EBM"""
     df = ebm_explain(
@@ -426,6 +442,7 @@ def _get_ebm_explain_traces(
         condense_last=condense_last,
         index_mapping=index_mapping,
         remove_last_bins=remove_last_bins,
+        _original_feature=_original_feature
     )
     x = df.index
     y = df["eff"]
