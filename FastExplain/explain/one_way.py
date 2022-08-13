@@ -22,6 +22,7 @@ from FastExplain.utils import (
     plot_one_way,
     plot_two_one_way,
     plot_two_way,
+    fill_categorical_nan,
 )
 
 
@@ -531,8 +532,6 @@ def get_two_way_analysis(
         if numeric is not None
         else check_cont_col(df[col_2], max_card=max_card)
     )
-    df = df[~df[col_1].isna()] if numeric_1 else df
-    df = df[~df[col_2].isna()] if numeric_2 else df
 
     if bins is None:
         if numeric_1:
@@ -552,6 +551,9 @@ def get_two_way_analysis(
         if numeric_2
         else filtered_df[col_2].astype("category")
     )
+    filtered_df[col_1] = fill_categorical_nan(filtered_df[col_1])
+    filtered_df[col_2] = fill_categorical_nan(filtered_df[col_2])
+
     func = ifnone(func, lambda x: conditional_mean(x, size_cutoff))
 
     two_way_df = (
@@ -1630,20 +1632,20 @@ def _get_one_way_analysis(
 
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
-    df = df[~df[x_col].isna()] if numeric else df
     if numeric:
         bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col, y_col]].copy()
-
     filtered_df[x_col] = (
         pd.cut(filtered_df[x_col], bins, include_lowest=True)
         if numeric
         else filtered_df[x_col].astype("category")
     )
     func = func if func else lambda x: conditional_mean(x, size_cutoff)
+    filtered_df[x_col] = fill_categorical_nan(filtered_df[x_col])
     one_way_df = filtered_df.groupby(x_col).agg(
         **{y_col: (y_col, func), "size": (y_col, "count")}
     )
+
     if numeric:
         one_way_df.index = bin_intervals(
             one_way_df.index, dp, percentage, condense_last
@@ -1707,7 +1709,6 @@ def _get_two_one_way_analysis(
 
     df = df.query(filter) if filter else df
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
-    df = df[~df[x_col].isna()] if numeric else df
     if numeric:
         bins = bins if bins else get_bins(df[x_col], grid_size)
     filtered_df = df[[x_col] + y_col].copy()
@@ -1716,6 +1717,7 @@ def _get_two_one_way_analysis(
         if numeric
         else filtered_df[x_col].astype("category")
     )
+    filtered_df[x_col] = fill_categorical_nan(filtered_df[x_col])
     func = func if func else lambda x: conditional_mean(x, size_cutoff)
     one_way_df = filtered_df.groupby(x_col).agg(
         **{y_col[0]: (y_col[0], func), y_col[1]: (y_col[1], func)}

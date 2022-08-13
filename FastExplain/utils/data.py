@@ -47,3 +47,9 @@ def trim_df(df, bins):
         df = df.iloc[:-bins]
 
     return df
+
+
+def fill_categorical_nan(x, value="NaN"):
+    x = x.cat.add_categories([value])
+    x = x.fillna(value)
+    return x

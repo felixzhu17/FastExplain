@@ -35,12 +35,21 @@ def bin_columns(bins, dp=2, percentage=False, condense_last=True):
 
 
 def bin_intervals(bins, dp=2, percentage=False, condense_last=True):
+
     formatting = "%" if percentage else "f"
     binned_intervals = [
-        f"{i.left:,.{dp}{formatting}} - {i.right:,.{dp}{formatting}}" for i in bins
+        f"{i.left:,.{dp}{formatting}} - {i.right:,.{dp}{formatting}}"
+        if i not in ["NaN"]
+        else "NaN"
+        for i in bins
     ]
+
     if condense_last:
-        binned_intervals[-1] = f"{bins[-1].left:,.{dp}{formatting}}+"
+        replace_index = -2 if "NaN" in bins else -1
+        binned_intervals[
+            replace_index
+        ] = f"{bins[replace_index].left:,.{dp}{formatting}}+"
+
     return binned_intervals
 
 
