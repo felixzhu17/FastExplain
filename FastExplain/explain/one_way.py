@@ -93,6 +93,7 @@ def get_frequency(
     condense_last: bool = True,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
+    display_proportion: bool = False,
 ):
 
     """
@@ -134,6 +135,8 @@ def get_frequency(
             Defaults to None.
         index_mapping (Optional[dict], optional):
             Dictionary mapping the values to display on the x-axis
+        display_proportion (bool, option):
+            Whether to display as a proportion of total count
     """
 
     df = df.query(filter) if filter else df
@@ -157,6 +160,10 @@ def get_frequency(
         )
     if index_mapping is not None:
         frequency_df.index = frequency_df.index.map(index_mapping)
+
+    if display_proportion:
+        frequency_df = frequency_df / frequency_df.sum()
+
     return frequency_df
 
 
@@ -172,6 +179,7 @@ def plot_histogram(
     condense_last: bool = True,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
+    display_proportion: bool = False,
     x_axis_name: Optional[str] = None,
     y_axis_name: Optional[str] = None,
     plot_title: Optional[str] = None,
@@ -218,6 +226,8 @@ def plot_histogram(
             Defaults to None.
         index_mapping (Optional[dict], optional):
             Dictionary mapping the values to display on the x-axis
+        display_proportion (bool, option):
+            Whether to display as a proportion of total count
     """
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
     plot_title = ifnone(plot_title, f"{x_axis_name} Frequency")
@@ -233,6 +243,7 @@ def plot_histogram(
         condense_last=condense_last,
         filter=filter,
         index_mapping=index_mapping,
+        display_proportion=display_proportion,
     )
     return plot_bar(
         df=frequency_df,
@@ -921,6 +932,7 @@ class OneWay:
         condense_last: bool = True,
         filter: Optional[str] = None,
         index_mapping: Optional[dict] = None,
+        display_proportion: bool = False,
     ):
 
         """
@@ -960,6 +972,8 @@ class OneWay:
                 Defaults to None.
             index_mapping (Optional[dict], optional):
                 Dictionary mapping the values to display on the x-axis
+            display_proportion (bool, option):
+                Whether to display as a proportion of total count
         """
         index_mapping = self._get_index_mapping(index_mapping, x_col)
         return get_frequency(
@@ -974,6 +988,7 @@ class OneWay:
             condense_last=condense_last,
             filter=filter,
             index_mapping=index_mapping,
+            display_proportion=display_proportion,
         )
 
     def plot_histogram(
@@ -988,6 +1003,7 @@ class OneWay:
         condense_last: bool = True,
         filter: Optional[str] = None,
         index_mapping: Optional[dict] = None,
+        display_proportion: bool = False,
         x_axis_name: Optional[str] = None,
         y_axis_name: Optional[str] = None,
         plot_title: Optional[str] = None,
@@ -1046,6 +1062,7 @@ class OneWay:
             condense_last=condense_last,
             filter=filter,
             index_mapping=index_mapping,
+            display_proportion=display_proportion,
             x_axis_name=x_axis_name,
             y_axis_name=y_axis_name,
             plot_title=plot_title,

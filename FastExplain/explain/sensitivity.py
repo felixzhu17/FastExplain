@@ -14,7 +14,7 @@ def sensitivity_test(
     trials: int = 50,
     replacement_conditions: Optional[List[str]] = None,
     relative_diff: bool = True,
-    percent_replace: Union[List[float], float] = 0.2,
+    percent_replace: Union[List[float], float] = 1,
     metric_agg_func: Callable = sum,
     replace_func: Optional[Callable] = None,
 ):
