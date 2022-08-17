@@ -381,6 +381,7 @@ def plot_one_way_analysis(
     sort: bool = False,
     ascending: bool = True,
     display_proportion: bool = False,
+    histogram_name: Optional[str] = None,
 ):
 
     """
@@ -471,6 +472,7 @@ def plot_one_way_analysis(
         sort=sort,
         ascending=ascending,
         display_proportion=display_proportion,
+        histogram_name=histogram_name,
     )
 
 
@@ -1182,6 +1184,8 @@ class OneWay:
         plotsize: Optional[List[int]] = None,
         sort: bool = False,
         ascending: bool = True,
+        display_proportion: bool = False,
+        histogram_name: Optional[str] = None,
     ):
         """
         Plot one-way analysis between two features in a DataFrame. The x_col is binned and a function is applied to the y_col grouped by values of the x_col
@@ -1266,6 +1270,8 @@ class OneWay:
             plotsize=plotsize,
             sort=sort,
             ascending=ascending,
+            display_proportion=display_proportion,
+            histogram_name=histogram_name,
         )
 
     def get_two_way_analysis(
@@ -1698,6 +1704,7 @@ def _plot_one_way_analysis(
     sort: bool = False,
     ascending: bool = True,
     display_proportion: bool = False,
+    histogram_name: Optional[str] = None,
     *args,
     **kwargs,
 ):
@@ -1716,6 +1723,7 @@ def _plot_one_way_analysis(
         sort=sort,
         ascending=ascending,
         display_proportion=display_proportion,
+        histogram_name=histogram_name,
     )
 
 
@@ -1779,6 +1787,7 @@ def _plot_two_one_way_analysis(
     sort=False,
     ascending=True,
     display_proportion: bool = False,
+    histogram_name: Optional[str] = None,
     *args,
     **kwargs,
 ):

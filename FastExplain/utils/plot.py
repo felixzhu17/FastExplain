@@ -192,12 +192,16 @@ def plot_one_way(
     sort=False,
     ascending=True,
     display_proportion=False,
+    histogram_name=None,
 ):
     """Base function for plotting one-way analysis with frequency"""
 
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
     y_axis_name = ifnone(y_axis_name, clean_text(y_col))
     plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
+    histogram_name = ifnone(
+        histogram_name, "Proportion" if display_proportion else "Frequency"
+    )
 
     if size is not None:
 
@@ -211,7 +215,7 @@ def plot_one_way(
         )
         fig.add_trace(
             go.Bar(
-                name="Proportion" if display_proportion else "Frequency",
+                name=histogram_name,
                 x=df.index,
                 y=df["size"],
                 marker={"color": COLOURS["grey"]},
@@ -222,7 +226,7 @@ def plot_one_way(
         fig = plotly_two_axis_layout(
             fig,
             x_axis_title=x_axis_name,
-            primary_y_axis_title="Proportion" if display_proportion else "Frequency",
+            primary_y_axis_title=histogram_name,
             secondary_y_axis_title=y_axis_name,
             title=plot_title,
             plotsize=plotsize,
