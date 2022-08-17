@@ -222,7 +222,7 @@ def plot_one_way(
         fig = plotly_two_axis_layout(
             fig,
             x_axis_title=x_axis_name,
-            primary_y_axis_title="Frequency",
+            primary_y_axis_title="Proportion" if display_proportion else "Frequency",
             secondary_y_axis_title=y_axis_name,
             title=plot_title,
             plotsize=plotsize,
