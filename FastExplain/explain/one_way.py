@@ -377,6 +377,7 @@ def plot_one_way_analysis(
     plotsize: Optional[List[int]] = None,
     sort: bool = False,
     ascending: bool = True,
+    display_proportion: bool = False,
 ):
 
     """
@@ -465,6 +466,7 @@ def plot_one_way_analysis(
         plotsize=plotsize,
         sort=sort,
         ascending=ascending,
+        display_proportion=display_proportion,
     )
 
 
@@ -1682,6 +1684,7 @@ def _plot_one_way_analysis(
     plotsize: Optional[List[int]] = None,
     sort: bool = False,
     ascending: bool = True,
+    display_proportion: bool = False,
     *args,
     **kwargs,
 ):
@@ -1699,6 +1702,7 @@ def _plot_one_way_analysis(
         plotsize=plotsize,
         sort=sort,
         ascending=ascending,
+        display_proportion=display_proportion,
     )
 
 
@@ -1758,6 +1762,7 @@ def _plot_two_one_way_analysis(
     plotsize: Optional[List[int]] = None,
     sort=False,
     ascending=True,
+    display_proportion: bool = False,
     *args,
     **kwargs,
 ):

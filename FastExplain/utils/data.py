@@ -50,8 +50,9 @@ def trim_df(df, bins):
 
 
 def fill_categorical_nan(x, value="NaN"):
-    x = x.cat.add_categories([value])
-    x = x.fillna(value)
+    if x.isna().sum() > 0:
+        x = x.cat.add_categories([value])
+        x = x.fillna(value)
     return x
 
 

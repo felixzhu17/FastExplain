@@ -191,6 +191,7 @@ def plot_one_way(
     plotsize=None,
     sort=False,
     ascending=True,
+    display_proportion=False,
 ):
     """Base function for plotting one-way analysis with frequency"""
 
@@ -199,6 +200,10 @@ def plot_one_way(
     plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
 
     if size is not None:
+
+        if display_proportion:
+            size = size / size.sum()
+
         df["size"] = size
         df = sort_plot_df(df, y_col, sort, ascending)
         fig = create_secondary_axis_plotly(
@@ -206,7 +211,7 @@ def plot_one_way(
         )
         fig.add_trace(
             go.Bar(
-                name="Frequency",
+                name="Proportion" if display_proportion else "Frequency",
                 x=df.index,
                 y=df["size"],
                 marker={"color": COLOURS["grey"]},
