@@ -273,6 +273,7 @@ def get_one_way_analysis(
     condense_last: bool = True,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
+    index_ordering: Optional[list] = None,
 ):
 
     """
@@ -353,6 +354,7 @@ def get_one_way_analysis(
         condense_last=condense_last,
         filter=filter,
         index_mapping=index_mapping,
+        index_ordering=index_ordering,
     )
 
 
@@ -371,6 +373,7 @@ def plot_one_way_analysis(
     condense_last: bool = True,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
+    index_ordering: Optional[list] = None,
     x_axis_name: Optional[str] = None,
     y_axis_name: Optional[Union[List[str], str]] = None,
     plot_title: Optional[str] = None,
@@ -460,6 +463,7 @@ def plot_one_way_analysis(
         condense_last=condense_last,
         filter=filter,
         index_mapping=index_mapping,
+        index_ordering=index_ordering,
         x_axis_name=x_axis_name,
         y_axis_name=y_axis_name,
         plot_title=plot_title,
@@ -1088,6 +1092,7 @@ class OneWay:
         condense_last: bool = True,
         filter: Optional[str] = None,
         index_mapping: Optional[dict] = None,
+        index_ordering: Optional[str] = None,
     ):
 
         """
@@ -1152,6 +1157,7 @@ class OneWay:
             condense_last=condense_last,
             filter=filter,
             index_mapping=index_mapping,
+            index_ordering=index_ordering,
         )
 
     def plot_one_way_analysis(
@@ -1169,6 +1175,7 @@ class OneWay:
         condense_last: bool = True,
         filter: Optional[str] = None,
         index_mapping: Optional[dict] = None,
+        index_ordering: Optional[list] = None,
         x_axis_name: Optional[str] = None,
         y_axis_name: Optional[Union[List[str], str]] = None,
         plot_title: Optional[str] = None,
@@ -1252,6 +1259,7 @@ class OneWay:
             condense_last=condense_last,
             filter=filter,
             index_mapping=index_mapping,
+            index_ordering=index_ordering,
             x_axis_name=x_axis_name,
             y_axis_name=y_axis_name,
             plot_title=plot_title,
@@ -1645,6 +1653,7 @@ def _get_one_way_analysis(
     condense_last: bool = True,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
+    index_ordering: Optional[list] = None,
 ):
 
     """Base function to get one way analysis"""
@@ -1669,6 +1678,10 @@ def _get_one_way_analysis(
         one_way_df.index = bin_intervals(
             one_way_df.index, dp, percentage, condense_last
         )
+
+    if index_ordering is not None:
+        one_way_df = one_way_df.loc[index_ordering]
+
     if index_mapping is not None:
         one_way_df.index = one_way_df.index.map(index_mapping)
     return one_way_df
@@ -1721,6 +1734,7 @@ def _get_two_one_way_analysis(
     condense_last: bool = True,
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
+    index_ordering: Optional[list] = None,
 ):
 
     """Base function to get one way analysis for two features"""
@@ -1747,6 +1761,8 @@ def _get_two_one_way_analysis(
         one_way_df.index = bin_intervals(
             one_way_df.index, dp, percentage, condense_last
         )
+    if index_ordering is not None:
+        one_way_df = one_way_df.loc[index_ordering]
     if index_mapping is not None:
         one_way_df.index = one_way_df.index.map(index_mapping)
     return one_way_df
