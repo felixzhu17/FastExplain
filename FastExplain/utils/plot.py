@@ -206,15 +206,22 @@ def plot_one_way(
     table_cols = [i for i in df.columns if i != "size"]
     plot_colours = CORE_COLOURS[: len(table_cols)]
 
+    clean_col_map = {i: i.title() for i in table_cols}
+    clean_col_names = list(clean_col_map.keys())
+
+    df.replace(columns=clean_col_map, inplace=True)
+
     if size is not None:
 
         if display_proportion:
             size = size / size.sum()
 
         df["size"] = size
-        df = sort_plot_df(df, table_cols[0], sort, ascending)
+        df = sort_plot_df(df, clean_col_names[0], sort, ascending)
         fig = create_secondary_axis_plotly(
-            px.line(df, x=df.index, y=table_cols, color_discrete_sequence=plot_colours)
+            px.line(
+                df, x=df.index, y=clean_col_names, color_discrete_sequence=plot_colours
+            )
         )
         fig.add_trace(
             go.Bar(
@@ -236,9 +243,9 @@ def plot_one_way(
         )
 
     else:
-        df = sort_plot_df(df, table_cols[0], sort, ascending)
+        df = sort_plot_df(df, clean_col_names[0], sort, ascending)
         fig = px.line(
-            df, x=df.index, y=table_cols, color_discrete_sequence=plot_colours
+            df, x=df.index, y=clean_col_names, color_discrete_sequence=plot_colours
         )
         fig = plotly_layout(
             fig,
