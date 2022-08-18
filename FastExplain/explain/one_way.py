@@ -14,6 +14,7 @@ from FastExplain.clean.split import check_cont_col, cont_cat_split
 from FastExplain.explain.bin import get_bins
 from FastExplain.utils import (
     bin_intervals,
+    check_list_type,
     clean_dict_text,
     clean_text,
     conditional_mean,
@@ -274,6 +275,7 @@ def get_one_way_analysis(
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
     index_ordering: Optional[list] = None,
+    agg_names: Optional[list] = None,
 ):
 
     """
@@ -334,11 +336,11 @@ def get_one_way_analysis(
         ascending (bool, optional):
             Whether to sort ascending. Defaults to True.
     """
+
     one_way_func = (
-        _get_two_one_way_analysis
-        if isinstance(y_col, (list, tuple))
-        else _get_one_way_analysis
+        _get_two_one_way_analysis if check_list_type(y_col) else _get_one_way_analysis
     )
+
     return one_way_func(
         df=df,
         x_col=x_col,
@@ -355,6 +357,7 @@ def get_one_way_analysis(
         filter=filter,
         index_mapping=index_mapping,
         index_ordering=index_ordering,
+        agg_names=agg_names,
     )
 
 
@@ -374,6 +377,7 @@ def plot_one_way_analysis(
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
     index_ordering: Optional[list] = None,
+    agg_names: Optional[list] = None,
     x_axis_name: Optional[str] = None,
     y_axis_name: Optional[Union[List[str], str]] = None,
     plot_title: Optional[str] = None,
@@ -445,9 +449,7 @@ def plot_one_way_analysis(
 
     y_col = y_col[0] if len(y_col) == 1 else y_col
     one_way_func = (
-        _plot_two_one_way_analysis
-        if isinstance(y_col, (list, tuple))
-        else _plot_one_way_analysis
+        _plot_two_one_way_analysis if check_list_type(y_col) else _plot_one_way_analysis
     )
     return one_way_func(
         df=df,
@@ -465,6 +467,7 @@ def plot_one_way_analysis(
         filter=filter,
         index_mapping=index_mapping,
         index_ordering=index_ordering,
+        agg_names=agg_names,
         x_axis_name=x_axis_name,
         y_axis_name=y_axis_name,
         plot_title=plot_title,
@@ -1095,6 +1098,7 @@ class OneWay:
         filter: Optional[str] = None,
         index_mapping: Optional[dict] = None,
         index_ordering: Optional[str] = None,
+        agg_names: Optional[list] = None,
     ):
 
         """
@@ -1160,6 +1164,7 @@ class OneWay:
             filter=filter,
             index_mapping=index_mapping,
             index_ordering=index_ordering,
+            agg_names=agg_names,
         )
 
     def plot_one_way_analysis(
@@ -1186,6 +1191,7 @@ class OneWay:
         ascending: bool = True,
         display_proportion: bool = False,
         histogram_name: Optional[str] = None,
+        agg_names: Optional[list] = None,
     ):
         """
         Plot one-way analysis between two features in a DataFrame. The x_col is binned and a function is applied to the y_col grouped by values of the x_col
@@ -1264,6 +1270,7 @@ class OneWay:
             filter=filter,
             index_mapping=index_mapping,
             index_ordering=index_ordering,
+            agg_names=agg_names,
             x_axis_name=x_axis_name,
             y_axis_name=y_axis_name,
             plot_title=plot_title,
@@ -1644,6 +1651,27 @@ class OneWay:
         )
 
 
+def _filter_one_way_analysis_df(
+    df, x_col, y_col, numeric, bins, filter, max_card, grid_size, size_cutoff
+):
+
+    y_col = y_col if isinstance(y_col, (list, tuple)) else [y_col]
+    df = df.query(filter) if filter else df
+    numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
+    if numeric:
+        bins = bins if bins else get_bins(df[x_col], grid_size)
+
+    filtered_df = df[[x_col] + y_col].copy()
+    filtered_df[x_col] = (
+        pd.cut(filtered_df[x_col], bins, include_lowest=True)
+        if numeric
+        else filtered_df[x_col].astype("category")
+    )
+
+    filtered_df[x_col] = fill_categorical_nan(filtered_df[x_col])
+    return filtered_df, numeric
+
+
 def _get_one_way_analysis(
     df: pd.DataFrame,
     x_col: str,
@@ -1660,25 +1688,36 @@ def _get_one_way_analysis(
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
     index_ordering: Optional[list] = None,
+    agg_names: Optional[list] = None,
 ):
 
     """Base function to get one way analysis"""
 
-    df = df.query(filter) if filter else df
-    numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
-    if numeric:
-        bins = bins if bins else get_bins(df[x_col], grid_size)
-    filtered_df = df[[x_col, y_col]].copy()
-    filtered_df[x_col] = (
-        pd.cut(filtered_df[x_col], bins, include_lowest=True)
-        if numeric
-        else filtered_df[x_col].astype("category")
+    filtered_df, numeric = _filter_one_way_analysis_df(
+        df=df,
+        x_col=x_col,
+        y_col=y_col,
+        numeric=numeric,
+        bins=bins,
+        filter=filter,
+        max_card=max_card,
+        grid_size=grid_size,
+        size_cutoff=size_cutoff,
     )
-    func = func if func else lambda x: conditional_mean(x, size_cutoff)
-    filtered_df[x_col] = fill_categorical_nan(filtered_df[x_col])
-    one_way_df = filtered_df.groupby(x_col).agg(
-        **{y_col: (y_col, func), "size": (y_col, "count")}
-    )
+
+    func = func if func is not None else lambda x: conditional_mean(x, size_cutoff)
+
+    if check_list_type(func):
+        agg_names = ifnone(agg_names, [f"{y_col} Metric {i}" for i in range(len(func))])
+        agg_dict = {k: (y_col, v) for k, v in zip(agg_names, func)}
+
+    else:
+        agg_names = ifnone(agg_names, y_col)
+        agg_dict = {agg_names: (y_col, func)}
+
+    agg_dict["size"] = (y_col, "count")
+
+    one_way_df = filtered_df.groupby(x_col).agg(**agg_dict)
 
     if numeric:
         one_way_df.index = bin_intervals(
@@ -1711,6 +1750,7 @@ def _plot_one_way_analysis(
 
     """Base function to plot one way analysis"""
     one_way_df = get_one_way_analysis(df=df, x_col=x_col, y_col=y_col, *args, **kwargs)
+
     return plot_one_way(
         df=one_way_df,
         x_col=x_col,
@@ -1743,25 +1783,27 @@ def _get_two_one_way_analysis(
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
     index_ordering: Optional[list] = None,
+    agg_names: Optional[list] = None,
 ):
 
     """Base function to get one way analysis for two features"""
 
     if len(y_col) != 2:
-        raise ValueError("Can only get up to two columns on y-axis")
+        raise NotImplementedError("Can only get up to two columns on y-axis")
 
-    df = df.query(filter) if filter else df
-    numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
-    if numeric:
-        bins = bins if bins else get_bins(df[x_col], grid_size)
-    filtered_df = df[[x_col] + y_col].copy()
-    filtered_df[x_col] = (
-        pd.cut(filtered_df[x_col], bins, include_lowest=True)
-        if numeric
-        else filtered_df[x_col].astype("category")
+    filtered_df, numeric = _filter_one_way_analysis_df(
+        df=df,
+        x_col=x_col,
+        y_col=y_col,
+        numeric=numeric,
+        bins=bins,
+        filter=filter,
+        max_card=max_card,
+        grid_size=grid_size,
+        size_cutoff=size_cutoff,
     )
-    filtered_df[x_col] = fill_categorical_nan(filtered_df[x_col])
-    func = func if func else lambda x: conditional_mean(x, size_cutoff)
+
+    func = func if func is not None else lambda x: conditional_mean(x, size_cutoff)
     one_way_df = filtered_df.groupby(x_col).agg(
         **{y_col[0]: (y_col[0], func), y_col[1]: (y_col[1], func)}
     )

@@ -2,7 +2,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from FastExplain.utils.colours import COLOURS
+from FastExplain.utils.colours import COLOURS, CORE_COLOURS
 from FastExplain.utils.logic import clean_text, ifnone
 
 
@@ -203,15 +203,18 @@ def plot_one_way(
         histogram_name, "Proportion" if display_proportion else "Frequency"
     )
 
+    table_cols = [i for i in df.columns if i != "size"]
+    plot_colours = CORE_COLOURS[: len(table_cols)]
+
     if size is not None:
 
         if display_proportion:
             size = size / size.sum()
 
         df["size"] = size
-        df = sort_plot_df(df, y_col, sort, ascending)
+        df = sort_plot_df(df, table_cols[0], sort, ascending)
         fig = create_secondary_axis_plotly(
-            px.line(df, x=df.index, y=y_col, color_discrete_sequence=[COLOURS["blue"]])
+            px.line(df, x=df.index, y=table_cols, color_discrete_sequence=plot_colours)
         )
         fig.add_trace(
             go.Bar(
@@ -233,8 +236,10 @@ def plot_one_way(
         )
 
     else:
-        df = sort_plot_df(df, y_col, sort, ascending)
-        fig = px.line(df, x=df.index, y=y_col)
+        df = sort_plot_df(df, table_cols[0], sort, ascending)
+        fig = px.line(
+            df, x=df.index, y=table_cols, color_discrete_sequence=plot_colours
+        )
         fig = plotly_layout(
             fig,
             plotsize=plotsize,

@@ -14,6 +14,9 @@ COLOURS = {
     "light_grey": "#EBECF0",
 }
 
+CORE_COLOURS = ["blue", "red", "yellow", "green", "purple", "black"]
+CORE_COLOURS = [COLOURS[i] for i in CORE_COLOURS]
 
-def cycle_colours(colours=["blue", "red", "yellow", "green", "purple", "black"]):
-    return cycle([COLOURS[i] for i in colours])
+
+def cycle_colours(colours=CORE_COLOURS):
+    return cycle(CORE_COLOURS)

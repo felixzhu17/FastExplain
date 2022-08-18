@@ -12,7 +12,7 @@ from FastExplain.metrics import (
 )
 from FastExplain.models.algorithms import ebm_reg, rf_reg, xgb_reg
 from FastExplain.models.base import Model
-from FastExplain.utils import root_mean
+from FastExplain.utils import ifnone, root_mean
 
 REG_MODELS = {"rf": rf_reg, "xgb": xgb_reg, "ebm": ebm_reg}
 
@@ -152,7 +152,8 @@ class Regression(
         )
 
     def plot_one_way_error(self, col: Optional[str] = None, *args, **kwargs):
-        col = col if col else self.data.dep_var
+        col = ifnone(col, self.data.dep_var)
+        print(col)
         return plot_one_way_error(
             df=self.data.df,
             error=self.raw_error["squared_error"]["model"]["overall"],

@@ -70,3 +70,7 @@ def try_convert_numeric(x):
         return [float(i) for i in x]
     except:
         return x
+
+
+def check_list_type(x):
+    return isinstance(x, (list, tuple))
