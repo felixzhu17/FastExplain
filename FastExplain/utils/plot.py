@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from FastExplain.utils.colours import COLOURS, CORE_COLOURS
-from FastExplain.utils.logic import clean_text, ifnone
+from FastExplain.utils.logic import check_list_type, clean_text, ifnone
 
 
 def plot_two_way(
@@ -197,7 +197,11 @@ def plot_one_way(
     """Base function for plotting one-way analysis with frequency"""
 
     x_axis_name = ifnone(x_axis_name, clean_text(x_col))
-    y_axis_name = ifnone(y_axis_name, clean_text(y_col))
+
+    y_axis_name = ifnone(
+        y_axis_name,
+        clean_text(", ".join(y_col)) if check_list_type(y_col) else clean_text(y_col),
+    )
     plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
     histogram_name = ifnone(
         histogram_name, "Proportion" if display_proportion else "Frequency"

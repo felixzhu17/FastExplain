@@ -277,7 +277,7 @@ def get_one_way_analysis(
     index_ordering: Optional[list] = None,
     legend_names: Optional[list] = None,
     histogram_include_na: bool = False,
-    dual_axis_y_col: bool = False
+    dual_axis_y_col: bool = False,
 ):
 
     """
@@ -390,7 +390,7 @@ def plot_one_way_analysis(
     display_proportion: bool = False,
     histogram_name: Optional[str] = None,
     histogram_include_na: bool = False,
-    dual_axis_y_col: bool = False
+    dual_axis_y_col: bool = False,
 ):
 
     """
@@ -481,7 +481,7 @@ def plot_one_way_analysis(
         ascending=ascending,
         display_proportion=display_proportion,
         histogram_name=histogram_name,
-        histogram_include_na=histogram_include_na
+        histogram_include_na=histogram_include_na,
     )
 
 
@@ -1199,7 +1199,7 @@ class OneWay:
         histogram_name: Optional[str] = None,
         legend_names: Optional[list] = None,
         histogram_include_na: bool = False,
-        dual_axis_y_col: bool = False
+        dual_axis_y_col: bool = False,
     ):
         """
         Plot one-way analysis between two features in a DataFrame. The x_col is binned and a function is applied to the y_col grouped by values of the x_col
@@ -1288,7 +1288,7 @@ class OneWay:
             display_proportion=display_proportion,
             histogram_name=histogram_name,
             histogram_include_na=histogram_include_na,
-            dual_axis_y_col=dual_axis_y_col
+            dual_axis_y_col=dual_axis_y_col,
         )
 
     def get_two_way_analysis(
@@ -1699,7 +1699,7 @@ def _get_one_way_analysis(
     index_mapping: Optional[dict] = None,
     index_ordering: Optional[list] = None,
     legend_names: Optional[list] = None,
-    histogram_include_na: bool = False
+    histogram_include_na: bool = False,
 ):
 
     """Base function to get one way analysis"""
@@ -1718,8 +1718,12 @@ def _get_one_way_analysis(
 
     func = func if func is not None else lambda x: conditional_mean(x, size_cutoff)
 
-    
-    agg_dict = _get_agg_dict(y_col=y_col, func=func, legend_names=legend_names , histogram_include_na=histogram_include_na)
+    agg_dict = _get_agg_dict(
+        y_col=y_col,
+        func=func,
+        legend_names=legend_names,
+        histogram_include_na=histogram_include_na,
+    )
     one_way_df = filtered_df.groupby(x_col).agg(**agg_dict)
 
     if numeric:
@@ -1734,15 +1738,18 @@ def _get_one_way_analysis(
         one_way_df.index = one_way_df.index.map(index_mapping)
     return one_way_df
 
+
 def _get_agg_dict(y_col, func, legend_names, histogram_include_na):
 
     histogram_func = len if histogram_include_na else "count"
 
     if check_list_type(func) and check_list_type(y_col):
         raise NotImplementedError("Can only have one of function or y_col as lists")
- 
+
     if check_list_type(func):
-        legend_names = ifnone(legend_names, [f"{y_col} Metric {i}" for i in range(len(func))])
+        legend_names = ifnone(
+            legend_names, [f"{y_col} Metric {i}" for i in range(len(func))]
+        )
         agg_dict = {k: (y_col, v) for k, v in zip(legend_names, func)}
         agg_dict["size"] = (y_col, histogram_func)
 
@@ -1811,7 +1818,7 @@ def _get_two_one_way_analysis(
     index_mapping: Optional[dict] = None,
     index_ordering: Optional[list] = None,
     legend_names: Optional[list] = None,
-    histogram_include_na: bool = False
+    histogram_include_na: bool = False,
 ):
 
     """Base function to get one way analysis for two features"""
@@ -1832,11 +1839,14 @@ def _get_two_one_way_analysis(
     )
 
     func = func if func is not None else lambda x: conditional_mean(x, size_cutoff)
-    agg_dict = _get_agg_dict(y_col=y_col, func=func, legend_names=legend_names , histogram_include_na=histogram_include_na)
-
-    one_way_df = filtered_df.groupby(x_col).agg(
-        **agg_dict
+    agg_dict = _get_agg_dict(
+        y_col=y_col,
+        func=func,
+        legend_names=legend_names,
+        histogram_include_na=histogram_include_na,
     )
+
+    one_way_df = filtered_df.groupby(x_col).agg(**agg_dict)
     if numeric:
         one_way_df.index = bin_intervals(
             one_way_df.index, dp, percentage, condense_last
@@ -1860,6 +1870,7 @@ def _plot_two_one_way_analysis(
     ascending=True,
     display_proportion: bool = False,
     histogram_name: Optional[str] = None,
+    histogram_include_na: bool = False,
     *args,
     **kwargs,
 ):
