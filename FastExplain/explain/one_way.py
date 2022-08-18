@@ -1662,15 +1662,18 @@ class OneWay:
 
 
 def _filter_one_way_analysis_df(
-    df, x_col, y_col, numeric, bins, filter, max_card, grid_size, size_cutoff
+    df, x_col, y_col, numeric, bins, filter, max_card, grid_size
 ):
 
     y_col = y_col if isinstance(y_col, (list, tuple)) else [y_col]
+    
     df = df.query(filter) if filter else df
+    
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
+    
     if numeric:
         bins = bins if bins else get_bins(df[x_col], grid_size)
-
+    
     filtered_df = df[[x_col] + y_col].copy()
     filtered_df[x_col] = (
         pd.cut(filtered_df[x_col], bins, include_lowest=True)
@@ -1713,9 +1716,9 @@ def _get_one_way_analysis(
         filter=filter,
         max_card=max_card,
         grid_size=grid_size,
-        size_cutoff=size_cutoff,
     )
-
+    
+    
     func = func if func is not None else lambda x: conditional_mean(x, size_cutoff)
 
     agg_dict = _get_agg_dict(
@@ -1769,7 +1772,7 @@ def _get_agg_dict(y_col, func, legend_names, histogram_include_na):
 def _plot_one_way_analysis(
     df: pd.DataFrame,
     x_col: str,
-    y_col: str,
+    y_col: Union[list, str],
     x_axis_name: Optional[str] = None,
     y_axis_name: Optional[str] = None,
     plot_title: Optional[str] = None,
@@ -1783,8 +1786,8 @@ def _plot_one_way_analysis(
 ):
 
     """Base function to plot one way analysis"""
-    one_way_df = get_one_way_analysis(df=df, x_col=x_col, y_col=y_col, *args, **kwargs)
 
+    one_way_df = get_one_way_analysis(df=df, x_col=x_col, y_col=y_col, *args, **kwargs)
     return plot_one_way(
         df=one_way_df,
         x_col=x_col,
