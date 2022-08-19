@@ -74,3 +74,9 @@ def try_convert_numeric(x):
 
 def check_list_type(x):
     return isinstance(x, (list, tuple))
+
+def doc_setter(origin):
+    def wrapper(func):
+        func.__doc__ = origin.__doc__
+        return func
+    return wrapper

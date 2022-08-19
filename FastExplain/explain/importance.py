@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 
-from FastExplain.utils import COLOURS, is_ebm, is_rf
+from FastExplain.utils import COLOURS, is_ebm, is_rf, doc_setter
 
 
 def plot_feature_importance(
@@ -91,24 +91,14 @@ class Importance:
         self.m = m
         self.xs = xs
 
+    @doc_setter(plot_feature_importance)
     def plot_feature_importance(
         self,
         feature_highlights: list = [],
         limit: int = 10,
         plotsize: Optional[List[int]] = None,
     ):
-        """
-        Plot feature importance for for Random Forest, XGBoost or Explainable Boosting Machine
-
-        Args:
-            feature_highlights (list, optional):
-                List of features to highlight on plot. Defaults to [].
-            limit (int, optional):
-                Limit to the most important features. Defaults to 10.
-            plotsize (Optional[List[int]], optional):
-                Custom plotsize supplied as (width, height). Defaults to None.
-
-        """
+    
         return plot_feature_importance(
             m=self.m,
             xs=self.xs,

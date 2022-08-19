@@ -16,6 +16,7 @@ from FastExplain.utils import (
     plot_upper_lower_bound_traces,
     trim_df,
     try_convert_numeric,
+    doc_setter
 )
 
 
@@ -246,6 +247,7 @@ class EbmExplain:
         self.dep_var = dep_var
         self.cat_mapping = cat_mapping
 
+    @doc_setter(ebm_explain)
     def ebm_explain(
         self,
         col: str,
@@ -256,23 +258,7 @@ class EbmExplain:
         index_mapping: Optional[dict] = None,
         remove_last_bins: Optional[int] = None,
     ):
-        """
-        Calculate EBM values for a predictor feature in a model
-
-        Args:
-            col (str):
-                Name of predictor feature to use for EBM Explain
-            standardize_values (bool, optional):
-                Whether to standardize the first bin as 0. Defaults to True.
-            dp (int, optional):
-                Decimal points to format. Defaults to 2.
-            percentage (bool, optional):
-                Whether to format bins as percentages. Defaults to False.
-            condense_last (bool, optional):
-                Whether to bin last value with a greater than. Defaults to True.
-            index_mapping (Optional[dict], optional):
-                Dictionary mapping the values to display on the x-axis. Defaults to None.
-        """
+        
         index_mapping = ifnone(
             index_mapping,
             clean_dict_text(self.cat_mapping[col]) if col in self.cat_mapping else None,
@@ -291,6 +277,7 @@ class EbmExplain:
             _original_feature=_original_feature,
         )
 
+    @doc_setter(plot_ebm_explain)
     def plot_ebm_explain(
         self,
         col: str,
@@ -306,31 +293,6 @@ class EbmExplain:
         plotsize=None,
     ):
 
-        """
-        Plot EBM values for a predictor feature in a model
-
-        Args:
-            col (str):
-                Name of predictor feature to use for EBM Explain
-            standardize_values (bool, optional):
-                Whether to standardize the first bin as 0. Defaults to True.
-            dp (int, optional):
-                Decimal points to format. Defaults to 2.
-            percentage (bool, optional):
-                Whether to format bins as percentages. Defaults to False.
-            condense_last (bool, optional):
-                Whether to bin last value with a greater than. Defaults to True.
-            index_mapping (Optional[dict], optional):
-                Dictionary mapping the values to display on the x-axis. Defaults to None.
-            dep_name (Optional[str], optional):
-                Custom name to use for dependent variable on plot. Defaults to None.
-            feature_names (Optional[str], optional):
-                Custom names to use for predictor variable on plot. Defaults to None.
-            plot_title (Optional[str], optional):
-                Custom name to use for title of plot. Defaults to None.
-            plotsize (Optional[List[int]], optional):
-                Custom plotsize supplied as (width, height). Defaults to None.
-        """
         dep_name = ifnone(dep_name, self.dep_var)
         index_mapping = ifnone(
             index_mapping,

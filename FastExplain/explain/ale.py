@@ -20,6 +20,7 @@ from FastExplain.utils import (
     plot_two_way,
     plot_upper_lower_bound_traces,
     trim_df,
+    doc_setter
 )
 
 
@@ -533,6 +534,7 @@ class Ale:
         self.dep_var = dep_var
         self.cat_mapping = cat_mapping
 
+    @doc_setter(ale)
     def ale(
         self,
         col: str,
@@ -550,50 +552,6 @@ class Ale:
         index_mapping: Optional[dict] = None,
     ):
 
-        """
-        Calculate ALE values for a predictor feature in a model
-
-        Args:
-            col (str):
-                Name of predictor feature to use for ALE
-            grid_size (int, optional):
-                Number of predictor quantiles to bin data into. Defaults to 20.
-            bins (Optional[List[float]], optional):
-                Optionally, provide a list of values to bin predictor into, in place of quantile segmentation. Defaults to None.
-            numeric (Optional[bool], optional):
-                Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
-            max_card (int, optional):
-                Maximum number of unique values for categorical variable. Defaults to 20.
-            normalize_quantiles (bool, optional):
-                Whether to display bins as ranges instead of values. Defaults to True.
-            standardize_values (bool, optional):
-                Whether to standardize the first bin as 0. Defaults to True.
-            percentage (bool, optional):
-                Whether to format bins as percentages. Defaults to False.
-            condense_last (bool, optional):
-                Whether to bin last value with a greater than. Defaults to True.
-            remove_last_bins (Optional[int], optional):
-                Number of bins to remove. Defaults to None.
-            dp (int, optional):
-                Decimal points to format. Defaults to 2.
-            filter (Optional[str], optional):
-                The query string to evaluate.
-                You can refer to variables
-                in the environment by prefixing them with an '@' character like
-                ``@a + b``.
-                You can refer to column names that are not valid Python variable names
-                by surrounding them in backticks. Thus, column names containing spaces
-                or punctuations (besides underscores) or starting with digits must be
-                surrounded by backticks. (For example, a column named "Area (cm^2)" would
-                be referenced as ```Area (cm^2)```). Column names which are Python keywords
-                (like "list", "for", "import", etc) cannot be used.
-                For example, if one of your columns is called ``a a`` and you want
-                to sum it with ``b``, your query should be ```a a` + b``.
-                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
-                Defaults to None.
-            index_mapping (Optional[dict], optional):
-                Dictionary mapping the values to display on the x-axis. Defaults to None.
-        """
         index_mapping = ifnone(
             index_mapping,
             clean_dict_text(self.cat_mapping[col]) if col in self.cat_mapping else None,
@@ -618,6 +576,7 @@ class Ale:
             _original_feature=_original_feature,
         )
 
+    @doc_setter(plot_ale)
     def plot_ale(
         self,
         col: str,
@@ -639,61 +598,6 @@ class Ale:
         plot_title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
     ):
-
-        """
-        Plot ALE values for a predictor feature in a model
-
-        Args:
-            col (str):
-                Name of predictor feature to use for ALE
-            grid_size (int, optional):
-                Number of predictor quantiles to bin data into. Defaults to 20.
-            bins (Optional[List[float]], optional):
-                Optionally, provide a list of values to bin predictor into, in place of quantile segmentation. Defaults to None.
-            numeric (Optional[bool], optional):
-                Whether the feature is numeric or categorical. If not provided, it is automatically detected based on max_card. Defaults to None.
-            max_card (int, optional):
-                Maximum number of unique values for categorical variable. Defaults to 20.
-            normalize_quantiles (bool, optional):
-                Whether to display bins as ranges instead of values. Defaults to True.
-            standardize_values (bool, optional):
-                Whether to standardize the first bin as 0. Defaults to True.
-            percentage (bool, optional):
-                Whether to format bins as percentages. Defaults to False.
-            condense_last (bool, optional):
-                Whether to bin last value with a greater than. Defaults to True.
-            remove_last_bins (Optional[int], optional):
-                Number of bins to remove. Defaults to None.
-            dp (int, optional):
-                Decimal points to format. Defaults to 2.
-            filter (Optional[str], optional):
-                The query string to evaluate.
-                You can refer to variables
-                in the environment by prefixing them with an '@' character like
-                ``@a + b``.
-                You can refer to column names that are not valid Python variable names
-                by surrounding them in backticks. Thus, column names containing spaces
-                or punctuations (besides underscores) or starting with digits must be
-                surrounded by backticks. (For example, a column named "Area (cm^2)" would
-                be referenced as ```Area (cm^2)```). Column names which are Python keywords
-                (like "list", "for", "import", etc) cannot be used.
-                For example, if one of your columns is called ``a a`` and you want
-                to sum it with ``b``, your query should be ```a a` + b``.
-                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
-                Defaults to None.
-            index_mapping (Optional[dict], optional):
-                Dictionary mapping the values to display on the x-axis. Defaults to None.
-            dep_name (Optional[str], optional):
-                Custom name to use for dependent variable on plot. Defaults to None.
-            feature_names (Optional[str], optional):
-                Custom names to use for predictor variable on plot. Defaults to None.
-            model_names (Optional[List[str]], optional):
-                Name of models if supplying multiple models. Defaults to None.
-            plot_title (Optional[str], optional):
-                Custom name to use for title of plot. Defaults to None.
-            plotsize (Optional[List[int]], optional):
-                Custom plotsize supplied as (width, height). Defaults to None.
-        """
         dep_name = ifnone(dep_name, self.dep_var)
         index_mapping = ifnone(
             index_mapping,
@@ -724,6 +628,7 @@ class Ale:
             _original_feature=_original_feature,
         )
 
+    @doc_setter(ale_2d)
     def ale_2d(
         self,
         cols: List[str],
@@ -735,40 +640,7 @@ class Ale:
         condense_last: bool = True,
         filter: Optional[str] = None,
     ):
-        """
-        Calculate ALE values for a pair of predictor features in a model
-
-        Args:
-            col (List[str]):
-                Name of the predictor feature pair to use for ALE
-            grid_size (int, optional):
-                Number of predictor quantiles to bin data into. Defaults to 40.
-            max_card (int, optional):
-                Maximum number of unique values for categorical variable. Defaults to 20.
-            standardize_values (bool, optional):
-                Whether to standardize the minimum as 0. Defaults to True.
-            dp (int, optional):
-                Decimal points to format. Defaults to 2.
-            percentage (bool, optional):
-                Whether to format bins as percentages. Defaults to False.
-            condense_last (bool, optional):
-                Whether to bin last value with a greater than. Defaults to True.
-            filter (Optional[str], optional):
-                The query string to evaluate.
-                You can refer to variables
-                in the environment by prefixing them with an '@' character like
-                ``@a + b``.
-                You can refer to column names that are not valid Python variable names
-                by surrounding them in backticks. Thus, column names containing spaces
-                or punctuations (besides underscores) or starting with digits must be
-                surrounded by backticks. (For example, a column named "Area (cm^2)" would
-                be referenced as ```Area (cm^2)```). Column names which are Python keywords
-                (like "list", "for", "import", etc) cannot be used.
-                For example, if one of your columns is called ``a a`` and you want
-                to sum it with ``b``, your query should be ```a a` + b``.
-                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
-                Defaults to None.
-        """
+        
         return ale_2d(
             m=self.m,
             xs=self.xs,
@@ -782,6 +654,7 @@ class Ale:
             filter=filter,
         )
 
+    @doc_setter(plot_ale_2d)
     def plot_ale_2d(
         self,
         cols: List[str],
@@ -798,53 +671,7 @@ class Ale:
         plotsize: Optional[List[int]] = None,
         colorscale: Union[List[str], str] = "Blues",
     ):
-        """
-        Calculate ALE values for a pair of predictor features in a model
-
-        Args:
-            col (List[str]):
-                Name of the predictor feature pair to use for ALE
-            grid_size (int, optional):
-                Number of predictor quantiles to bin data into. Defaults to 40.
-            max_card (int, optional):
-                Maximum number of unique values for categorical variable. Defaults to 20.
-            standardize_values (bool, optional):
-                Whether to standardize the minimum as 0. Defaults to True.
-            dp (int, optional):
-                Decimal points to format. Defaults to 2.
-            percentage (bool, optional):
-                Whether to format bins as percentages. Defaults to False.
-            condense_last (bool, optional):
-                Whether to bin last value with a greater than. Defaults to True.
-            filter (Optional[str], optional):
-                The query string to evaluate.
-                You can refer to variables
-                in the environment by prefixing them with an '@' character like
-                ``@a + b``.
-                You can refer to column names that are not valid Python variable names
-                by surrounding them in backticks. Thus, column names containing spaces
-                or punctuations (besides underscores) or starting with digits must be
-                surrounded by backticks. (For example, a column named "Area (cm^2)" would
-                be referenced as ```Area (cm^2)```). Column names which are Python keywords
-                (like "list", "for", "import", etc) cannot be used.
-                For example, if one of your columns is called ``a a`` and you want
-                to sum it with ``b``, your query should be ```a a` + b``.
-                For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
-                Defaults to None.
-            dep_name (Optional[str], optional):
-                Custom name to use for dependent variable on plot. Defaults to None.
-            feature_names (Optional[str], optional):
-                Custom names to use for predictor variables on plot. Defaults to None.
-            plot_title (Optional[str], optional):
-                Custom name to use for title of plot. Defaults to None.
-            plotsize (Optional[List[int]], optional):
-                Custom plotsize supplied as (width, height). Defaults to None.
-            colorscale (Union[List[str], str], optional):
-                Colormap used to map scalar data to colors (for a 2D image).
-                If a string is provided, it should be the name of a known color scale, and if a list is provided, it should be a list of CSS-compatible colors.
-                For more information, see color_continuous_scale of https://plotly.com/python-api-reference/generated/plotly.express.imshow.html
-                Defaults to "Blues".
-        """
+        
         dep_name = ifnone(dep_name, self.dep_var)
         return plot_ale_2d(
             self.m,
