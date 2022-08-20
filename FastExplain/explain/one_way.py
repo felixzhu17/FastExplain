@@ -24,7 +24,7 @@ from FastExplain.utils import (
     plot_one_way,
     plot_two_one_way,
     plot_two_way,
-    doc_setter
+    doc_setter,
 )
 
 
@@ -144,7 +144,16 @@ def get_frequency(
     count_df = df.copy()
     count_df["count"] = 1
 
-    filtered_df, numeric = _filter_one_way_analysis_df(df=count_df, x_col=x_col, y_col = ["count"], numeric=numeric, bins=bins, filter=filter, max_card=max_card, grid_size=grid_size)
+    filtered_df, numeric = _filter_one_way_analysis_df(
+        df=count_df,
+        x_col=x_col,
+        y_col=["count"],
+        numeric=numeric,
+        bins=bins,
+        filter=filter,
+        max_card=max_card,
+        grid_size=grid_size,
+    )
     frequency_df = filtered_df.groupby(x_col).agg(**{"frequency": ("count", "count")})
     if numeric:
         frequency_df.index = bin_intervals(
@@ -336,7 +345,6 @@ def get_one_way_analysis(
 
     """
 
-
     filtered_df, numeric = _filter_one_way_analysis_df(
         df=df,
         x_col=x_col,
@@ -347,8 +355,7 @@ def get_one_way_analysis(
         max_card=max_card,
         grid_size=grid_size,
     )
-    
-    
+
     func = func if func is not None else lambda x: conditional_mean(x, size_cutoff)
 
     agg_dict = _get_agg_dict(
@@ -997,7 +1004,7 @@ class OneWay:
         sort: bool = False,
         ascending: bool = True,
     ):
-        
+
         index_mapping = self._get_index_mapping(index_mapping, x_col)
         return plot_histogram(
             df=self.df,
@@ -1140,7 +1147,7 @@ class OneWay:
         filter: Optional[str] = None,
         index_mapping: Optional[List[dict]] = None,
     ):
-        
+
         y_col = ifnone(y_col, self.dep_var)
         index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return get_two_way_analysis(
@@ -1183,7 +1190,7 @@ class OneWay:
         colorscale: Union[List[str], str] = "Blues",
         surface_plot: bool = True,
     ):
-        
+
         y_col = ifnone(y_col, self.dep_var)
         index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return plot_two_way_analysis(
@@ -1224,7 +1231,7 @@ class OneWay:
         filter: Optional[str] = None,
         index_mapping: Optional[List[dict]] = None,
     ):
-        
+
         index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return get_two_way_frequency(
             df=self.df,
@@ -1261,7 +1268,7 @@ class OneWay:
         colorscale: Union[List[str], str] = "Blues",
         surface_plot: bool = True,
     ):
-        
+
         index_mapping = self._get_two_index_mapping(index_mapping, x_cols)
         return plot_two_way_frequency(
             df=self.df,
@@ -1310,14 +1317,14 @@ def _filter_one_way_analysis_df(
 ):
 
     y_col = y_col if isinstance(y_col, (list, tuple)) else [y_col]
-    
+
     df = df.query(filter) if filter else df
-    
+
     numeric = ifnone(numeric, check_cont_col(df[x_col], max_card=max_card))
-    
+
     if numeric:
         bins = bins if bins else get_bins(df[x_col], grid_size)
-    
+
     filtered_df = df[[x_col] + y_col].copy()
     filtered_df[x_col] = (
         pd.cut(filtered_df[x_col], bins, include_lowest=True)
@@ -1327,8 +1334,6 @@ def _filter_one_way_analysis_df(
 
     filtered_df[x_col] = fill_categorical_nan(filtered_df[x_col])
     return filtered_df, numeric
-
-
 
 
 def _get_agg_dict(y_col, func, legend_names, histogram_include_na):
@@ -1411,9 +1416,7 @@ def _plot_two_one_way_analysis(
 ):
 
     """Base function to plot one way analysis for two features"""
-    one_way_df = get_one_way_analysis(
-        df=df, x_col=x_col, y_col=y_col, *args, **kwargs
-    )
+    one_way_df = get_one_way_analysis(df=df, x_col=x_col, y_col=y_col, *args, **kwargs)
     return plot_two_one_way(
         df=one_way_df,
         x_col=x_col,

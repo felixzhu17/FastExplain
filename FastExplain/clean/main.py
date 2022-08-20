@@ -2,6 +2,8 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
+
 
 from FastExplain.clean.encode_categorical import EncodeCategorical
 from FastExplain.clean.fill_missing import FillMissing
@@ -334,9 +336,15 @@ class PandasClean:
 
 
 def check_classification(y):
+
     unique_y = len(y.unique())
     if unique_y == 1:
         raise ValueError("Dependent Variable only has 1 unique value")
+
+    if not is_numeric_dtype(y):
+        if unique_y > 2:
+            raise NotImplementedError("Multi-class classification not supported yet")
+
     return unique_y == 2
 
 
@@ -346,14 +354,16 @@ def check_dep_var(df, dep_var):
     else:
         raise ValueError("Dependent Variable must be a string")
 
-    if df[dep_var].isna().sum() == 0:
-        pass
-    else:
-        raise ValueError("Dependent Variable has missing values")
+    if is_numeric_dtype(df[dep_var]):
 
-    if np.isinf(df[dep_var]).sum() == 0:
-        pass
-    else:
-        raise ValueError("Dependent Variable has inf values")
+        if df[dep_var].isna().sum() == 0:
+            pass
+        else:
+            raise ValueError("Dependent Variable has missing values")
+
+        if np.isinf(df[dep_var]).sum() == 0:
+            pass
+        else:
+            raise ValueError("Dependent Variable has inf values")
 
     return

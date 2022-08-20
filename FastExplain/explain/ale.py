@@ -20,7 +20,7 @@ from FastExplain.utils import (
     plot_two_way,
     plot_upper_lower_bound_traces,
     trim_df,
-    doc_setter
+    doc_setter,
 )
 
 
@@ -640,7 +640,7 @@ class Ale:
         condense_last: bool = True,
         filter: Optional[str] = None,
     ):
-        
+
         return ale_2d(
             m=self.m,
             xs=self.xs,
@@ -671,7 +671,7 @@ class Ale:
         plotsize: Optional[List[int]] = None,
         colorscale: Union[List[str], str] = "Blues",
     ):
-        
+
         dep_name = ifnone(dep_name, self.dep_var)
         return plot_ale_2d(
             self.m,

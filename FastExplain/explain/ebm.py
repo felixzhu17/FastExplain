@@ -16,7 +16,7 @@ from FastExplain.utils import (
     plot_upper_lower_bound_traces,
     trim_df,
     try_convert_numeric,
-    doc_setter
+    doc_setter,
 )
 
 
@@ -258,7 +258,7 @@ class EbmExplain:
         index_mapping: Optional[dict] = None,
         remove_last_bins: Optional[int] = None,
     ):
-        
+
         index_mapping = ifnone(
             index_mapping,
             clean_dict_text(self.cat_mapping[col]) if col in self.cat_mapping else None,

@@ -73,7 +73,9 @@ def test_one_way(test_csv, rf_class_object, xgb_class_object, ebm_class_object):
     rf_class_object.plot_one_way_analysis("Age", filter="Age < 30", sort=True)
     xgb_class_object.plot_one_way_analysis("Age")
     ebm_class_object.plot_one_way_analysis("Age", ["Survived", "SibSp"])
-    ebm_class_object.plot_one_way_analysis("Age", ["Survived", "SibSp"], dual_axis_y_col = True)
+    ebm_class_object.plot_one_way_analysis(
+        "Age", ["Survived", "SibSp"], dual_axis_y_col=True
+    )
     assert True
 
 

@@ -98,7 +98,7 @@ class Importance:
         limit: int = 10,
         plotsize: Optional[List[int]] = None,
     ):
-    
+
         return plot_feature_importance(
             m=self.m,
             xs=self.xs,
