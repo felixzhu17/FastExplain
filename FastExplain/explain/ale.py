@@ -14,13 +14,13 @@ from FastExplain.utils import (
     clean_dict_text,
     clean_text,
     cycle_colours,
+    doc_setter,
     get_upper_lower_bound_traces,
     ifnone,
     merge_multi_df,
     plot_two_way,
     plot_upper_lower_bound_traces,
     trim_df,
-    doc_setter,
 )
 
 

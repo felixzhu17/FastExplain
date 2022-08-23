@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
-
 from FastExplain.clean.encode_categorical import EncodeCategorical
 from FastExplain.clean.fill_missing import FillMissing
 from FastExplain.clean.shrink import df_shrink

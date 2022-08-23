@@ -18,13 +18,13 @@ from FastExplain.utils import (
     clean_dict_text,
     clean_text,
     conditional_mean,
+    doc_setter,
     fill_categorical_nan,
     ifnone,
     plot_bar,
     plot_one_way,
     plot_two_one_way,
     plot_two_way,
-    doc_setter,
 )
 
 

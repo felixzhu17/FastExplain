@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.inspection import partial_dependence
 
-from FastExplain.utils import COLOURS, clean_text, ifnone, doc_setter
+from FastExplain.utils import COLOURS, clean_text, doc_setter, ifnone
 
 
 def plot_ice(

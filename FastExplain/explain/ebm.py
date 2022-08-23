@@ -10,13 +10,13 @@ from FastExplain.utils import (
     clean_dict_text,
     clean_text,
     cycle_colours,
+    doc_setter,
     get_upper_lower_bound_traces,
     ifnone,
     merge_multi_df,
     plot_upper_lower_bound_traces,
     trim_df,
     try_convert_numeric,
-    doc_setter,
 )
 
 

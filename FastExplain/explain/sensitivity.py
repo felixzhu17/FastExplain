@@ -3,7 +3,7 @@ from typing import Any, Callable, List, Optional, Union
 
 import pandas as pd
 
-from FastExplain.utils import check_unequal_list, fill_list, ifnone, doc_setter
+from FastExplain.utils import check_unequal_list, doc_setter, fill_list, ifnone
 
 
 def sensitivity_test(
