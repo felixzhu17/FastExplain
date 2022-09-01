@@ -184,7 +184,7 @@ def plot_ale(
     dep_name: Optional[str] = None,
     feature_name: Optional[str] = None,
     model_names: Optional[List[str]] = None,
-    plot_title: Optional[str] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     _original_feature=None,
 ):
@@ -242,7 +242,7 @@ def plot_ale(
             Custom names to use for predictor variable on plot. Defaults to None.
         model_names (Optional[List[str]], optional):
             Name of models if supplying multiple models. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -329,7 +329,7 @@ def plot_ale(
         if dep_name
         else f"ALE {feature_name}"
     )
-    plot_title = ifnone(plot_title, title)
+    title = ifnone(title, title)
     fig = plot_upper_lower_bound_traces(
         traces=traces,
         x=x,
@@ -337,7 +337,7 @@ def plot_ale(
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
-        plot_title=plot_title,
+        title=title,
     )
     return fig
 
@@ -434,7 +434,7 @@ def plot_ale_2d(
     filter: Optional[str] = None,
     dep_name: Optional[str] = None,
     feature_names: Optional[List[str]] = None,
-    plot_title: Optional[str] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     colorscale: Union[List[str], str] = "Blues",
     surface_plot: bool = True,
@@ -481,7 +481,7 @@ def plot_ale_2d(
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_names (Optional[str], optional):
             Custom names to use for predictor variables on plot. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -513,12 +513,12 @@ def plot_ale_2d(
         if dep_name
         else f"ALE {feature_1} and {feature_2}"
     )
-    plot_title = ifnone(plot_title, title)
+    title = ifnone(title, title)
     fig = plot_two_way(
         df=df,
         x_cols=cols,
         feature_names=feature_names,
-        plot_title=plot_title,
+        title=title,
         plotsize=plotsize,
         colorscale=colorscale,
         surface_plot=surface_plot,
@@ -595,7 +595,7 @@ class Ale:
         dep_name: Optional[str] = None,
         feature_name: Optional[str] = None,
         model_names: Optional[List[str]] = None,
-        plot_title: Optional[str] = None,
+        title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
     ):
         dep_name = ifnone(dep_name, self.dep_var)
@@ -623,7 +623,7 @@ class Ale:
             dep_name=dep_name,
             feature_name=feature_name,
             model_names=model_names,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             _original_feature=_original_feature,
         )
@@ -667,7 +667,7 @@ class Ale:
         filter: Optional[str] = None,
         dep_name: Optional[str] = None,
         feature_names: Optional[List[str]] = None,
-        plot_title: Optional[str] = None,
+        title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         colorscale: Union[List[str], str] = "Blues",
     ):
@@ -686,7 +686,7 @@ class Ale:
             filter=filter,
             dep_name=dep_name,
             feature_names=feature_names,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             colorscale=colorscale,
         )

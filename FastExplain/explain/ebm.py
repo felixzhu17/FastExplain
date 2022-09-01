@@ -124,7 +124,7 @@ def plot_ebm_explain(
     model_names: Optional[List[str]] = None,
     dep_name=None,
     feature_name=None,
-    plot_title=None,
+    title=None,
     plotsize=None,
     _original_feature=None,
 ):
@@ -155,7 +155,7 @@ def plot_ebm_explain(
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_names (Optional[str], optional):
             Custom names to use for predictor variable on plot. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -225,7 +225,7 @@ def plot_ebm_explain(
         if dep_name
         else f"EBM {feature_name}"
     )
-    plot_title = ifnone(plot_title, title)
+    title = ifnone(title, title)
 
     fig = plot_upper_lower_bound_traces(
         traces=traces,
@@ -234,7 +234,7 @@ def plot_ebm_explain(
         x_axis_title=feature_name,
         y_axis_title=dep_name,
         plotsize=plotsize,
-        plot_title=plot_title,
+        title=title,
     )
     return fig
 
@@ -289,7 +289,7 @@ class EbmExplain:
         remove_last_bins: Optional[int] = None,
         dep_name=None,
         feature_name=None,
-        plot_title=None,
+        title=None,
         plotsize=None,
     ):
 
@@ -310,7 +310,7 @@ class EbmExplain:
             index_mapping=index_mapping,
             dep_name=dep_name,
             feature_name=feature_name,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             remove_last_bins=remove_last_bins,
             _original_feature=_original_feature,

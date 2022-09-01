@@ -16,7 +16,7 @@ def plot_ice(
     filter: Optional[str] = None,
     dep_name: Optional[str] = None,
     feature_name: Optional[str] = None,
-    plot_title: Optional[str] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     *pdp_args,
     **pdp_kwargs,
@@ -53,7 +53,7 @@ def plot_ice(
             Custom name to use for dependent variable on plot. Defaults to None.
         feature_name (Optional[str], optional):
             Custom name to use for predictor variable on plot. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -92,9 +92,9 @@ def plot_ice(
         if dep_name
         else f"ICE Plot of {feature_name}"
     )
-    plot_title = ifnone(plot_title, title)
+    title = ifnone(title, title)
     fig.update_layout(
-        title=plot_title,
+        title=title,
         xaxis_title=feature_name,
         plot_bgcolor="white",
     )
@@ -125,7 +125,7 @@ class PDP:
         filter: Optional[str] = None,
         dep_name: Optional[str] = None,
         feature_name: Optional[str] = None,
-        plot_title: Optional[str] = None,
+        title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         *pdp_args,
         **pdp_kwargs,
@@ -140,7 +140,7 @@ class PDP:
             filter=filter,
             dep_name=dep_name,
             feature_name=feature_name,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             *pdp_args,
             **pdp_kwargs,

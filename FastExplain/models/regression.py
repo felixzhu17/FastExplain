@@ -159,7 +159,7 @@ class Regression(
             error=self.raw_error["squared_error"]["model"]["overall"],
             x_col=col,
             func=root_mean,
-            y_axis_name="Root Squared Error",
+            yaxis_title="Root Squared Error",
             *args,
             **kwargs,
         )

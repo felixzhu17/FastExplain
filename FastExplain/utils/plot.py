@@ -11,7 +11,7 @@ def plot_two_way(
     x_cols,
     feature_names=None,
     dep_name=None,
-    plot_title=None,
+    title=None,
     plotsize=None,
     colorscale="Blues",
     surface_plot=True,
@@ -23,7 +23,7 @@ def plot_two_way(
             x_cols=x_cols,
             feature_names=feature_names,
             dep_name=dep_name,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             colorscale=colorscale,
         )
@@ -34,7 +34,7 @@ def plot_two_way(
             x_cols=x_cols,
             feature_names=feature_names,
             dep_name=dep_name,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             colorscale=colorscale,
         )
@@ -45,7 +45,7 @@ def _plot_two_way_surface(
     x_cols,
     feature_names=None,
     dep_name=None,
-    plot_title=None,
+    title=None,
     plotsize=None,
     colorscale="Blues",
 ):
@@ -61,8 +61,8 @@ def _plot_two_way_surface(
         feature_names, (clean_text(x_cols[0]), clean_text(x_cols[1]))
     )
 
-    plot_title = ifnone(
-        plot_title,
+    title = ifnone(
+        title,
         f"{feature_1} and {feature_2} vs {dep_name}"
         if dep_name
         else f"{feature_1} and {feature_2}",
@@ -71,7 +71,7 @@ def _plot_two_way_surface(
     fig = go.Figure(data=[go.Surface(z=df, colorscale=colorscale)])
 
     fig.update_layout(
-        title=plot_title,
+        title=title,
         scene=dict(
             xaxis=dict(
                 backgroundcolor="rgba(0, 0, 0,0)",
@@ -115,7 +115,7 @@ def _plot_two_way_heatmap(
     x_cols,
     feature_names=None,
     dep_name=None,
-    plot_title=None,
+    title=None,
     plotsize=None,
     colorscale="Blues",
 ):
@@ -126,8 +126,8 @@ def _plot_two_way_heatmap(
         feature_names, (clean_text(x_cols[0]), clean_text(x_cols[1]))
     )
 
-    plot_title = ifnone(
-        plot_title,
+    title = ifnone(
+        title,
         f"{feature_1} and {feature_2} vs {dep_name}"
         if dep_name
         else f"{feature_1} and {feature_2}",
@@ -136,7 +136,7 @@ def _plot_two_way_heatmap(
     fig = plotly_layout(
         fig,
         plotsize=plotsize,
-        title=plot_title,
+        title=title,
         xaxis_title=feature_2,
         yaxis_title=feature_1,
     )
@@ -147,35 +147,35 @@ def plot_bar(
     df,
     x_col,
     y_col,
-    x_axis_name=None,
-    y_axis_name=None,
-    plot_title=None,
+    xaxis_title=None,
+    yaxis_title=None,
+    title=None,
     plotsize=None,
     sort=False,
     ascending=True,
     color=COLOURS["grey"],
 ):
     """Base function for plotting frequency"""
-    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
-    y_axis_name = ifnone(y_axis_name, clean_text(x_col))
+    xaxis_title = ifnone(xaxis_title, clean_text(x_col))
+    yaxis_title = ifnone(yaxis_title, clean_text(y_col))
     df = sort_plot_df(df, y_col, sort, ascending)
     fig = go.Figure(
         data=[
             go.Bar(
-                name=y_axis_name,
+                name=yaxis_title,
                 x=df.index,
                 y=df[y_col],
                 marker={"color": color},
             )
         ]
     )
-    plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
+    title = ifnone(title, f"{xaxis_title} vs {yaxis_title}")
     fig = plotly_layout(
         fig,
         plotsize=plotsize,
-        title=plot_title,
-        xaxis_title=x_axis_name,
-        yaxis_title=y_axis_name,
+        title=title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
     )
     return fig
 
@@ -185,9 +185,9 @@ def plot_one_way(
     x_col,
     y_col,
     size=None,
-    x_axis_name=None,
-    y_axis_name=None,
-    plot_title=None,
+    xaxis_title=None,
+    yaxis_title=None,
+    title=None,
     plotsize=None,
     sort=False,
     ascending=True,
@@ -196,13 +196,13 @@ def plot_one_way(
 ):
     """Base function for plotting one-way analysis with frequency"""
 
-    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
+    xaxis_title = ifnone(xaxis_title, clean_text(x_col))
 
-    y_axis_name = ifnone(
-        y_axis_name,
+    yaxis_title = ifnone(
+        yaxis_title,
         clean_text(", ".join(y_col)) if check_list_type(y_col) else clean_text(y_col),
     )
-    plot_title = ifnone(plot_title, f"{x_axis_name} vs {y_axis_name}")
+    title = ifnone(title, f"{xaxis_title} vs {yaxis_title}")
     histogram_name = ifnone(
         histogram_name, "Proportion" if display_proportion else "Frequency"
     )
@@ -241,10 +241,10 @@ def plot_one_way(
 
         fig = plotly_two_axis_layout(
             fig,
-            x_axis_title=x_axis_name,
+            x_axis_title=xaxis_title,
             primary_y_axis_title=histogram_name,
-            secondary_y_axis_title=y_axis_name,
-            title=plot_title,
+            secondary_y_axis_title=yaxis_title,
+            title=title,
             plotsize=plotsize,
         )
 
@@ -256,24 +256,24 @@ def plot_one_way(
         fig = plotly_layout(
             fig,
             plotsize=plotsize,
-            title=plot_title,
-            xaxis_title=x_axis_name,
-            yaxis_title=y_axis_name,
+            title=title,
+            xaxis_title=xaxis_title,
+            yaxis_title=yaxis_title,
         )
 
     return fig
 
 
 def plot_two_one_way(
-    df, x_col, y_col, x_axis_name=None, y_axis_name=None, plot_title=None, plotsize=None
+    df, x_col, y_col, xaxis_title=None, yaxis_title=None, title=None, plotsize=None
 ):
 
-    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
-    y_axis_name_1, y_axis_name_2 = ifnone(
-        y_axis_name, (clean_text(y_col[0]), clean_text(y_col[1]))
+    xaxis_title = ifnone(xaxis_title, clean_text(x_col))
+    yaxis_title_1, yaxis_title_2 = ifnone(
+        yaxis_title, (clean_text(y_col[0]), clean_text(y_col[1]))
     )
-    plot_title = ifnone(
-        plot_title, f"{x_axis_name} vs {y_axis_name_1} and {y_axis_name_2}"
+    title = ifnone(
+        title, f"{xaxis_title} vs {yaxis_title_1} and {yaxis_title_2}"
     )
 
     fig = create_secondary_axis_plotly(
@@ -290,15 +290,15 @@ def plot_two_one_way(
 
     fig = plotly_two_axis_layout(
         fig,
-        x_axis_title=x_axis_name,
-        primary_y_axis_title=y_axis_name_2,
-        secondary_y_axis_title=y_axis_name_1,
-        title=plot_title,
+        x_axis_title=xaxis_title,
+        primary_y_axis_title=yaxis_title_2,
+        secondary_y_axis_title=yaxis_title_1,
+        title=title,
         plotsize=plotsize,
     )
-    fig["data"][0]["name"] = y_axis_name_1
+    fig["data"][0]["name"] = yaxis_title_1
     fig["data"][0]["showlegend"] = True
-    fig["data"][1]["name"] = y_axis_name_2
+    fig["data"][1]["name"] = yaxis_title_2
     fig["data"][1]["showlegend"] = True
     return fig
 
@@ -358,7 +358,7 @@ def plot_upper_lower_bound_traces(
     x_axis_title=None,
     y_axis_title=None,
     plotsize=None,
-    plot_title=None,
+    title=None,
 ):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     for i in traces:
@@ -372,7 +372,7 @@ def plot_upper_lower_bound_traces(
         x_axis_title=x_axis_title,
         primary_y_axis_title="Frequency",
         secondary_y_axis_title=clean_text(y_axis_title),
-        title=plot_title,
+        title=title,
         plotsize=plotsize,
     )
 

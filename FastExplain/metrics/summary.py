@@ -116,9 +116,9 @@ def plot_one_way_error(
     percentage: bool = False,
     condense_last: bool = True,
     filter: Optional[str] = None,
-    x_axis_name: str = None,
-    y_axis_name: str = None,
-    plot_title: Optional[str] = None,
+    xaxis_title: str = None,
+    yaxis_title: str = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
 ):
 
@@ -165,11 +165,11 @@ def plot_one_way_error(
             to sum it with ``b``, your query should be ```a a` + b``.
             For more information refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html.
             Defaults to None.
-        x_axis_name (Optional[str], optional):
+        xaxis_title (Optional[str], optional):
             Custom names to use for x_axis on plot. Defaults to None.
-        y_axis_name (Optional[Union[List[str], str]], optional):
+        yaxis_title (Optional[Union[List[str], str]], optional):
             Custom name to use for y_axis on plot. Can provide up to 2 y-axis to measure against. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -194,9 +194,9 @@ def plot_one_way_error(
         x_col=x_col,
         y_col="error",
         size=one_way_error_df["size"],
-        x_axis_name=x_axis_name,
-        y_axis_name=y_axis_name,
-        plot_title=plot_title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        title=title,
         plotsize=plotsize,
     )
 
@@ -296,7 +296,7 @@ def plot_two_way_error(
     filter: Optional[str] = None,
     feature_names=None,
     dep_name=None,
-    plot_title=None,
+    title=None,
     plotsize=None,
     colorscale="Blues",
     surface_plot: bool = True,
@@ -349,7 +349,7 @@ def plot_two_way_error(
             Custom names to use for independent variables on plot. Defaults to None.
         dep_name (Optional[str], optional):
             Custom name to use for dependent variable on plot. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -379,7 +379,7 @@ def plot_two_way_error(
         x_cols=x_cols,
         feature_names=feature_names,
         dep_name=dep_name,
-        plot_title=plot_title,
+        title=title,
         plotsize=plotsize,
         colorscale=colorscale,
         surface_plot=surface_plot,
