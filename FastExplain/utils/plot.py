@@ -272,9 +272,7 @@ def plot_two_one_way(
     yaxis_title_1, yaxis_title_2 = ifnone(
         yaxis_title, (clean_text(y_col[0]), clean_text(y_col[1]))
     )
-    title = ifnone(
-        title, f"{xaxis_title} vs {yaxis_title_1} and {yaxis_title_2}"
-    )
+    title = ifnone(title, f"{xaxis_title} vs {yaxis_title_1} and {yaxis_title_2}")
 
     fig = create_secondary_axis_plotly(
         px.line(df, x=df.index, y=y_col[0], color_discrete_sequence=[COLOURS["blue"]])

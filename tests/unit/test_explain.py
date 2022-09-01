@@ -49,9 +49,7 @@ def test_ale_class(rf_class_object, xgb_class_object):
     assert len(rf_class_object.ale("Sex").index) == 2
     assert len(xgb_class_object.ale("Cabin", numeric=False).index) == 148
     rf_class_object.plot_ale("Sex", filter="Age < 30")
-    xgb_class_object.plot_ale(
-        "Sex", title="Test", dep_name="Test", feature_name="Test"
-    )
+    xgb_class_object.plot_ale("Sex", title="Test", dep_name="Test", feature_name="Test")
     assert True
 
 
