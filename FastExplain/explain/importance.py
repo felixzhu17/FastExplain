@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 
-from FastExplain.utils import COLOURS, is_ebm, is_rf, doc_setter
+from FastExplain.utils import COLOURS, doc_setter, is_ebm, is_rf
 
 
 def plot_feature_importance(

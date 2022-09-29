@@ -26,7 +26,7 @@ def test_ale(rf_class_object, xgb_class_object):
     xgb_class_object.plot_ale(
         "Age",
         filter="Age < 30",
-        plot_title="Test",
+        title="Test",
         dep_name="Test",
         feature_name="Test",
     )
@@ -38,7 +38,7 @@ def test_ale_2d(rf_class_object, xgb_class_object):
     xgb_class_object.plot_ale_2d(
         ["Age", "SibSp"],
         filter="Age < 30",
-        plot_title="Test",
+        title="Test",
         dep_name="Test",
         feature_names=["Test", "Test"],
     )
@@ -49,15 +49,13 @@ def test_ale_class(rf_class_object, xgb_class_object):
     assert len(rf_class_object.ale("Sex").index) == 2
     assert len(xgb_class_object.ale("Cabin", numeric=False).index) == 148
     rf_class_object.plot_ale("Sex", filter="Age < 30")
-    xgb_class_object.plot_ale(
-        "Sex", plot_title="Test", dep_name="Test", feature_name="Test"
-    )
+    xgb_class_object.plot_ale("Sex", title="Test", dep_name="Test", feature_name="Test")
     assert True
 
 
 def test_ebm(ebm_class_object):
-    ebm_class_object.plot_ebm_explain("Age", plot_title="Test")
-    ebm_class_object.plot_ebm_explain("Sex", plot_title="Test")
+    ebm_class_object.plot_ebm_explain("Age", title="Test")
+    ebm_class_object.plot_ebm_explain("Sex", title="Test")
     assert True
 
 

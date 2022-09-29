@@ -18,13 +18,13 @@ from FastExplain.utils import (
     clean_dict_text,
     clean_text,
     conditional_mean,
+    doc_setter,
     fill_categorical_nan,
     ifnone,
     plot_bar,
     plot_one_way,
     plot_two_one_way,
     plot_two_way,
-    doc_setter,
 )
 
 
@@ -164,6 +164,7 @@ def get_frequency(
 
     if display_proportion:
         frequency_df = frequency_df / frequency_df.sum()
+        frequency_df.rename(columns={"frequency": "proportion"}, inplace=True)
 
     return frequency_df
 
@@ -181,9 +182,9 @@ def plot_histogram(
     filter: Optional[str] = None,
     index_mapping: Optional[dict] = None,
     display_proportion: bool = False,
-    x_axis_name: Optional[str] = None,
-    y_axis_name: Optional[str] = None,
-    plot_title: Optional[str] = None,
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[str] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     sort: bool = False,
     ascending: bool = True,
@@ -229,11 +230,11 @@ def plot_histogram(
             Dictionary mapping the values to display on the x-axis
         display_proportion (bool, option):
             Whether to display as a proportion of total count
-        x_axis_name (Optional[str], optional):
+        xaxis_title (Optional[str], optional):
             Custom names to use for x_axis on plot. Defaults to None.
-        y_axis_name (Optional[Union[List[str], str]], optional):
+        yaxis_title (Optional[Union[List[str], str]], optional):
             Custom name to use for y_axis on plot. Can provide up to 2 y-axis to measure against. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -242,8 +243,8 @@ def plot_histogram(
         ascending (bool, optional):
             Whether to sort ascending. Defaults to True.
     """
-    x_axis_name = ifnone(x_axis_name, clean_text(x_col))
-    plot_title = ifnone(plot_title, f"{x_axis_name} Frequency")
+    xaxis_title = ifnone(xaxis_title, clean_text(x_col))
+    title = ifnone(title, f"{xaxis_title} Frequency")
     frequency_df = get_frequency(
         df=df,
         x_col=x_col,
@@ -261,10 +262,10 @@ def plot_histogram(
     return plot_bar(
         df=frequency_df,
         x_col=x_col,
-        y_col="frequency",
-        x_axis_name=x_axis_name,
-        y_axis_name=y_axis_name,
-        plot_title=plot_title,
+        y_col="proportion" if display_proportion else "frequency",
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        title=title,
         plotsize=plotsize,
         sort=sort,
         ascending=ascending,
@@ -396,9 +397,9 @@ def plot_one_way_analysis(
     index_mapping: Optional[dict] = None,
     index_ordering: Optional[list] = None,
     legend_names: Optional[list] = None,
-    x_axis_name: Optional[str] = None,
-    y_axis_name: Optional[Union[List[str], str]] = None,
-    plot_title: Optional[str] = None,
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[Union[List[str], str]] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     sort: bool = False,
     ascending: bool = True,
@@ -453,11 +454,11 @@ def plot_one_way_analysis(
             Defaults to None.
         index_mapping (Optional[dict], optional):
             Dictionary mapping the values to display on the x-axis. Defaults to None.
-        x_axis_name (Optional[str], optional):
+        xaxis_title (Optional[str], optional):
             Custom names to use for x_axis on plot. Defaults to None.
-        y_axis_name (Optional[Union[List[str], str]], optional):
+        yaxis_title (Optional[Union[List[str], str]], optional):
             Custom name to use for y_axis on plot. Can provide up to 2 y-axis to measure against. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -496,9 +497,9 @@ def plot_one_way_analysis(
         index_mapping=index_mapping,
         index_ordering=index_ordering,
         legend_names=legend_names,
-        x_axis_name=x_axis_name,
-        y_axis_name=y_axis_name,
-        plot_title=plot_title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        title=title,
         plotsize=plotsize,
         sort=sort,
         ascending=ascending,
@@ -650,7 +651,7 @@ def plot_two_way_analysis(
     index_mapping: Optional[List[dict]] = None,
     feature_names: Optional[List[str]] = None,
     dep_name: Optional[str] = None,
-    plot_title: Optional[str] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     colorscale: Union[List[str], str] = "Blues",
     surface_plot: bool = True,
@@ -705,7 +706,7 @@ def plot_two_way_analysis(
             Custom names to use for independent variables on plot. Defaults to None.
         dep_name (Optional[str], optional):
             Custom name to use for dependent variable on plot. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -739,7 +740,7 @@ def plot_two_way_analysis(
         x_cols=x_cols,
         feature_names=feature_names,
         dep_name=dep_name,
-        plot_title=plot_title,
+        title=title,
         plotsize=plotsize,
         colorscale=colorscale,
         surface_plot=surface_plot,
@@ -842,7 +843,7 @@ def plot_two_way_frequency(
     filter: Optional[str] = None,
     index_mapping: Optional[List[dict]] = None,
     feature_names: Optional[List[str]] = None,
-    plot_title: Optional[str] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     colorscale: Union[List[str], str] = "Blues",
     surface_plot: bool = True,
@@ -891,7 +892,7 @@ def plot_two_way_frequency(
             List of two dictionaries mapping the values to display on axis
         feature_names (Optional[List[str]], optional):
             Custom names to use for independent variables on plot. Defaults to None.
-        plot_title (Optional[str], optional):
+        title (Optional[str], optional):
             Custom name to use for title of plot. Defaults to None.
         plotsize (Optional[List[int]], optional):
             Custom plotsize supplied as (width, height). Defaults to None.
@@ -920,13 +921,13 @@ def plot_two_way_frequency(
     feature_1, feature_2 = ifnone(
         feature_names, (clean_text(x_cols[0]), clean_text(x_cols[1]))
     )
-    plot_title = ifnone(plot_title, f"Frequency of {feature_1} and {feature_2}")
+    title = ifnone(title, f"Frequency of {feature_1} and {feature_2}")
 
     return plot_two_way(
         df=frequency_df,
         x_cols=x_cols,
         feature_names=feature_names,
-        plot_title=plot_title,
+        title=title,
         plotsize=plotsize,
         colorscale=colorscale,
         surface_plot=surface_plot,
@@ -997,9 +998,9 @@ class OneWay:
         filter: Optional[str] = None,
         index_mapping: Optional[dict] = None,
         display_proportion: bool = False,
-        x_axis_name: Optional[str] = None,
-        y_axis_name: Optional[str] = None,
-        plot_title: Optional[str] = None,
+        xaxis_title: Optional[str] = None,
+        yaxis_title: Optional[str] = None,
+        title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         sort: bool = False,
         ascending: bool = True,
@@ -1019,9 +1020,9 @@ class OneWay:
             filter=filter,
             index_mapping=index_mapping,
             display_proportion=display_proportion,
-            x_axis_name=x_axis_name,
-            y_axis_name=y_axis_name,
-            plot_title=plot_title,
+            xaxis_title=xaxis_title,
+            yaxis_title=yaxis_title,
+            title=title,
             plotsize=plotsize,
             sort=sort,
             ascending=ascending,
@@ -1086,9 +1087,9 @@ class OneWay:
         filter: Optional[str] = None,
         index_mapping: Optional[dict] = None,
         index_ordering: Optional[list] = None,
-        x_axis_name: Optional[str] = None,
-        y_axis_name: Optional[Union[List[str], str]] = None,
-        plot_title: Optional[str] = None,
+        xaxis_title: Optional[str] = None,
+        yaxis_title: Optional[Union[List[str], str]] = None,
+        title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         sort: bool = False,
         ascending: bool = True,
@@ -1118,9 +1119,9 @@ class OneWay:
             index_mapping=index_mapping,
             index_ordering=index_ordering,
             legend_names=legend_names,
-            x_axis_name=x_axis_name,
-            y_axis_name=y_axis_name,
-            plot_title=plot_title,
+            xaxis_title=xaxis_title,
+            yaxis_title=yaxis_title,
+            title=title,
             plotsize=plotsize,
             sort=sort,
             ascending=ascending,
@@ -1185,7 +1186,7 @@ class OneWay:
         index_mapping: Optional[List[dict]] = None,
         feature_names: Optional[List[str]] = None,
         dep_name: Optional[str] = None,
-        plot_title: Optional[str] = None,
+        title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         colorscale: Union[List[str], str] = "Blues",
         surface_plot: bool = True,
@@ -1210,7 +1211,7 @@ class OneWay:
             index_mapping=index_mapping,
             feature_names=feature_names,
             dep_name=dep_name,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             colorscale=colorscale,
             surface_plot=surface_plot,
@@ -1263,7 +1264,7 @@ class OneWay:
         filter: Optional[str] = None,
         index_mapping: Optional[List[dict]] = None,
         feature_names: Optional[List[str]] = None,
-        plot_title: Optional[str] = None,
+        title: Optional[str] = None,
         plotsize: Optional[List[int]] = None,
         colorscale: Union[List[str], str] = "Blues",
         surface_plot: bool = True,
@@ -1284,7 +1285,7 @@ class OneWay:
             filter=filter,
             index_mapping=index_mapping,
             feature_names=feature_names,
-            plot_title=plot_title,
+            title=title,
             plotsize=plotsize,
             colorscale=colorscale,
             surface_plot=surface_plot,
@@ -1367,9 +1368,9 @@ def _plot_one_way_analysis(
     df: pd.DataFrame,
     x_col: str,
     y_col: Union[list, str],
-    x_axis_name: Optional[str] = None,
-    y_axis_name: Optional[str] = None,
-    plot_title: Optional[str] = None,
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[str] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     sort: bool = False,
     ascending: bool = True,
@@ -1387,9 +1388,9 @@ def _plot_one_way_analysis(
         x_col=x_col,
         y_col=y_col,
         size=one_way_df["size"],
-        x_axis_name=x_axis_name,
-        y_axis_name=y_axis_name,
-        plot_title=plot_title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        title=title,
         plotsize=plotsize,
         sort=sort,
         ascending=ascending,
@@ -1402,9 +1403,9 @@ def _plot_two_one_way_analysis(
     df: pd.DataFrame,
     x_col: str,
     y_col: List[str],
-    x_axis_name: Optional[str] = None,
-    y_axis_name: Optional[List[str]] = None,
-    plot_title: Optional[str] = None,
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[List[str]] = None,
+    title: Optional[str] = None,
     plotsize: Optional[List[int]] = None,
     sort=False,
     ascending=True,
@@ -1421,8 +1422,8 @@ def _plot_two_one_way_analysis(
         df=one_way_df,
         x_col=x_col,
         y_col=y_col,
-        x_axis_name=x_axis_name,
-        y_axis_name=y_axis_name,
-        plot_title=plot_title,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        title=title,
         plotsize=plotsize,
     )
