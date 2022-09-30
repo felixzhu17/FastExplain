@@ -87,12 +87,12 @@ def plot_ice(
     )
     fig.update_traces(showlegend=False)
     feature_name = ifnone(feature_name, clean_text(col))
-    title = (
+    temp_title = (
         f"ICE Plot of {feature_name} vs {clean_text(dep_name)}"
         if dep_name
         else f"ICE Plot of {feature_name}"
     )
-    title = ifnone(title, title)
+    title = ifnone(title, temp_title)
     fig.update_layout(
         title=title,
         xaxis_title=feature_name,

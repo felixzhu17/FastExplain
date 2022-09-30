@@ -249,6 +249,7 @@ def plot_ale(
     """
 
     feature_name = ifnone(feature_name, clean_text(col))
+    dep_name = ifnone(dep_name, "")
     if isinstance(m, (list, tuple)):
         model_names = (
             model_names if model_names else [f"Model {i}" for i in range(len(m))]
@@ -324,12 +325,12 @@ def plot_ale(
             _original_feature=_original_feature,
         )
 
-    title = (
+    temp_title = (
         f"ALE {feature_name} vs {clean_text(dep_name)}"
         if dep_name
         else f"ALE {feature_name}"
     )
-    title = ifnone(title, title)
+    title = ifnone(title, temp_title)
     fig = plot_upper_lower_bound_traces(
         traces=traces,
         x=x,
@@ -508,12 +509,12 @@ def plot_ale_2d(
         filter=filter,
     )
 
-    title = (
+    temp_title = (
         f"ALE {feature_1} and {feature_2} vs {clean_text(dep_name)}"
         if dep_name
         else f"ALE {feature_1} and {feature_2}"
     )
-    title = ifnone(title, title)
+    title = ifnone(title, temp_title)
     fig = plot_two_way(
         df=df,
         x_cols=cols,

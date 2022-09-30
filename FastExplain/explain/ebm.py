@@ -162,6 +162,7 @@ def plot_ebm_explain(
     """
 
     feature_name = ifnone(feature_name, clean_text(col))
+    dep_name = ifnone(dep_name, "")
 
     if isinstance(m, list):
         model_names = (
@@ -220,12 +221,12 @@ def plot_ebm_explain(
             _original_feature=_original_feature,
         )
 
-    title = (
+    temp_title = (
         f"EBM {feature_name} vs {clean_text(dep_name)}"
         if dep_name
         else f"EBM {feature_name}"
     )
-    title = ifnone(title, title)
+    title = ifnone(title, temp_title)
 
     fig = plot_upper_lower_bound_traces(
         traces=traces,
