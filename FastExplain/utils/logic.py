@@ -36,9 +36,8 @@ def bin_columns(bins, dp=2, percentage=False, condense_last=True):
 
 def bin_intervals(bins, dp=2, percentage=False, condense_last=True):
 
-    formatting = "%" if percentage else "f"
     binned_intervals = [
-        f"{i.left:,.{dp}{formatting}} - {i.right:,.{dp}{formatting}}"
+        f"{format_number(i.left, dp, percentage)} - {format_number(i.right, dp, percentage)}"
         if i not in ["NaN"]
         else "NaN"
         for i in bins
@@ -48,7 +47,7 @@ def bin_intervals(bins, dp=2, percentage=False, condense_last=True):
         replace_index = -2 if "NaN" in bins else -1
         binned_intervals[
             replace_index
-        ] = f"{bins[replace_index].left:,.{dp}{formatting}}+"
+        ] = f"{format_number(bins[replace_index].left, dp, percentage)}+"
 
     return binned_intervals
 
@@ -82,3 +81,7 @@ def doc_setter(origin):
         return func
 
     return wrapper
+
+def format_number(x, dp, percentage):
+    formatting = "%" if percentage else "f"
+    return f"{x:,.{dp}{formatting}}"

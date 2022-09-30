@@ -57,8 +57,8 @@ def cont_cat_split(dfs, max_card=20, max_sparsity=0.25, dep_var=None, verbose=Tr
 
 def check_cont_col(x, max_card=20):
     return (
-        pd.api.types.is_integer_dtype(x.dtype) and x.unique().shape[0] > max_card
-    ) or pd.api.types.is_float_dtype(x.dtype)
+        (pd.api.types.is_integer_dtype(x.dtype) or pd.api.types.is_float_dtype(x.dtype)) and x.unique().shape[0] > max_card
+    ) 
 
 
 def check_sparsity(x, max_sparsity=0.25):
