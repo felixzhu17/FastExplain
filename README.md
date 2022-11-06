@@ -6,7 +6,7 @@
 pip install fast-explain
 ``` 
 ## Clean Data, Fit ML Models and Explore Results all in one line.
-FastExplain provides an **out-of-the-box** tool for analysts to **quickly model and explore data**, with **flexibility to fine-tune** if needed.
+FastExplain provides an **out-of-the-box** tool for analysts to **quickly explore data**, **train and interpret models**, with **flexibility to fine-tune** if needed.
 - **Automated cleaning and fitting** of machine learning models with hyperparameter search
 - **Aesthetic display** of explanatory methods ready for reporting
 - **Connected interface** for all data, models and related explanatory methods
