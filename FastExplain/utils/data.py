@@ -65,7 +65,10 @@ def adjust_df(df):
 
 
 def condense_interpretable_df(df):
-    return df.groupby(df.index).apply(
+    def get_range_first_value(index):
+        return [float(i.replace("+", "").split(" - ")[0]) for i in index]
+
+    condensed_df = df.groupby(df.index).apply(
         lambda x: pd.Series(
             [
                 np.average(x["eff"], weights=x["size"]),
@@ -76,3 +79,5 @@ def condense_interpretable_df(df):
             index=["eff", "upper", "lower", "size"],
         )
     )
+
+    return condensed_df.sort_index(key=get_range_first_value)
