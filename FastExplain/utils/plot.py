@@ -488,4 +488,3 @@ def custom_legend_name(fig, new_names):
         fig.data[i].name = new_name
         fig["data"][i]["showlegend"] = True
     return
-

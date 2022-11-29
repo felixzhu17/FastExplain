@@ -9,6 +9,7 @@ from FastExplain.utils import (
     check_all_numeric,
     clean_dict_text,
     clean_text,
+    condense_interpretable_df,
     cycle_colours,
     doc_setter,
     get_upper_lower_bound_traces,
@@ -364,7 +365,7 @@ def _clean_ebm_explain(
         if numeric
         else ebm_global.data(index)["names"],
     )
-    df = df[~df.index.duplicated(keep="last")]
+    df = condense_interpretable_df(df)
     if standardize_values:
         df = adjust_df(df)
     if index_mapping is not None and numeric is False:
@@ -372,7 +373,7 @@ def _clean_ebm_explain(
         df.index = df.index.map(index_mapping)
 
     if remove_last_bins:
-        df = trim_df(remove_last_bins)
+        df = trim_df(df, remove_last_bins)
 
     return df
 

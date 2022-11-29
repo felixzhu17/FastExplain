@@ -82,6 +82,7 @@ def doc_setter(origin):
 
     return wrapper
 
+
 def format_number(x, dp, percentage):
     formatting = "%" if percentage else "f"
     return f"{x:,.{dp}{formatting}}"

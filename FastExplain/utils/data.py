@@ -62,3 +62,17 @@ def adjust_df(df):
     df["lower"] += adjust
     df["upper"] += adjust
     return df
+
+
+def condense_interpretable_df(df):
+    return df.groupby(df.index).apply(
+        lambda x: pd.Series(
+            [
+                np.average(x["eff"], weights=x["size"]),
+                np.average(x["upper"], weights=x["size"]),
+                np.average(x["lower"], weights=x["size"]),
+                sum(x["size"]),
+            ],
+            index=["eff", "upper", "lower", "size"],
+        )
+    )

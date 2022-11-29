@@ -13,6 +13,7 @@ from FastExplain.utils import (
     bin_columns,
     clean_dict_text,
     clean_text,
+    condense_interpretable_df,
     cycle_colours,
     doc_setter,
     get_upper_lower_bound_traces,
@@ -999,7 +1000,7 @@ def _clean_ale(
         grid_size=grid_size,
         _original_feature=_original_feature,
     )
-    df = df[~df.index.duplicated(keep="last")]
+    df = condense_interpretable_df(df)
     if standardize_values:
         df = adjust_df(df)
 
@@ -1011,7 +1012,7 @@ def _clean_ale(
             pd.to_numeric(df.index), dp, percentage, condense_last
         )
     if remove_last_bins:
-        df = trim_df(remove_last_bins)
+        df = trim_df(df, remove_last_bins)
 
     if index_mapping is not None:
         df.index = df.index.map(index_mapping)
