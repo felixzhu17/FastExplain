@@ -48,25 +48,21 @@ class Model(Explain, ABC):
         **model_kwargs,
     ):
 
-        self.data = prepare_data(
-            df=df,
+        self._data_prep_args = dict(
             cat_names=cat_names,
             cont_names=cont_names,
             max_card=max_card,
             max_sparsity=max_sparsity,
             dep_var=dep_var,
-            perc_train=perc_train,
-            seed=seed,
-            splits=splits,
             cat_strategy=cat_strategy,
             fill_strategy=fill_strategy,
             fill_const=fill_const,
             na_dummy=na_dummy,
             cont_transformations=cont_transformations,
             reduce_memory=reduce_memory,
-            return_class=True,
         )
 
+        self.data = self.prepare_data(df, perc_train, seed, splits)
         if use_fitted_model:
             self.m = model
         else:
@@ -122,6 +118,16 @@ class Model(Explain, ABC):
             self.data.df,
             self.data.dep_var,
             self.data.cat_mapping,
+        )
+
+    def prepare_data(self, df, perc_train, seed, splits, return_class=True):
+        return prepare_data(
+            df=df,
+            **self._data_prep_args,
+            return_class=return_class,
+            perc_train=perc_train,
+            seed=seed,
+            splits=splits,
         )
 
     @abstractmethod
