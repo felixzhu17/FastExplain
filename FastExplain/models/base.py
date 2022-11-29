@@ -120,7 +120,14 @@ class Model(Explain, ABC):
             self.data.cat_mapping,
         )
 
-    def prepare_data(self, df, perc_train, seed, splits, return_class=True):
+    def prepare_data(
+        self,
+        df,
+        perc_train: int = 0.8,
+        seed: int = 0,
+        splits: Optional[List[List]] = None,
+        return_class=True,
+    ):
         return prepare_data(
             df=df,
             **self._data_prep_args,
