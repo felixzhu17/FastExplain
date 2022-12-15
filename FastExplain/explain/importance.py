@@ -108,7 +108,7 @@ class Importance:
         )
 
     @doc_setter(_get_feature_importance_df)
-    def plot_feature_importance(
+    def _get_feature_importance_df(
         self,
     ):
 
