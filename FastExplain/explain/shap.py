@@ -228,8 +228,7 @@ class Shap:
         self.explainer = shap.Explainer(self.m)
         if len(self.explainer.expected_value) == 1:
             self.explainer.expected_value = self.explainer.expected_value.mean()
-        sorted_xs = self.xs.sort_index()
-        self.shap_values = self.explainer(sorted_xs)
+        self.shap_values = self.explainer(self.xs)
         if len(self.shap_values.shape) == 3:
             self.shap_values = self.shap_values[:, :, 1]
         self.shap_values_df = self._get_shap_values_df()
