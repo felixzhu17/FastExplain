@@ -1,11 +1,13 @@
+import warnings
 from typing import Any, List, Optional
 
 import pandas as pd
 import shap
+from sklearn.cluster import KMeans
 
-from FastExplain.utils import ifnone, query_df_index, sample_index
+from FastExplain.utils import ifnone, is_rf, query_df_index, sample_index
 
-SHAP_MAX_SAMPLES = 1_000
+SHAP_MAX_SAMPLES = 1_000_000
 
 
 class Shap:
@@ -38,12 +40,22 @@ class Shap:
     """
 
     def __init__(
-        self, m: type, xs: pd.DataFrame, shap_max_samples: int = SHAP_MAX_SAMPLES
+        self,
+        m: type,
+        xs: pd.DataFrame,
+        cat_mapping=None,
+        shap_max_samples: int = SHAP_MAX_SAMPLES,
     ):
         self.m = m
+        if is_rf(m):
+            warnings.warn(
+                "SHAP values is very slow for RandomForest. Use XGBoost instead for faster performance"
+            )
         self.xs = xs
         self.shap_max_samples = shap_max_samples
         self.sample_seed = 0
+        self.cat_mapping = cat_mapping
+        self.shap_values_df = None
         shap.initjs()
 
     @property
@@ -90,8 +102,8 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Force Plots. See https://shap.readthedocs.io/en/latest/generated/shap.plots.force.html?highlight=force
         """
-        _ = self.get_shap_values()
-        self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
+
+        _ = self.get_shap_values(shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.force(self.shap_values[index], *args, **kwargs)
 
@@ -129,8 +141,8 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Beeswarm Plots. See https://shap.readthedocs.io/en/latest/example_notebooks/api_examples/plots/beeswarm.html?highlight=BEESWARM
         """
-        _ = self.get_shap_values()
-        self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
+
+        _ = self.get_shap_values(shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.beeswarm(self.shap_values[index], *args, **kwargs)
 
@@ -171,8 +183,8 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Scatter Plots. See https://shap.readthedocs.io/en/latest/example_notebooks/api_examples/plots/scatter.html#Simple-dependence-scatter-plot
         """
-        _ = self.get_shap_values()
-        self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
+
+        _ = self.get_shap_values(shap_max_samples)
         index = self.get_shap_index(filter, index)
         return shap.plots.scatter(
             self.shap_values[index, col], color=self.shap_values[index], *args, **kwargs
@@ -180,6 +192,7 @@ class Shap:
 
     def shap_importance_plot(
         self,
+        shap_max_samples: Optional[int] = None,
         *args,
         **kwargs,
     ):
@@ -190,16 +203,25 @@ class Shap:
             *args, **kwargs:
                 Additional arguments for SHAP Bar Plots. See https://shap.readthedocs.io/en/latest/example_notebooks/api_examples/plots/bar.html#
         """
-        _ = self.get_shap_values()
+        _ = self.get_shap_values(shap_max_samples)
         return shap.plots.bar(self.shap_values, *args, **kwargs)
 
-    def get_shap_values(self):
+    def get_shap_values(self, shap_max_samples: Optional[int] = None):
         """If SHAP values already calculated, pass, else calculate SHAP values. Return SHAP values"""
+        self.shap_max_samples = ifnone(shap_max_samples, self.shap_max_samples)
         if self._explainer_exists() and self._shap_values_exists():
             pass
         else:
             self._set_shap_values()
         return self.shap_values_df
+
+    def cluster_shap_values(self, n, shap_max_samples: Optional[int] = None):
+        _ = self.get_shap_values(shap_max_samples)
+        shap_df = self.shap_values_df.copy()
+        shap_cols = [i for i in shap_df.columns if i.startswith("shap")]
+        kmeans = KMeans(n_clusters=n).fit(shap_df[shap_cols])
+        shap_df["cluster"] = kmeans.labels_
+        return shap_df
 
     def _set_shap_values(self):
         """Calculate SHAP values"""
@@ -226,7 +248,12 @@ class Shap:
             self.shap_values.values, columns=["shap_" + i for i in self.xs.columns]
         )
         shap_values_df.index = self.xs.index
-        return self.xs.merge(shap_values_df, left_index=True, right_index=True)
+        shap_df = self.xs.merge(shap_values_df, left_index=True, right_index=True)
+        if self.cat_mapping:
+            for k, v in self.cat_mapping.items():
+                if k in shap_df:
+                    shap_df[k] = shap_df[k].map(v)
+            return shap_df
 
     def get_shap_index(self, filter, index):
         """Sample index based on filter or index or default"""
