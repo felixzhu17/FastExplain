@@ -118,6 +118,7 @@ class Model(Explain, ABC):
             self.data.df,
             self.data.dep_var,
             self.data.cat_mapping,
+            self.data.y,
         )
 
     def prepare_data(

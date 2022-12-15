@@ -44,6 +44,7 @@ class Shap:
         m: type,
         xs: pd.DataFrame,
         cat_mapping=None,
+        y=None,
         shap_max_samples: int = SHAP_MAX_SAMPLES,
     ):
         self.m = m
@@ -55,6 +56,7 @@ class Shap:
         self.shap_max_samples = shap_max_samples
         self.sample_seed = 0
         self.cat_mapping = cat_mapping
+        self.y = y
         self.shap_values_df = None
         shap.initjs()
 
@@ -252,7 +254,8 @@ class Shap:
             for k, v in self.cat_mapping.items():
                 if k in shap_df:
                     shap_df[k] = shap_df[k].map(v)
-            return shap_df
+        shap_df = shap_df.join(self.y)
+        return shap_df
 
     def get_shap_index(self, filter, index):
         """Sample index based on filter or index or default"""
