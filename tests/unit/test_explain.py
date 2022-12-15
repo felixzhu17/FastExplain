@@ -106,6 +106,9 @@ def test_shap_values(rf_reg_object, xgb_class_object):
 
     rf_reg_object.shap_importance_plot()
     xgb_class_object.shap_importance_plot()
+
+    rf_reg_object.shap_cluster_summary(3)
+    xgb_class_object.shap_cluster_summary(3)
     assert True
 
 

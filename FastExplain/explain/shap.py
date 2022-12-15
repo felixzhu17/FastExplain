@@ -242,7 +242,7 @@ class Shap:
         summary_df = cluster_df[
             [i for i in cluster_df.columns if not i.startswith("shap_")]
         ]
-        cont, cat = cont_cat_split(summary_df, dep_var=self.dep_var)
+        cont, cat = cont_cat_split(summary_df, dep_var="cluster")
         agg_funcs = {
             **{i: np.mean for i in cont},
             **{i: lambda x: most_common_values(x, cat_top_cutoff) for i in cat},
