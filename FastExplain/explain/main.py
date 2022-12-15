@@ -15,6 +15,6 @@ class Explain(OneWay, Ale, PDP, EbmExplain, Shap, Importance, Sensitivity):
         Ale.__init__(self, m, xs, df, dep_var, cat_mapping)
         PDP.__init__(self, m, xs, dep_var)
         EbmExplain.__init__(self, m, xs, df, dep_var, cat_mapping)
-        Shap.__init__(self, m, xs, cat_mapping, y)
+        Shap.__init__(self, m, xs, dep_var, cat_mapping, y)
         Importance.__init__(self, m, xs)
         Sensitivity.__init__(self, m, xs)

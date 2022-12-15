@@ -1,5 +1,4 @@
 import math
-import numbers
 from collections import Counter
 from functools import reduce
 
@@ -91,3 +90,25 @@ def condense_interpretable_df(df):
     )
 
     return condensed_df.sort_index(key=get_range_first_value)
+
+
+def most_common_values(arr, n):
+    # Get the unique values in the array and their counts
+    unique, counts = np.unique(arr, return_counts=True)
+
+    # Sort the values by their counts in descending order
+    sorted_idxs = np.argsort(-counts)
+
+    # Get the top 3 values and their counts
+    top_idxs = sorted_idxs[:n]
+    top_values = unique[top_idxs]
+    top_counts = counts[top_idxs]
+
+    # Calculate the percentage frequency of each value
+    total = arr.size
+    top_freqs = top_counts / total
+
+    # Create the list of tuples
+    top_common = [(v, f) for v, f in zip(top_values, top_freqs)]
+
+    return top_common

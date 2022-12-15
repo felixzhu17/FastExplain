@@ -1,11 +1,19 @@
 import warnings
 from typing import Any, List, Optional
 
+import numpy as np
 import pandas as pd
 import shap
 from sklearn.cluster import KMeans
 
-from FastExplain.utils import ifnone, is_rf, query_df_index, sample_index
+from FastExplain.clean.split import cont_cat_split
+from FastExplain.utils import (
+    ifnone,
+    is_rf,
+    most_common_values,
+    query_df_index,
+    sample_index,
+)
 
 SHAP_MAX_SAMPLES = 1_000_000
 
@@ -43,6 +51,7 @@ class Shap:
         self,
         m: type,
         xs: pd.DataFrame,
+        dep_var=None,
         cat_mapping=None,
         y=None,
         shap_max_samples: int = SHAP_MAX_SAMPLES,
@@ -57,6 +66,7 @@ class Shap:
         self.sample_seed = 0
         self.cat_mapping = cat_mapping
         self.y = y
+        self.dep_var = dep_var
         self.shap_values_df = None
         shap.initjs()
 
@@ -219,11 +229,25 @@ class Shap:
 
     def cluster_shap_values(self, n, shap_max_samples: Optional[int] = None):
         _ = self.get_shap_values(shap_max_samples)
-        shap_df = self.shap_values_df.copy()
-        shap_cols = [i for i in shap_df.columns if i.startswith("shap")]
-        kmeans = KMeans(n_clusters=n).fit(shap_df[shap_cols])
-        shap_df["cluster"] = kmeans.labels_
-        return shap_df
+        cluster_df = self.shap_values_df.copy()
+        shap_cols = [i for i in cluster_df.columns if i.startswith("shap")]
+        kmeans = KMeans(n_clusters=n).fit(cluster_df[shap_cols])
+        cluster_df["cluster"] = kmeans.labels_
+        return cluster_df
+
+    def shap_cluster_summary(
+        self, n, cat_top_cutoff=3, shap_max_samples: Optional[int] = None
+    ):
+        cluster_df = self.cluster_shap_values(n, shap_max_samples)
+        summary_df = cluster_df[
+            [i for i in cluster_df.columns if not i.startswith("shap_")]
+        ]
+        cont, cat = cont_cat_split(summary_df, dep_var=self.dep_var)
+        agg_funcs = {
+            **{i: np.mean for i in cont},
+            **{i: lambda x: most_common_values(x, cat_top_cutoff) for i in cat},
+        }
+        return summary_df.groupby("cluster").agg(agg_funcs)
 
     def _set_shap_values(self):
         """Calculate SHAP values"""
@@ -250,11 +274,12 @@ class Shap:
         )
         shap_values_df.index = self.xs.index
         shap_df = self.xs.merge(shap_values_df, left_index=True, right_index=True)
-        if self.cat_mapping:
+        if self.cat_mapping is not None:
             for k, v in self.cat_mapping.items():
                 if k in shap_df:
                     shap_df[k] = shap_df[k].map(v)
-        shap_df = shap_df.join(self.y)
+        if self.y is not None:
+            shap_df = shap_df.join(self.y)
         return shap_df
 
     def get_shap_index(self, filter, index):
