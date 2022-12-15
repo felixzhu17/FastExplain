@@ -106,3 +106,13 @@ class Importance:
             limit=limit,
             plotsize=plotsize,
         )
+
+    @doc_setter(_get_feature_importance_df)
+    def plot_feature_importance(
+        self,
+    ):
+
+        return _get_feature_importance_df(
+            m=self.m,
+            xs=self.xs,
+        )
