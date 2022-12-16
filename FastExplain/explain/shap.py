@@ -236,16 +236,22 @@ class Shap:
         return cluster_df
 
     def shap_cluster_summary(
-        self, n, cat_top_cutoff=3, shap_max_samples: Optional[int] = None
+        self,
+        n,
+        cat_top_cutoff=3,
+        cont_func="mean",
+        shap_max_samples: Optional[int] = None,
     ):
         cluster_df = self.cluster_shap_values(n, shap_max_samples)
         summary_df = cluster_df[
             [i for i in cluster_df.columns if not i.startswith("shap_")]
         ]
         cont, cat = cont_cat_split(summary_df, dep_var="cluster")
+        summary_df["count"] = 1
         agg_funcs = {
-            **{i: np.mean for i in cont},
+            **{i: cont_func for i in cont},
             **{i: lambda x: most_common_values(x, cat_top_cutoff) for i in cat},
+            "count": "size",
         }
         return summary_df.groupby("cluster").agg(agg_funcs)
 
