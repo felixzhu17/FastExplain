@@ -32,7 +32,6 @@ def plot_feature_importance(
     """
 
     df = _get_feature_importance_df(m, xs)
-    df = df.sort_values("Importance")
     df = df[-1 * limit :]
     plot_dict = {"x": "Importance", "y": "Feature", "orientation": "h"}
 
@@ -81,7 +80,7 @@ def _get_feature_importance_df(m, xs):
             [tree.feature_importances_ for tree in m.estimators_], axis=0
         )
 
-    return pd.DataFrame(df_dict)
+    return pd.DataFrame(df_dict).sort_values("Importance")
 
 
 class Importance:
