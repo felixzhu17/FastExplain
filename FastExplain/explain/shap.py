@@ -239,7 +239,7 @@ class Shap:
         self,
         n,
         cat_top_cutoff=3,
-        cont_func="mean",
+        cont_func="median",
         shap_max_samples: Optional[int] = None,
     ):
         cluster_df = self.cluster_shap_values(n, shap_max_samples)

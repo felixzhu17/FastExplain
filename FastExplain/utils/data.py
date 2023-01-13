@@ -63,13 +63,12 @@ def adjust_df(df):
     return df
 
 
-def get_range_first_value(index):
-    return [float(i.replace("+", "").split(" - ")[0]) for i in index]
-
-
 def condense_interpretable_df(df):
     def get_range_first_value(index):
-        return [float(str(i).replace("+", "").split(" - ")[0]) for i in index]
+        return [
+            float(str(i).replace("+", "").replace(",", "").split(" - ")[0])
+            for i in index
+        ]
 
     condensed_df = df.groupby(df.index).apply(
         lambda x: pd.Series(
