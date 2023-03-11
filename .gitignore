@@ -134,3 +134,4 @@ test.ipynb
 *.bat
 *.sh
 .vscodep
+test_env
